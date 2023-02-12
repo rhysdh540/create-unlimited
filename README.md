@@ -1,20 +1,16 @@
 # Create Unlimited
 
-This mod removes most of the limitations on various items and features of the Create mod.
+This mod removes most of the limitations on various items and features of the Create mod. **CUURENTLY VERY BROKEN, SEE [https://github.com/rhysdh540/create-ntl](https://github.com/rhysdh540/create-ntl) FOR WORKING VERSIONS**
 
 ### Current "Features":
 - Remove train track placing limits
-- 
+- allow trains to drive on "very illegal" tracks
+- change the distance you can move trains with a wrench
+- some other things i dont remember
 
 It is **required** only on the server, but it is recommended that users install it on the client as well to take advantage of extra features.
 
 credit to [tizu69](https://github.com/tizu69) for the original idea (and the icon).
-
-
-### LATEST STABLE BUILDS:
-These are confirmed to work and not crash, but can be outdated.
- - 1.18.2: Build **15**
- - 1.19.2: Build **19**
 
 ### How to install
 First, click on the actions tab of this repository.
