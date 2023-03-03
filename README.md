@@ -1,6 +1,8 @@
 # Create Unlimited
 
-This mod removes most of the limitations on various items and features of the Create mod. **CUURENTLY VERY BROKEN, SEE [https://github.com/rhysdh540/create-ntl](https://github.com/rhysdh540/create-ntl) FOR WORKING VERSIONS**
+This mod removes most of the limitations on various items and features of the Create mod.
+
+# CUURENTLY VERY BROKEN, SEE [https://github.com/rhysdh540/create-ntl](https://github.com/rhysdh540/create-ntl) FOR WORKING VERSIONS
 
 ### Current "Features":
 - Remove train track placing limits
