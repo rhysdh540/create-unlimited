@@ -4,9 +4,11 @@
   "package": "net.rdh.createunlimited.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "MixinTitleScreen"
   ],
   "mixins": [
+    "TrackEdgeMixin",
+    "TrackPlacementMixin",
+    "accesor.PlacementInfoAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
