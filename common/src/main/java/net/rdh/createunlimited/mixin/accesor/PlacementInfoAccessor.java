@@ -13,7 +13,7 @@ public interface PlacementInfoAccessor {
     @Accessor(value = "curve", remap = false) void setCurve(BezierConnection curve);
 
     @Accessor(value = "valid", remap = false) boolean getValid();
-    @Accessor(value = "valid") void setValid(boolean valid);
+    @Accessor(value = "valid", remap = false) void setValid(boolean valid);
 
     @Accessor(value = "end1Extent", remap = false) int getEnd1Extent();
     @Accessor(value = "end1Extent", remap = false) void setEnd1Extent(int end1Extent);
