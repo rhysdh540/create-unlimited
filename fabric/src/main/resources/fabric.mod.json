@@ -3,7 +3,7 @@
   "id": "createunlimited",
   "version": "${version}",
   "name": "Create Unlimited",
-  "description": "a",
+  "description": "Remove all the limits!",
   "authors": [
     "rdh"
   ],

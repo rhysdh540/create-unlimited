@@ -1,7 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "[${forge_version},)"
 issueTrackerURL = "https://github.com/rhysdh540/createunlimited/issues"
-license = "Insert License Here"
+license = "GPL-3.0"
 
 [[mods]]
 modId = "createunlimited"
@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "Create Unlimited"
 authors = "rdh"
 description = '''
-a
+Remove all the limits!
 '''
 logoFile = "icon.png"
 

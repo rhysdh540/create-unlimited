@@ -34,14 +34,14 @@ jobs:
       - name: gradle murders github servers
         run: ./gradlew build
 
-      - name: merge build artifacts
-        run: ./gradlew mergeJars
-
       - name: upload separate build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: cu-artifacts-separate
           path: build/libs/*.jar
+
+      - name: merge build artifacts
+        run: ./gradlew mergeJars
 
       - name: upload merged build artifacts
         uses: actions/upload-artifact@v2
