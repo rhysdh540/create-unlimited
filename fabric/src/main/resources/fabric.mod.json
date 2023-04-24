@@ -1,27 +1,27 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "createunlimited",
   "version": "${version}",
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Create Unlimited",
+  "description": "a",
   "authors": [
-    "Me!"
+    "rdh"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/rhysdh540/createunlimited",
+    "sources": "https://github.com/rhysdh540/createunlimited"
   },
-  "license": "Insert License Here",
-  "icon": "assets/examplemod/icon.png",
+  "license": "GPL-3.0",
+  "icon": "assets/createunlimited/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.examplemod.fabric.ExampleModFabric"
+      "net.rdh.createunlimited.fabric.CreateUnlimitedFabric"
     ]
   },
   "mixins": [
-    "examplemod.mixins.json",
-    "examplemod-common.mixins.json"
+    "createunlimited.mixins.json",
+    "createunlimited-common.mixins.json"
   ],
   "depends": {
     "minecraft": "${minecraft_version}",

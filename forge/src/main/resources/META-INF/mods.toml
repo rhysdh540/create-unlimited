@@ -1,33 +1,33 @@
 modLoader = "javafml"
 loaderVersion = "[${forge_version},)"
-#issueTrackerURL = ""
+issueTrackerURL = "https://github.com/rhysdh540/createunlimited/issues"
 license = "Insert License Here"
 
 [[mods]]
-modId = "examplemod"
+modId = "createunlimited"
 version = "${version}"
-displayName = "Example Mod"
-authors = "Me!"
+displayName = "Create Unlimited"
+authors = "rdh"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+a
 '''
 logoFile = "icon.png"
 
-[[dependencies.examplemod]]
+[[dependencies.createunlimited]]
 modId = "forge"
 mandatory = true
 versionRange = "[${forge_version},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.examplemod]]
+[[dependencies.createunlimited]]
 modId = "minecraft"
 mandatory = true
 versionRange = "${minecraft_version}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.examplemod]]
+[[dependencies.createunlimited]]
 modId="create"
 mandatory=true
 versionRange="${create_version}"

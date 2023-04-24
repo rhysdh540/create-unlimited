@@ -3,13 +3,14 @@ on: [ pull_request, push ]
 
 jobs:
   build:
+    if: "!startsWith(github.event.head_commit.message, '[skip]')"
     strategy:
       matrix:
         java: [ 17 ]
     runs-on: ubuntu-latest
     steps:
 
-      - name: checkout repository
+      - name: steal code from repository
         uses: actions/checkout@v2
 
       - name: setup jdk ${{ matrix.java }}
@@ -17,7 +18,8 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
 
-      - uses: actions/cache@v2
+      - name: cache gradle
+        uses: actions/cache@v2
         with:
           path: |
             ~/.gradle/caches
@@ -26,14 +28,23 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle
 
-      - name: make gradle wrapper executable
+      - name: give gradle permission to murder github servers
         run: chmod +x ./gradlew
 
-      - name: build
+      - name: gradle murders github servers
         run: ./gradlew build
 
-      - name: capture build artifacts
+      - name: merge build artifacts
+        run: ./gradlew mergeJars
+
+      - name: upload separate build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: Artifacts
-          path: build/libs/
+          name: cu-artifacts-separate
+          path: build/libs/*.jar
+
+      - name: upload merged build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: cu-artifacts-merged
+          path: build/libs/merged/*.jar

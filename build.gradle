@@ -3,10 +3,17 @@ plugins {
     id "dev.architectury.loom" version "1.0-SNAPSHOT" apply false
     id "io.github.juuxel.loom-quiltflower" version "1.+" apply false // Quiltflower, a better decompiler
     id "io.github.p03w.machete" version "1.+" // automatic jar compressing on build
+    id "io.github.pacifistmc.forgix" version "1.2.6" // jar merging
 }
 
 architectury {
     minecraft = rootProject.minecraft_version
+}
+
+forgix {
+    group = "net.rdh.createunlimited"
+    mergedJarName = "createunlimited"
+    outputDir = "build/libs/merged"
 }
 
 subprojects {
