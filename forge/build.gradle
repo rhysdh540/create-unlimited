@@ -34,6 +34,7 @@ repositories {
             includeGroup("com.simibubi.create")
         }
     }
+    maven { url = "https://cursemaven.com" }
 }
 
 dependencies {
@@ -48,6 +49,10 @@ dependencies {
 
     // Development QOL
     modLocalRuntime("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") { transitive = false }
+    modLocalRuntime("curse.maven:better-mods-button-541584:3963202")
+    modLocalRuntime("curse.maven:catalogue-459701:4171024")
+    modLocalRuntime("curse.maven:configured-457570:4462837")
+
 
     // if you would like to add integration with JEI, uncomment this line.
 //    modCompileOnly("mezz.jei:jei-${minecraft_version}:${jei_version}:api")

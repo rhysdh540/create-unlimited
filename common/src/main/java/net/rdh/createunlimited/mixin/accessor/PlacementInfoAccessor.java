@@ -1,4 +1,4 @@
-package net.rdh.createunlimited.mixin.accesor;
+package net.rdh.createunlimited.mixin.accessor;
 
 import com.simibubi.create.content.logistics.trains.BezierConnection;
 import com.simibubi.create.content.logistics.trains.track.TrackPlacement.PlacementInfo;
@@ -12,7 +12,7 @@ public interface PlacementInfoAccessor {
     @Accessor(value = "curve", remap = false) BezierConnection getCurve();
     @Accessor(value = "curve", remap = false) void setCurve(BezierConnection curve);
 
-    @Accessor(value = "valid", remap = false) boolean getValid();
+    @Accessor(value = "valid", remap = false) boolean isValid();
     @Accessor(value = "valid", remap = false) void setValid(boolean valid);
 
     @Accessor(value = "end1Extent", remap = false) int getEnd1Extent();

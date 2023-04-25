@@ -6,9 +6,10 @@ import com.simibubi.create.content.logistics.trains.ITrackBlock;
 import com.simibubi.create.content.logistics.trains.track.TrackBlock;
 import com.simibubi.create.content.logistics.trains.track.TrackPlacement;
 import com.simibubi.create.content.logistics.trains.track.TrackPlacement.PlacementInfo;
-import com.simibubi.create.foundation.advancement.AllAdvancements;
-import com.simibubi.create.foundation.utility.*;
 
+import com.simibubi.create.foundation.advancement.AllAdvancements;
+import com.simibubi.create.foundation.config.AllConfigs;
+import com.simibubi.create.foundation.utility.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -22,11 +23,11 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 
-import net.rdh.createunlimited.Config;
+import net.minecraft.world.phys.Vec3;
 import net.rdh.createunlimited.CreateUnlimited;
-import net.rdh.createunlimited.mixin.accesor.PlacementInfoAccessor;
+import net.rdh.createunlimited.config.CUConfig;
+import net.rdh.createunlimited.mixin.accessor.PlacementInfoAccessor;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -47,12 +48,10 @@ public class TrackPlacementMixin {
      */
     @Overwrite
     public static PlacementInfo tryConnect(Level level, Player player, BlockPos pos2, BlockState state2, ItemStack stack, boolean girder, boolean maximiseTurn) {
-        //CreateUnlimited.LOGGER.info("tryConnect called!");
         Vec3 lookVec = player.getLookAngle();
         int lookAngle = (int) (22.5 + AngleHelper.deg(Mth.atan2(lookVec.z, lookVec.x)) % 360) / 8;
-        //int maxLength = AllConfigs.SERVER.trains.maxTrackPlacementLength.get();
-        int maxLength = Config.TRACK_RANGE.get();
-        boolean check = !Config.PLACEMENT_ENABLED.get();
+        int maxLength = AllConfigs.SERVER.trains.maxTrackPlacementLength.get();
+        boolean check = !CUConfig.SERVER.placementChecksEnabled.get();
 
         if (level.isClientSide && cached != null && pos2.equals(hoveringPos) && stack.equals(lastItem)
                 && hoveringMaxed == maximiseTurn && lookAngle == hoveringAngle)
