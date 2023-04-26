@@ -7,5 +7,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(ConfigBase.class)
 public interface ConfigBaseAccessor {
-    @Invoker("registerAll") void callRegisterAll(final ForgeConfigSpec.Builder builder);
+    @Invoker(value = "registerAll", remap = false) void callRegisterAll(final ForgeConfigSpec.Builder builder);
 }

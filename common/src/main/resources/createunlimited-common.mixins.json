@@ -7,8 +7,12 @@
   ],
   "mixins": [
     "CTrainsMixin",
+    "SuperGlueSectionHandlerMixin",
+    "SuperGlueSelectionPacketMixin",
     "TrackEdgeMixin",
     "TrackPlacementMixin",
+    "TrainMixin",
+    "TrainRelocatorMixin",
     "accessor.ConfigBaseAccessor",
     "accessor.PlacementInfoAccessor"
   ],

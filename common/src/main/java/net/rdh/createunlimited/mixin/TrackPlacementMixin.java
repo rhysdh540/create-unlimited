@@ -46,12 +46,12 @@ public class TrackPlacementMixin {
      * @author rdh
      * @reason yes
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public static PlacementInfo tryConnect(Level level, Player player, BlockPos pos2, BlockState state2, ItemStack stack, boolean girder, boolean maximiseTurn) {
         Vec3 lookVec = player.getLookAngle();
         int lookAngle = (int) (22.5 + AngleHelper.deg(Mth.atan2(lookVec.z, lookVec.x)) % 360) / 8;
         int maxLength = AllConfigs.SERVER.trains.maxTrackPlacementLength.get();
-        boolean check = !CUConfig.SERVER.placementChecksEnabled.get();
+        boolean check = CUConfig.SERVER.trains.placementChecksEnabled.get();
 
         if (level.isClientSide && cached != null && pos2.equals(hoveringPos) && stack.equals(lastItem)
                 && hoveringMaxed == maximiseTurn && lookAngle == hoveringAngle)

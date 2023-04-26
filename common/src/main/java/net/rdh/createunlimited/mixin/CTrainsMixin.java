@@ -1,18 +1,16 @@
 package net.rdh.createunlimited.mixin;
 
 import com.simibubi.create.foundation.config.CTrains;
-import com.simibubi.create.foundation.config.ConfigBase;
 import net.rdh.createunlimited.CreateUnlimited;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(CTrains.class)
-public class CTrainsMixin extends ConfigBase {
-    static {
-        CreateUnlimited.LOGGER.info("CTrains override loaded (probably)");
+public class CTrainsMixin {
+    @ModifyArg(method = "<init>()V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/config/CTrains;i(IIILjava/lang/String;[Ljava/lang/String;)Lcom/simibubi/create/foundation/config/ConfigBase$ConfigInt;"), index = 2)
+    private int modifyMaxTrackPlacementLength(int par1) {
+        CreateUnlimited.LOGGER.info("CTrains config override loaded (probably)");
+        return Integer.MAX_VALUE;
     }
-    @Override public String getName() {
-        return "trains";
-    }
-
-    public final ConfigInt maxTrackPlacementLength = i(32, 16, "maxTrackPlacementLength", "Maximum length of track that can be placed as one batch or turn.");
 }

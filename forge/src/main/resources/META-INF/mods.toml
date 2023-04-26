@@ -5,7 +5,7 @@ license = "GPL-3.0"
 
 [[mods]]
 modId = "createunlimited"
-version = "${version}"
+version = "${version}-FORGE"
 displayName = "Create Unlimited"
 authors = "rdh"
 description = '''
