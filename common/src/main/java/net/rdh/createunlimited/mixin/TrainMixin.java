@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public class TrainMixin {
     @ModifyConstant(method = "tick", constant = @Constant(doubleValue = 4), remap = false)
     private double modifyMaxStress(double original) {
-        return CUConfig.SERVER.trains.maxAllowedStress.get();
+        double a = CUConfig.maxAllowedStress.get();
+        return (a == -1) ? Double.MAX_VALUE : a;
     }
 }

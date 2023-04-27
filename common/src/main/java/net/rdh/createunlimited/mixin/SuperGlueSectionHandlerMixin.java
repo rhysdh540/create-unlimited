@@ -12,15 +12,14 @@ import java.util.Set;
 public class SuperGlueSectionHandlerMixin {
     @ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24), remap = false)
     private double modifyMaxSuperGlueDistance(double original) {
-        return CUConfig.SERVER.glue.maxGlueConnectionRange.get();
+        return CUConfig.maxGlueConnectionRange.get();
     }
-    // shows as working but glue doesn't connect
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
     private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
-        return instance.contains((BlockPos) o) || !CUConfig.SERVER.glue.blocksMustBeConnectedForGlue.get();
+        return instance.contains((BlockPos) o) || !CUConfig.blocksMustBeConnectedForConnection.get();
     }
     @Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
     private boolean modifyNeedsConnectedClick(Set<BlockPos> instance, Object o) {
-        return instance.contains((BlockPos) o) || !CUConfig.SERVER.glue.blocksMustBeConnectedForGlue.get();
+        return instance.contains((BlockPos) o) || !CUConfig.blocksMustBeConnectedForConnection.get();
     }
 }

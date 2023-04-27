@@ -51,7 +51,7 @@ public class TrackPlacementMixin {
         Vec3 lookVec = player.getLookAngle();
         int lookAngle = (int) (22.5 + AngleHelper.deg(Mth.atan2(lookVec.z, lookVec.x)) % 360) / 8;
         int maxLength = AllConfigs.SERVER.trains.maxTrackPlacementLength.get();
-        boolean check = CUConfig.SERVER.trains.placementChecksEnabled.get();
+        boolean check = CUConfig.placementChecksEnabled.get();
 
         if (level.isClientSide && cached != null && pos2.equals(hoveringPos) && stack.equals(lastItem)
                 && hoveringMaxed == maximiseTurn && lookAngle == hoveringAngle)

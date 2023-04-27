@@ -6,7 +6,6 @@
   "client": [
   ],
   "mixins": [
-    "CTrainsMixin",
     "SuperGlueSectionHandlerMixin",
     "SuperGlueSelectionPacketMixin",
     "TrackEdgeMixin",
@@ -14,7 +13,9 @@
     "TrainMixin",
     "TrainRelocatorMixin",
     "accessor.ConfigBaseAccessor",
-    "accessor.PlacementInfoAccessor"
+    "accessor.PlacementInfoAccessor",
+    "CTrainsMixin",
+    "ExtendoGripItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

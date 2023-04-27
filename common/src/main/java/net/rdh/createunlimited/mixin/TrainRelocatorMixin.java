@@ -10,10 +10,10 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public class TrainRelocatorMixin {
     @ModifyConstant(method = "onClicked", constant = @Constant(doubleValue = 24), remap = false)
     private static double modifyMaxTrainRelocatingDistance(double original) {
-        return CUConfig.SERVER.trains.maxTrainRelocatingDistance.get();
+        return CUConfig.maxTrainRelocatingDistance.get();
     }
     @ModifyConstant(method = "clientTick", constant = @Constant(doubleValue = 24), remap = false)
     private static double modifyMaxTrainRelocatingDistanceClient(double original) {
-        return CUConfig.SERVER.trains.maxTrainRelocatingDistance.get();
+        return CUConfig.maxTrainRelocatingDistance.get();
     }
 }
