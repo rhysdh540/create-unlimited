@@ -1,11 +1,7 @@
-package net.rdh.createunlimited.mixin;
+package dev.rdh.createunlimited.mixin;
 
 import com.simibubi.create.content.curiosities.tools.ExtendoGripItem;
-import net.rdh.createunlimited.CreateUnlimited;
-import net.rdh.createunlimited.config.CUConfig;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ExtendoGripItem.class)
 public class ExtendoGripItemMixin {

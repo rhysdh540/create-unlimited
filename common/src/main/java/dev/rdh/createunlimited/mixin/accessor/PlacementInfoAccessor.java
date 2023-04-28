@@ -1,4 +1,4 @@
-package net.rdh.createunlimited.mixin.accessor;
+package dev.rdh.createunlimited.mixin.accessor;
 
 import com.simibubi.create.content.logistics.trains.BezierConnection;
 import com.simibubi.create.content.logistics.trains.track.TrackPlacement.PlacementInfo;

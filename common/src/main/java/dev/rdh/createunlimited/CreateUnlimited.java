@@ -1,4 +1,4 @@
-package net.rdh.createunlimited;
+package dev.rdh.createunlimited;
 
 import com.simibubi.create.Create;
 import net.minecraft.core.Direction;

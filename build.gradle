@@ -12,7 +12,7 @@ architectury {
 }
 
 forgix {
-    group = "net.rdh.createunlimited"
+    group = "dev.rdh.createunlimited"
     mergedJarName = "createunlimited-${mod_version}+${minecraft_version}.jar"
     outputDir = "build/libs/merged"
 }

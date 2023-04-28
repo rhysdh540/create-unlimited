@@ -1,7 +1,7 @@
-package net.rdh.createunlimited.mixin;
+package dev.rdh.createunlimited.mixin;
 
 import com.simibubi.create.foundation.config.CTrains;
-import net.rdh.createunlimited.CreateUnlimited;
+import dev.rdh.createunlimited.CreateUnlimited;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;

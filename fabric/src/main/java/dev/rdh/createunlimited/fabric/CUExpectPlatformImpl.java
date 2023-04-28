@@ -1,4 +1,4 @@
-package net.rdh.createunlimited.fabric;
+package dev.rdh.createunlimited.fabric;
 
 import net.fabricmc.loader.api.FabricLoader;
 

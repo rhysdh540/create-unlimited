@@ -1,9 +1,9 @@
-package net.rdh.createunlimited.config;
+package dev.rdh.createunlimited.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.rdh.createunlimited.CreateUnlimited;
+import dev.rdh.createunlimited.CreateUnlimited;
 import org.jetbrains.annotations.NotNull;
 
 public class CUConfig {
