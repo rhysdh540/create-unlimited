@@ -34,17 +34,23 @@ jobs:
       - name: gradle murders github servers
         run: ./gradlew build
 
-      - name: upload separate build artifacts
+      - name: upload forge build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: cu-artifacts-separate
-          path: build/libs/*.jar
+          name: cu-artifacts-forge
+          path: forge/build/libs/*.jar
+
+      - name: upload fabric build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: cu-artifacts-fabric
+          path: fabric/build/libs/*.jar
 
       - name: merge build artifacts
         run: ./gradlew mergeJars
 
-      - name: upload merged build artifacts
+      - name: upload merged build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: cu-artifacts-merged
+          name: cu-artifact-merged
           path: build/libs/merged/*.jar
