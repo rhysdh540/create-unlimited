@@ -33,7 +33,7 @@ public class CUConfig {
         maxTrainRelocatingDistance = i(24, 0, "maxTrainRelocatingDistance", "Maximum distance a train can be relocated using the wrench.");
         maxAllowedStress = d(4.0, -1.0, "maxAllowedStress", "Maximum stress from couplings before train derails. Set to -1 to disable.");
 
-        BUILDER.pop().comment("Glue Settings").push("Glue");
+        BUILDER.pop().comment("Glue Settings").push("SuperGlue");
         maxGlueConnectionRange = i(24, 0, "maxGlueConnectionRange", "Maximum distance between two blocks for them to be considered for glue connections.");
         blocksMustBeConnectedForConnection = b(true, "blocksMustBeConnectedForConnection", "Require blocks to be connected for glue connections.");
 
@@ -56,6 +56,21 @@ public class CUConfig {
                 .build();
         configData.load();
         spec.setConfig(configData);
+    }
+
+    public static ForgeConfigSpec.ConfigValue<?>[] getObjects(String key) {
+        switch(key) {
+            case "Trains" -> {
+                return new ForgeConfigSpec.ConfigValue[]{placementChecksEnabled, veryIllegalDriving, maxTrainRelocatingDistance, maxAllowedStress};
+            }
+            case "SuperGlue" -> {
+                return new ForgeConfigSpec.ConfigValue[]{maxGlueConnectionRange, blocksMustBeConnectedForConnection};
+            }
+            case "ExtendoGrip" -> {
+                return new ForgeConfigSpec.ConfigValue[]{singleExtendoGripRange, doubleExtendoGripRange};
+            }
+            default -> throw new IllegalArgumentException("Invalid key: " + key);
+        }
     }
 
     public static ForgeConfigSpec.BooleanValue b(boolean normal, String path, String comment) {

@@ -2,7 +2,7 @@ package dev.rdh.createunlimited.fabric;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import dev.rdh.createunlimited.config.CUConfigScreen;
+import dev.rdh.createunlimited.config.gui.CUConfigScreen;
 
 public class CUModMenuCompat implements ModMenuApi {
     @Override

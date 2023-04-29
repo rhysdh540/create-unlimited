@@ -1,7 +1,7 @@
 package dev.rdh.createunlimited.forge;
 
 import dev.rdh.createunlimited.config.CUConfig;
-import dev.rdh.createunlimited.config.CUConfigScreen;
+import dev.rdh.createunlimited.config.gui.CUConfigScreen;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;

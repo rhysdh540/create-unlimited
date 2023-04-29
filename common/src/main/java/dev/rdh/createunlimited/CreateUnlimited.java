@@ -34,7 +34,7 @@ public class CreateUnlimited {
      * All it really does though is print a message to the log.
      */
     public static void init() {
-        LOGGER.info("{} initializing! Create version: {} on platform: {}", NAME, Create.VERSION, CUExpectPlatform.platformName());
+        LOGGER.info("{} initializing! Create version: {} on platform: {}", NAME, Create.VERSION, CUPlatformFunctions.platformName());
     }
 
     /**

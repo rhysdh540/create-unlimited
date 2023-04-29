@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(CTrains.class)
 public class CTrainsMixin {
-    @ModifyArg(method = "<init>()V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/config/CTrains;i(IIILjava/lang/String;[Ljava/lang/String;)Lcom/simibubi/create/foundation/config/ConfigBase$ConfigInt;"), index = 2)
+    @ModifyArg(method = "<init>()V", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/config/CTrains;i(IIILjava/lang/String;[Ljava/lang/String;)Lcom/simibubi/create/foundation/config/ConfigBase$ConfigInt;", remap = false), index = 2, remap = false)
     private int modifyMaxTrackPlacementLength(int par1) {
         CreateUnlimited.LOGGER.info("CTrains config override loaded (probably)");
         return Integer.MAX_VALUE;
