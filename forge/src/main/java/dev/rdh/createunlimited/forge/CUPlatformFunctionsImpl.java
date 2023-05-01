@@ -1,24 +1,25 @@
 package dev.rdh.createunlimited.forge;
 
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("UnstableApiUsage")
+@Mod.EventBusSubscriber
 public class CUPlatformFunctionsImpl {
+	public static List<LiteralArgumentBuilder<CommandSourceStack>> commands = new ArrayList<>();
 	public static String platformName() {
 		return "Forge";
 	}
 	public static Path getConfigDirectory() {
 		return FMLPaths.CONFIGDIR.get();
 	}
-	public static boolean isClientEnv() {
-		return FMLEnvironment.dist.isClient();
-	}
-	public static boolean isModLoaded(String modid) {
-		return ModList.get().isLoaded(modid);
-	}
-
+    public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
+		commands.add(command);
+    }
 }

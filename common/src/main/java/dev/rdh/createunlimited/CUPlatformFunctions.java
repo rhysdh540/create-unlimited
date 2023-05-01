@@ -1,6 +1,8 @@
 package dev.rdh.createunlimited;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.commands.CommandSourceStack;
 
 import java.nio.file.Path;
 
@@ -14,11 +16,7 @@ public class CUPlatformFunctions {
         throw new AssertionError();
     }
     @ExpectPlatform
-    public static boolean isClientEnv() {
-        throw new AssertionError();
-    }
-    @ExpectPlatform
-    public static boolean isModLoaded(String modid) {
+    public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
         throw new AssertionError();
     }
 }

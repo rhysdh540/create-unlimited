@@ -1,6 +1,8 @@
 package dev.rdh.createunlimited;
 
 import com.simibubi.create.Create;
+import dev.rdh.createunlimited.command.CreateUnlimitedCommand;
+import dev.rdh.createunlimited.config.CUConfig;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -35,6 +37,8 @@ public class CreateUnlimited {
      */
     public static void init() {
         LOGGER.info("{} initializing! Create version: {} on platform: {}", NAME, Create.VERSION, CUPlatformFunctions.platformName());
+        CUConfig.init(CUConfig.SPEC, CUPlatformFunctions.getConfigDirectory().resolve("createunlimited.toml"));
+        CreateUnlimitedCommand.register();
     }
 
     /**
@@ -58,7 +62,9 @@ public class CreateUnlimited {
      * @param s the direction vector of the second line segment
      * @param plane the plane in which the line segments are defined, specified by an element of the enum Direction.Axis
      * @return a {@code double} array containing the values of {@code t} and {@code u}, the parameters that define the intersection point: <br> {@code P1 + tR = P2 + uS}
+     * @see com.simibubi.create.foundation.utility.VecHelper#intersect(Vec3, Vec3, Vec3, Vec3, Direction.Axis) VecHelper.intersect()
      */
+    @SuppressWarnings("SuspiciousNameCombination")
     public static double[] intersect(Vec3 p1, Vec3 p2, Vec3 r, Vec3 s, Direction.Axis plane) {
         if (plane == Direction.Axis.X) {
             p1 = new Vec3(p1.y, 0, p1.z);

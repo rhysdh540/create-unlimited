@@ -53,14 +53,11 @@ dependencies {
 //    modLocalRuntime("curse.maven:smoothboot-633412:4162940")
 //    modLocalRuntime("curse.maven:canary-665658:4498536")
 //    modLocalRuntime("curse.maven:saturn-670986:4500238")
-//    modLocalRuntime("curse.maven:ferritecore-429235:4117906")
+    modLocalRuntime("curse.maven:ferritecore-429235:4117906")
 
-//    modLocalRuntime("curse.maven:catalogue-459701:4171024")
+    modLocalRuntime("curse.maven:catalogue-459701:4171024")
 //    modLocalRuntime("curse.maven:configured-457570:4462837")
 
-
-    // if you would like to add integration with JEI, uncomment this line.
-//    modCompileOnly("mezz.jei:jei-${minecraft_version}:${jei_version}:api")
 }
 
 processResources {

@@ -7,20 +7,25 @@ import dev.rdh.createunlimited.CreateUnlimited;
 import org.jetbrains.annotations.NotNull;
 
 public class CUConfig {
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static ForgeConfigSpec SPEC;
+    public static final ForgeConfigSpec SPEC;
+    public static ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-    //trains
-    public static ForgeConfigSpec.BooleanValue placementChecksEnabled;
+    public enum PlacementCheck {
+        ON,
+        SURVIVAL_ONLY,
+        OFF,
+    }
+//    public static final String TRAINS = "Trains";
+    public static ForgeConfigSpec.EnumValue<PlacementCheck> placementChecksEnabled;
     public static ForgeConfigSpec.BooleanValue veryIllegalDriving;
     public static ForgeConfigSpec.IntValue maxTrainRelocatingDistance;
     public static ForgeConfigSpec.DoubleValue maxAllowedStress;
 
-    //glue
+//    public static final String GLUE = "Super Glue";
     public static ForgeConfigSpec.IntValue maxGlueConnectionRange;
     public static ForgeConfigSpec.BooleanValue blocksMustBeConnectedForConnection;
 
-    //extendo grip
+//    public static final String EXTENDO_GRIP = "Extendo-Grips";
     public static ForgeConfigSpec.IntValue singleExtendoGripRange;
     public static ForgeConfigSpec.IntValue doubleExtendoGripRange;
 
@@ -28,7 +33,7 @@ public class CUConfig {
         BUILDER.comment("Create Unlimited Config").push("CreateUnlimited");
 
         BUILDER.comment("Train Settings").push("Trains");
-        placementChecksEnabled = b(true, "placementChecksEnabled", "Whether or not to enable the placement checks for train tracks.");
+        placementChecksEnabled = BUILDER.comment("Whether or not to enable the placement checks for train tracks.").defineEnum("placementChecksEnabled", PlacementCheck.ON);
         veryIllegalDriving = b(false, "veryIllegalDriving", "Whether or not to allow trains to drive on \"very illegal\" tracks. Slightly buggy.");
         maxTrainRelocatingDistance = i(24, 0, "maxTrainRelocatingDistance", "Maximum distance a train can be relocated using the wrench.");
         maxAllowedStress = d(4.0, -1.0, "maxAllowedStress", "Maximum stress from couplings before train derails. Set to -1 to disable.");
@@ -47,8 +52,6 @@ public class CUConfig {
 
     public static void init(@NotNull ForgeConfigSpec spec, java.nio.file.Path path) {
         CreateUnlimited.LOGGER.info("Loading CU config!");
-
-
         final CommentedFileConfig configData = CommentedFileConfig.builder(path)
                 .sync()
                 .autosave()
@@ -56,21 +59,6 @@ public class CUConfig {
                 .build();
         configData.load();
         spec.setConfig(configData);
-    }
-
-    public static ForgeConfigSpec.ConfigValue<?>[] getObjects(String key) {
-        switch(key) {
-            case "Trains" -> {
-                return new ForgeConfigSpec.ConfigValue[]{placementChecksEnabled, veryIllegalDriving, maxTrainRelocatingDistance, maxAllowedStress};
-            }
-            case "SuperGlue" -> {
-                return new ForgeConfigSpec.ConfigValue[]{maxGlueConnectionRange, blocksMustBeConnectedForConnection};
-            }
-            case "ExtendoGrip" -> {
-                return new ForgeConfigSpec.ConfigValue[]{singleExtendoGripRange, doubleExtendoGripRange};
-            }
-            default -> throw new IllegalArgumentException("Invalid key: " + key);
-        }
     }
 
     public static ForgeConfigSpec.BooleanValue b(boolean normal, String path, String comment) {
