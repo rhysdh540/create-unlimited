@@ -38,9 +38,9 @@ public class CUConfig {
     public static ForgeConfigSpec.IntValue maxGlueConnectionRange;
     public static ForgeConfigSpec.BooleanValue blocksMustBeConnectedForConnection;
 
-    public static String extendo;
-    public static ForgeConfigSpec.IntValue singleExtendoGripRange;
-    public static ForgeConfigSpec.IntValue doubleExtendoGripRange;
+//    public static String extendo;
+//    public static ForgeConfigSpec.IntValue singleExtendoGripRange;
+//    public static ForgeConfigSpec.IntValue doubleExtendoGripRange;
 
     /* cant do javadoc on static initializers :(((
      * but basically this builds the config and gives everything a default value and range
@@ -58,9 +58,9 @@ public class CUConfig {
         maxGlueConnectionRange = i(24, 0, "maxGlueConnectionRange", "Maximum distance between two blocks for them to be considered for glue connections.");
         blocksMustBeConnectedForConnection = b(true, "blocksMustBeConnectedForConnection", "Require blocks to be connected for glue connections.");
 
-        BUILDER.pop().comment("Extendo Grip Settings").push("ExtendoGrip");
-        singleExtendoGripRange = i(3, 0, "singleExtendoGripRange", "How much to extend your reach when holding an Extendo-Grip. Adds to your base reach.");
-        doubleExtendoGripRange = i(5, 0, "doubleExtendoGripRange", "How much to extend your reach when holding two Extendo-Grips. Adds to your base reach.");
+//        BUILDER.pop().comment("Extendo Grip Settings").push("ExtendoGrip");
+//        singleExtendoGripRange = i(3, 0, "singleExtendoGripRange", "How much to extend your reach when holding an Extendo-Grip. Adds to your base reach.");
+//        doubleExtendoGripRange = i(5, 0, "doubleExtendoGripRange", "How much to extend your reach when holding two Extendo-Grips. Adds to your base reach.");
         BUILDER.pop(2);
 
         SPEC = BUILDER.build();
