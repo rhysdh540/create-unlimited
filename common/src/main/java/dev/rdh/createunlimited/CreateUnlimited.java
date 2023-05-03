@@ -1,7 +1,7 @@
 package dev.rdh.createunlimited;
 
 import com.simibubi.create.Create;
-import dev.rdh.createunlimited.command.CreateUnlimitedCommand;
+import dev.rdh.createunlimited.command.CreateUnlimitedCommands;
 import dev.rdh.createunlimited.config.CUConfig;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -37,15 +37,15 @@ public class CreateUnlimited {
      */
     public static void init() {
         LOGGER.info("{} initializing! Create version: {} on platform: {}", NAME, Create.VERSION, CUPlatformFunctions.platformName());
-        CUConfig.init(CUConfig.SPEC, CUPlatformFunctions.getConfigDirectory().resolve("createunlimited.toml"));
-        CreateUnlimitedCommand.register();
+        CUConfig.init(CUPlatformFunctions.getConfigDirectory().resolve("createunlimited.toml"));
+        CreateUnlimitedCommands.registerConfigCommand();
     }
 
     /**
      * Creates a {@link ResourceLocation} with the mod's ID as the namespace.
      * Used for loading assets into our mod (which has none, so it's unused right now).
      * @param path The path of the resource location.
-     * @return A {@link ResourceLocation} with the mod's ID as the namespace and the given path.
+     * @return A {@code ResourceLocation} with the mod's ID as the namespace and the given path.
      */
     public static ResourceLocation id(String path) {
         return new ResourceLocation(MOD_ID, path);
@@ -53,7 +53,7 @@ public class CreateUnlimited {
 
     /**
      * Computes the intersection point of two line segments defined by two points and two direction vectors in a given plane.
-     * Similar to {@link com.simibubi.create.foundation.utility.VecHelper#intersect(Vec3, Vec3, Vec3, Vec3, Direction.Axis) VecHelper.intersect()} but unable to return {@code null}, to prevent {@link NullPointerException}s from occuring.<p>
+     * Similar to {@link com.simibubi.create.foundation.utility.VecHelper#intersect(Vec3, Vec3, Vec3, Vec3, Direction.Axis) VecHelper.intersect()} but unable to return {@code null}, to prevent {@link NullPointerException NullPointerExceptions} from occuring.<p>
      * If the plane is X-axis, the input points and direction vectors are projected onto the YZ plane.
      * If the plane is Z-axis, the input points and direction vectors are projected onto the XY plane.
      * @param p1 the first endpoint of the first line segment
@@ -64,7 +64,7 @@ public class CreateUnlimited {
      * @return a {@code double} array containing the values of {@code t} and {@code u}, the parameters that define the intersection point: <br> {@code P1 + tR = P2 + uS}
      * @see com.simibubi.create.foundation.utility.VecHelper#intersect(Vec3, Vec3, Vec3, Vec3, Direction.Axis) VecHelper.intersect()
      */
-    @SuppressWarnings("SuspiciousNameCombination")
+    @SuppressWarnings("SuspiciousNameCombination") // javac doesn't like when we pass a value called "y" to a method that expects a value called "x"
     public static double[] intersect(Vec3 p1, Vec3 p2, Vec3 r, Vec3 s, Direction.Axis plane) {
         if (plane == Direction.Axis.X) {
             p1 = new Vec3(p1.y, 0, p1.z);
@@ -86,7 +86,7 @@ public class CreateUnlimited {
         Vec3 sdivrcs = s.scale(1 / rcs);
         double t = qminusp.x * sdivrcs.z - qminusp.z * sdivrcs.x;
         double u = qminusp.x * rdivrcs.z - qminusp.z * rdivrcs.x;
-        return new double[] { t, u };
+        return new double[]{t, u};
     }
 
     /**

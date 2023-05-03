@@ -6,6 +6,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
+/**
+ * Mixin to modify the maximum distance a train can be relocated with a wrench.
+ */
 @Mixin(TrainRelocator.class)
 public class TrainRelocatorMixin {
     @ModifyConstant(method = "onClicked", constant = @Constant(doubleValue = 24), remap = false)

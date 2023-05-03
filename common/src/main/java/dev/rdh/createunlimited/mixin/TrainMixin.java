@@ -6,6 +6,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
+/**
+ * Mixin to modify the maximum stress tha can be placed on the couplings of a train.
+ */
 @Mixin(Train.class)
 public class TrainMixin {
     @ModifyConstant(method = "tick", constant = @Constant(doubleValue = 4), remap = false)

@@ -2,10 +2,23 @@ package dev.rdh.createunlimited.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import net.minecraftforge.common.ForgeConfigSpec;
-import dev.rdh.createunlimited.CreateUnlimited;
-import org.jetbrains.annotations.NotNull;
 
+import net.minecraftforge.common.ForgeConfigSpec;
+
+import dev.rdh.createunlimited.CreateUnlimited;
+
+import java.nio.file.Path;
+
+/**
+ * The configuration class for Create Unlimited.
+ * <p>
+ * This class is responsible for declaring, initializing, and registering the mod's configuration.
+ * Since it uses the Forge Configuration Specification, an external mod (Forge Config API Port) is required on Fabric, but it's probably bundled with the mod. (or some weird witchery means that it works anyway idk)
+ * <p>
+ * The configuration is stored in {@code [world folder]/serverconfig/createunlimited.toml}.
+ *
+ * @see <a href="https://github.com/TheElectronWill/night-config">Night Config on GitHub</a>
+ */
 public class CUConfig {
     public static final ForgeConfigSpec SPEC;
     public static ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
@@ -15,26 +28,29 @@ public class CUConfig {
         SURVIVAL_ONLY,
         OFF,
     }
-//    public static final String TRAINS = "Trains";
+    public static String train;
     public static ForgeConfigSpec.EnumValue<PlacementCheck> placementChecksEnabled;
-    public static ForgeConfigSpec.BooleanValue veryIllegalDriving;
+    public static ForgeConfigSpec.BooleanValue extendedDriving;
     public static ForgeConfigSpec.IntValue maxTrainRelocatingDistance;
     public static ForgeConfigSpec.DoubleValue maxAllowedStress;
 
-//    public static final String GLUE = "Super Glue";
+    public static String glue;
     public static ForgeConfigSpec.IntValue maxGlueConnectionRange;
     public static ForgeConfigSpec.BooleanValue blocksMustBeConnectedForConnection;
 
-//    public static final String EXTENDO_GRIP = "Extendo-Grips";
+    public static String extendo;
     public static ForgeConfigSpec.IntValue singleExtendoGripRange;
     public static ForgeConfigSpec.IntValue doubleExtendoGripRange;
 
+    /* cant do javadoc on static initializers :(((
+     * but basically this builds the config and gives everything a default value and range
+     */
     static {
         BUILDER.comment("Create Unlimited Config").push("CreateUnlimited");
 
         BUILDER.comment("Train Settings").push("Trains");
         placementChecksEnabled = BUILDER.comment("Whether or not to enable the placement checks for train tracks.").defineEnum("placementChecksEnabled", PlacementCheck.ON);
-        veryIllegalDriving = b(false, "veryIllegalDriving", "Whether or not to allow trains to drive on \"very illegal\" tracks. Slightly buggy.");
+        extendedDriving = b(false, "extendedDriving", "Whether or not to allow trains to drive on \"very illegal\" tracks. Slightly buggy.");
         maxTrainRelocatingDistance = i(24, 0, "maxTrainRelocatingDistance", "Maximum distance a train can be relocated using the wrench.");
         maxAllowedStress = d(4.0, -1.0, "maxAllowedStress", "Maximum stress from couplings before train derails. Set to -1 to disable.");
 
@@ -50,17 +66,22 @@ public class CUConfig {
         SPEC = BUILDER.build();
     }
 
-    public static void init(@NotNull ForgeConfigSpec spec, java.nio.file.Path path) {
-        CreateUnlimited.LOGGER.info("Loading CU config!");
+    /**
+     * Initializes and registers the config.
+     * @param path The path to the config file.
+     */
+    public static void init(Path path) {
+        CreateUnlimited.LOGGER.info("Loading Create Unlimited config!");
         final CommentedFileConfig configData = CommentedFileConfig.builder(path)
                 .sync()
                 .autosave()
                 .writingMode(WritingMode.REPLACE)
                 .build();
         configData.load();
-        spec.setConfig(configData);
+        SPEC.setConfig(configData);
     }
 
+    // helper methods for declaring config values
     public static ForgeConfigSpec.BooleanValue b(boolean normal, String path, String comment) {
         return BUILDER.comment(comment).define(path, normal);
     }

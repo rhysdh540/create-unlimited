@@ -11,6 +11,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Set;
 
+/**
+ * This mixin modifies the SuperGlueSelectionPacket class to allow for configurable glue range and connection checks. It handles the server-side code that actually connects the blocks.
+ * <p>
+ * Currently, it's a little broken because it still doesn't allow the two blocks to be connected into contraptions if they're not connected to each other, but it does allow them to be connected with super glue as long as they don't move.
+ */
 @Mixin(SuperGlueSelectionPacket.class)
 public class SuperGlueSelectionPacketMixin {
     @ModifyConstant(method = "lambda$handle$0", constant = @Constant(doubleValue = 25), remap = false)

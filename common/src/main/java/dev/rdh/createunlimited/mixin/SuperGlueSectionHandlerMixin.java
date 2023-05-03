@@ -8,6 +8,9 @@ import org.spongepowered.asm.mixin.injection.*;
 
 import java.util.Set;
 
+/**
+ * This mixin modifies the SuperGlueSelectionHandler class to allow for configurable glue range and connection checks. It handles the client-side code that creates the green/yellow overlay when you hover over a block range with super glue.
+ */
 @Mixin(SuperGlueSelectionHandler.class)
 public class SuperGlueSectionHandlerMixin {
     @ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24), remap = false)
