@@ -35,22 +35,21 @@ jobs:
         run: ./gradlew build
 
       - name: upload forge build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: cu-artifacts-forge
           path: forge/build/libs/*.jar
 
       - name: upload fabric build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: cu-artifacts-fabric
           path: fabric/build/libs/*.jar
 
-      - name: merge build artifacts
-        run: ./gradlew mergeJars
-
       - name: upload merged build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: cu-artifact-merged
-          path: build/libs/merged/*.jar
+          name: cu-artifacts-merged
+          path: |
+            build/libs/merged/*.jar
+            common/build/libs/*-sources.jar

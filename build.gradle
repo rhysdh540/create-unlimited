@@ -49,6 +49,8 @@ subprojects {
 
         // see each subproject for dependencies.
     }
+    build.finalizedBy(mergeJars)
+    assemble.finalizedBy(mergeJars)
 }
 
 allprojects {

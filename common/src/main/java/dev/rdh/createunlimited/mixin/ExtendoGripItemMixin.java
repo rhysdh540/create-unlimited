@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 /**
- * This mixin is responsible for changing the range of the Extendo-Grip. It's currently a bit broken (meaning completely broken but it doesn't crash)
+ * This mixin is responsible for changing the range of the Extendo-Grip. scratch that it's broken
  */
 @Mixin(ExtendoGripItem.class)
 public class ExtendoGripItemMixin {
