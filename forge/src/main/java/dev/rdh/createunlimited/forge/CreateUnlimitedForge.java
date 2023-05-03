@@ -1,12 +1,15 @@
 package dev.rdh.createunlimited.forge;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.rdh.createunlimited.config.CUConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import dev.rdh.createunlimited.CreateUnlimited;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 
 /**
  * The main class for the Forge implementation of Create Unlimited. It is called by Forge when the game starts.
@@ -24,6 +27,7 @@ public class CreateUnlimitedForge {
 //        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
 //                () -> new ConfigScreenHandler.ConfigScreenFactory((minecraftClient, screen) -> /*something*/));
                 // double lambda o.O
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, CUConfig.SPEC, "createunlimited.toml");
         CreateUnlimited.init();
         MinecraftForge.EVENT_BUS.register(CreateUnlimitedForge.class);
     }

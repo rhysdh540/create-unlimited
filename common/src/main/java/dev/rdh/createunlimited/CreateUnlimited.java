@@ -37,7 +37,7 @@ public class CreateUnlimited {
      */
     public static void init() {
         LOGGER.info("{} initializing! Create version: {} on platform: {}", NAME, Create.VERSION, CUPlatformFunctions.platformName());
-        CUConfig.init(CUPlatformFunctions.getConfigDirectory().resolve("createunlimited.toml"));
+        CUConfig.init(CUPlatformFunctions.getConfigDirectory().resolve("cu-IGNOREME.toml"));
         CreateUnlimitedCommands.registerConfigCommand();
     }
 
