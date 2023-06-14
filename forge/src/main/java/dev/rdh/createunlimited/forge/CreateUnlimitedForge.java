@@ -20,13 +20,8 @@ import net.minecraftforge.fml.config.ModConfig;
 public class CreateUnlimitedForge {
     /**
      * This constructor is what is called by Forge when the game starts. It initializes the common code, and registers the command registration event listener.
-     * <p>
-     * The commented-out code is to register the config screen with Forge's mod list screen. However, the screen is not yet implemented.
      */
     public CreateUnlimitedForge() {
-//        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
-//                () -> new ConfigScreenHandler.ConfigScreenFactory((minecraftClient, screen) -> /*something*/));
-                // double lambda o.O
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, CUConfig.SPEC, "createunlimited.toml");
         CreateUnlimited.init();
         MinecraftForge.EVENT_BUS.register(CreateUnlimitedForge.class);
