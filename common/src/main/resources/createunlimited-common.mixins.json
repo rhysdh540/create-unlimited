@@ -5,15 +5,15 @@
   "compatibilityLevel": "JAVA_17",
   "client": [],
   "mixins": [
+    "CTrainsMixin",
+    "ExtendoGripItemMixin",
     "SuperGlueSectionHandlerMixin",
     "SuperGlueSelectionPacketMixin",
     "TrackEdgeMixin",
     "TrackPlacementMixin",
     "TrainMixin",
     "TrainRelocatorMixin",
-    "accessor.PlacementInfoAccessor",
-    "CTrainsMixin",
-    "ExtendoGripItemMixin"
+    "accessor.PlacementInfoAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

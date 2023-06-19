@@ -1,6 +1,6 @@
 package dev.rdh.createunlimited.mixin;
 
-import com.simibubi.create.content.curiosities.tools.ExtendoGripItem;
+import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfig;
 import org.spongepowered.asm.mixin.Mixin;
