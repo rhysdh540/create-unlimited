@@ -50,7 +50,7 @@ public class TrackPlacementMixin {
 		boolean modEnabled = switch(CUConfig.placementChecksEnabled.get()) {
 			case ON -> true;
 			case OFF -> false;
-			case SURVIVAL_ONLY -> player.isCreative();
+			case SURVIVAL_ONLY -> !player.isCreative();
 		};
 
 		Vec3 lookVec = player.getLookAngle();
@@ -162,7 +162,7 @@ public class TrackPlacementMixin {
 
 				skipCurve = Mth.equal(u, 0);
 
-				if ((!skipCurve && sTest[0] < 0) && !modEnabled)
+				if ((!skipCurve && sTest[0] < 0) && modEnabled)
 					return info.withMessage("perpendicular")
 							.tooJumbly();
 
@@ -172,12 +172,12 @@ public class TrackPlacementMixin {
 					((PlacementInfoAccessor)info).setEnd1Extent((int) Math.round((dist + 1) / axis1.length()));
 
 				} else {
-					if ((!Mth.equal(ascend, 0) || normedAxis1.y != 0) && !modEnabled)
+					if ((!Mth.equal(ascend, 0) || normedAxis1.y != 0) && modEnabled)
 						return info.withMessage("ascending_s_curve");
 
 					double targetT = u <= 1 ? 3 : u * 2;
 
-					if (t < targetT && !modEnabled)
+					if (t < targetT && modEnabled)
 						return info.withMessage("too_sharp");
 
 					// This is for standardising s curve sizes
@@ -193,7 +193,7 @@ public class TrackPlacementMixin {
 		// Slope
 
 		if (slope) {
-			if(!modEnabled) {
+			if(modEnabled) {
 				if (!skipCurve)
 					return info.withMessage("slope_turn");
 				if (Mth.equal(normal1.dot(normal2), 0))
@@ -219,10 +219,10 @@ public class TrackPlacementMixin {
 				((PlacementInfoAccessor)info).setEnd2Extent((int) Math.round(dist2 - dist1));
 
 			double turnSize = Math.min(dist1, dist2);
-			if ((intersect[0] < 0 || intersect[1] < 0) && !modEnabled)
+			if ((intersect[0] < 0 || intersect[1] < 0) && modEnabled)
 				return info.withMessage("too_sharp")
 						.tooJumbly();
-			if (turnSize < 2 && !modEnabled)
+			if (turnSize < 2 && modEnabled)
 				return info.withMessage("too_sharp");
 
 			// This is for standardising curve sizes
@@ -239,12 +239,12 @@ public class TrackPlacementMixin {
 			int hDistance = ((PlacementInfoAccessor)info).getEnd1Extent();
 			if (axis1.y == 0 || !Mth.equal(absAscend + 1, dist / axis1.length())) {
 
-				if ((axis1.y != 0 && axis1.y == -axis2.y) && !modEnabled)
+				if ((axis1.y != 0 && axis1.y == -axis2.y) && modEnabled)
 					return info.withMessage("ascending_s_curve");
 
 				((PlacementInfoAccessor)info).setEnd1Extent(0);
 				double minHDistance = Math.max(absAscend < 4 ? absAscend * 4 : absAscend * 3, 6) / axis1.length();
-				if (hDistance < minHDistance && !modEnabled)
+				if (hDistance < minHDistance && modEnabled)
 					return info.withMessage("too_steep");
 				if (hDistance > minHDistance) {
 					int correction = (int) (hDistance - minHDistance);
@@ -259,7 +259,7 @@ public class TrackPlacementMixin {
 
 		if (!parallel) {
 			float absAngle = Math.abs(AngleHelper.deg(angle));
-			if ((absAngle < 60 || absAngle > 300) && !modEnabled)
+			if ((absAngle < 60 || absAngle > 300) && modEnabled)
 				return info.withMessage("turn_90")
 						.tooJumbly();
 
@@ -277,7 +277,7 @@ public class TrackPlacementMixin {
 			double turnSize = Math.min(dist1, dist2) - .1d;
 			boolean ninety = (absAngle + .25f) % 90 < 1;
 
-			if ((intersect[0] < 0 || intersect[1] < 0) && !modEnabled)
+			if ((intersect[0] < 0 || intersect[1] < 0) && modEnabled)
 				return info.withMessage("too_sharp")
 						.tooJumbly();
 
@@ -285,9 +285,9 @@ public class TrackPlacementMixin {
 			double turnSizeToFitAscend =
 					minTurnSize + (ninety ? Math.max(0, absAscend - 3) * 2f : Math.max(0, absAscend - 1.5f) * 1.5f);
 
-			if ((turnSize < minTurnSize) && !modEnabled)
+			if ((turnSize < minTurnSize) && modEnabled)
 				return info.withMessage("too_sharp");
-			if ((turnSize < turnSizeToFitAscend) && !modEnabled)
+			if ((turnSize < turnSizeToFitAscend) && modEnabled)
 				return info.withMessage("too_steep");
 
 			// This is for standardising curve sizes
