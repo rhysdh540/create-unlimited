@@ -10,8 +10,6 @@ import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfig;
 import dev.rdh.createunlimited.mixin.accessor.PlacementInfoAccessor;
 
-import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -368,7 +366,7 @@ public class TrackPlacementMixin {
 								count - Math.min(isTrack ? tracks - foundTracks : pavement - foundPavement, count);
 						if (i == inv.selected)
 							stackInSlot.setTag(null);
-						ItemStack newItem = ItemHandlerHelper.copyStackWithSize(stackInSlot, remainingItems);
+						ItemStack newItem = CreateUnlimited.copyStackWithSize(stackInSlot, remainingItems);
 						if (offhand)
 							player.setItemInHand(InteractionHand.OFF_HAND, newItem);
 						else
