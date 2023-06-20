@@ -19,10 +19,10 @@ public class SuperGlueSectionHandlerMixin {
 	}
 	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
 	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
-		return instance.contains((BlockPos) o) || !CUConfig.blocksMustBeConnectedForConnection.get();
+		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
 	}
 	@Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
 	private boolean modifyNeedsConnectedClick(Set<BlockPos> instance, Object o) {
-		return instance.contains((BlockPos) o) || !CUConfig.blocksMustBeConnectedForConnection.get();
+		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
 	}
 }

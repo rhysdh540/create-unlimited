@@ -47,7 +47,7 @@ public class TrackPlacementMixin {
 	 */
 	@Overwrite(remap = false)
 	public static PlacementInfo tryConnect(Level level, Player player, BlockPos pos2, BlockState state2, ItemStack stack, boolean girder, boolean maximiseTurn) {
-		boolean modEnabled = switch(CUConfig.placementChecksEnabled.get()) {
+		boolean modEnabled = switch(CUConfig.placementChecks.get()) {
 			case ON -> true;
 			case OFF -> false;
 			case SURVIVAL_ONLY -> !player.isCreative();

@@ -24,6 +24,6 @@ public class SuperGlueSelectionPacketMixin {
 	}
 	@Redirect(method = "lambda$handle$0", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z", remap = false), remap = false)
 	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
-		return instance.contains((BlockPos) o) || !CUConfig.blocksMustBeConnectedForConnection.get();
+		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
 	}
 }

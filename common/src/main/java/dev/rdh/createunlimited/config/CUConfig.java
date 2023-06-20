@@ -29,14 +29,14 @@ public class CUConfig {
         OFF,
     }
     public static String train;
-    public static ForgeConfigSpec.EnumValue<PlacementCheck> placementChecksEnabled;
+    public static ForgeConfigSpec.EnumValue<PlacementCheck> placementChecks;
     public static ForgeConfigSpec.BooleanValue extendedDriving;
-    public static ForgeConfigSpec.IntValue maxTrainRelocatingDistance;
+    public static ForgeConfigSpec.IntValue maxTrainRelocationDistance;
     public static ForgeConfigSpec.DoubleValue maxAllowedStress;
 
     public static String glue;
     public static ForgeConfigSpec.IntValue maxGlueConnectionRange;
-    public static ForgeConfigSpec.BooleanValue blocksMustBeConnectedForConnection;
+    public static ForgeConfigSpec.BooleanValue physicalBlockConnection;
 
 //    public static String extendo;
 //    public static ForgeConfigSpec.IntValue singleExtendoGripRange;
@@ -49,14 +49,14 @@ public class CUConfig {
         BUILDER.comment("Create Unlimited Config").push("CreateUnlimited");
 
         BUILDER.comment("Train Settings").push("Trains");
-        placementChecksEnabled = BUILDER.comment("Whether or not to enable the placement checks for train tracks.").defineEnum("placementChecksEnabled", PlacementCheck.ON);
-        extendedDriving = b(false, "extendedDriving", "Whether or not to allow trains to drive on \"very illegal\" tracks. Slightly buggy.");
-        maxTrainRelocatingDistance = i(24, 0, "maxTrainRelocatingDistance", "Maximum distance a train can be relocated using the wrench.");
+        placementChecks = BUILDER.comment("Whether or not to enable the placement checks for train tracks.").defineEnum("placementChecks", PlacementCheck.ON);
+        extendedDriving = b(false, "extendedDriving", "Whether or not to allow trains to drive on tracks with very small turn radii. Slightly buggy.");
+        maxTrainRelocationDistance = i(24, 0, "maxTrainRelocationDistance", "Maximum distance a train can be relocated using the wrench.");
         maxAllowedStress = d(4.0, -1.0, "maxAllowedStress", "Maximum stress from couplings before train derails. Set to -1 to disable.");
 
         BUILDER.pop().comment("Glue Settings").push("SuperGlue");
         maxGlueConnectionRange = i(24, 0, "maxGlueConnectionRange", "Maximum distance between two blocks for them to be considered for glue connections.");
-        blocksMustBeConnectedForConnection = b(true, "blocksMustBeConnectedForConnection", "Require blocks to be connected for glue connections.");
+        physicalBlockConnection = b(true, "physicalBlockConnection", "Require blocks to be connected for glue connections.");
 
 //        BUILDER.pop().comment("Extendo Grip Settings").push("ExtendoGrip");
 //        singleExtendoGripRange = i(3, 0, "singleExtendoGripRange", "How much to extend your reach when holding an Extendo-Grip. Adds to your base reach.");
