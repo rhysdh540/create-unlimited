@@ -29,8 +29,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Invoker;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(TrackPlacement.class)
 @SuppressWarnings("unused")
@@ -403,11 +401,6 @@ public class TrackPlacementMixin {
 		}
 		return placeTracks(level, info, state1, state2, targetPos1, targetPos2, false);
 	}
-//	@Redirect(method = "tryConnect", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/VecHelper;intersect(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/Direction$Axis;)[D"),remap = false)
-//	private static double[] intersect(Vec3 vec1, Vec3 vec2, Vec3 vec3, Vec3 vec4, Direction.Axis axis) {
-//		return CreateUnlimited.intersect(vec1, vec2, vec3, vec4, axis);
-//	}
-
 	/*
 	 * Lets us call the protected method paveTracks
 	 */
