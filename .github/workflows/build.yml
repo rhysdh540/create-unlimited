@@ -52,4 +52,3 @@ jobs:
           name: cu-artifacts-merged
           path: |
             build/libs/merged/*.jar
-            common/build/libs/*-sources.jar
