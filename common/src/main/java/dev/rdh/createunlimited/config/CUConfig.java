@@ -31,6 +31,7 @@ public class CUConfig {
     public static String train;
     public static ForgeConfigSpec.EnumValue<PlacementCheck> placementChecks;
     public static ForgeConfigSpec.BooleanValue extendedDriving;
+    public static ForgeConfigSpec.DoubleValue extendedDrivingValue;
     public static ForgeConfigSpec.IntValue maxTrainRelocationDistance;
     public static ForgeConfigSpec.DoubleValue maxAllowedStress;
 
@@ -51,6 +52,7 @@ public class CUConfig {
         BUILDER.comment("Train Settings").push("Trains");
         placementChecks = BUILDER.comment("Whether or not to enable the placement checks for train tracks.").defineEnum("placementChecks", PlacementCheck.ON);
         extendedDriving = b(false, "extendedDriving", "Whether or not to allow trains to drive on tracks with very small turn radii. Slightly buggy.");
+        extendedDrivingValue = d(0.1, 0.0, "extendedDrivingValue", "The maximum turn radius for trains to drive on. Only works if extendedDriving is enabled.");
         maxTrainRelocationDistance = i(24, 0, "maxTrainRelocationDistance", "Maximum distance a train can be relocated using the wrench.");
         maxAllowedStress = d(4.0, -1.0, "maxAllowedStress", "Maximum stress from couplings before train derails. Set to -1 to disable.");
 
