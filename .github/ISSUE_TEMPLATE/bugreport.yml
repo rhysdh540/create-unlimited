@@ -49,7 +49,7 @@ body:
       attributes:
         label: Mod Build
         description: The build number of the mod you were using when the bug occurred. This is usually the last numbers of the mod version (eg 0.0.1.**69**)
-        placeholder: 28
+        placeholder: "28"
       validations:
         required: true
   -   type: dropdown
