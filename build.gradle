@@ -9,10 +9,14 @@ plugins {
 architectury {
     minecraft = rootProject.minecraft_version
 }
+// Formats the mod version to include the Minecraft version and build number (if present)
+// example: 0.0.1.69+1.19.2
+String buildNumber = System.getenv("GITHUB_RUN_NUMBER")
+version = "${mod_version}" + (buildNumber != null ? ".${buildNumber}" : "") + "+${minecraft_version}"
 
 forgix {
     group = "dev.rdh.createunlimited"
-    mergedJarName = "createunlimited-${mod_version}+${minecraft_version}-merged.jar"
+    mergedJarName = "createunlimited-${version}+${minecraft_version}-merged.jar"
     outputDir = "build/libs/merged"
 }
 
@@ -60,11 +64,6 @@ allprojects {
 
     archivesBaseName = rootProject.archives_base_name
     group = rootProject.maven_group
-
-    // Formats the mod version to include the Minecraft version and build number (if present)
-    // example: 0.0.1.69+1.19.2
-    String buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-    version = "${mod_version}" + (buildNumber != null ? ".${buildNumber}" : "") + "+${minecraft_version}"
 
     repositories {
         // Add repositories to retrieve artifacts from in here.

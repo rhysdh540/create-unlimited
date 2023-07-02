@@ -1,12 +1,10 @@
 {
   "schemaVersion": 1,
   "id": "createunlimited",
-  "version": "${version}-FABRIC",
+  "version": "${version}",
   "name": "Create Unlimited",
   "description": "Remove all the limits!",
-  "authors": [
-    "rdh"
-  ],
+  "authors": ["rdh"],
   "contact": {
     "homepage": "https://github.com/rhysdh540/createunlimited",
     "sources": "https://github.com/rhysdh540/createunlimited",
