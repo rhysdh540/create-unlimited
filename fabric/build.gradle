@@ -50,13 +50,13 @@ dependencies {
 processResources {
     // set up properties for filling into metadata
     Map<String, String> properties = Map.of(
-            "version", version.split("\\+")[0], // don't include mc version
-            "fabric", fabric_loader_version,
-            "fapi", fabric_api_version,
-            "mc", minecraft_version,
-            "create", create_fabric_version // on fabric, use the entire version, unlike forge
+            "version", version,
+            "fabric_loader_version", fabric_loader_version,
+            "fabric_api_version", fabric_api_version,
+            "minecraft_version", minecraft_version,
+            "create_version", create_fabric_version // on fabric, use the entire version, unlike forge
     )
-    properties.forEach(inputs::property)
+    properties.forEach((k, v) -> inputs.property(k, v))
 
     filesMatching("fabric.mod.json") {
         expand properties
