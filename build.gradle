@@ -16,7 +16,7 @@ version = "${mod_version}" + (buildNumber != null ? ".${buildNumber}" : "") + "+
 
 forgix {
     group = "dev.rdh.createunlimited"
-    mergedJarName = "createunlimited-${version}+${minecraft_version}-merged.jar"
+    mergedJarName = "createunlimited-${version}-merged.jar"
     outputDir = "build/libs/merged"
 }
 
