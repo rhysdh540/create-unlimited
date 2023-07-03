@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(value = TrackPlacementOverlay.class, remap = false)
 public class TrackPlacementOverlayMixin {
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/util/ObfuscationReflectionHelper;getPrivateValue(Ljava/lang/Class;Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;"))
-	public static int getPrivateValue(Class<Gui> ignore, Gui instance, String ignore2) {
+	private static int getPrivateValue(Class<Gui> ignore, Gui instance, String ignore2) {
 		return ((GuiAccessor)instance).getToolHighlightTimer();
 	}
 }
