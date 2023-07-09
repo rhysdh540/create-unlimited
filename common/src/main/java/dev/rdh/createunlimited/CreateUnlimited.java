@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 public class CreateUnlimited {
 	public static final String MOD_ID = "createunlimited";
 	public static final String NAME = "Create Unlimited";
+	public static final String VERSION = "0.4.0";
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
 	public static void init() {

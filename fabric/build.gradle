@@ -56,7 +56,7 @@ processResources {
             "minecraft_version", minecraft_version,
             "create_version", create_fabric_version // on fabric, use the entire version, unlike forge
     )
-    properties.forEach(inputs::property)
+    properties.forEach((k, v) -> inputs.property(k, v))
 
     filesMatching("fabric.mod.json") {
         expand properties

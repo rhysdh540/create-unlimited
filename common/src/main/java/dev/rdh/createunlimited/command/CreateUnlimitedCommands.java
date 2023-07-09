@@ -21,10 +21,6 @@ import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 import static net.minecraft.network.chat.Component.nullToEmpty;
 
-/**
- * This class is responsible for the code behind the {@code /createunlimited} command.<p>
- * It also registers the command with the game.
- */
 public class CreateUnlimitedCommands {
     /**
      * Builds and registers the {@code /createunlimited} command, that changes configuration values.
@@ -47,12 +43,15 @@ public class CreateUnlimitedCommands {
      * @see <a href="https://github.com/Mojang/brigadier">Brigadier on GitHub</a>
      */
     public static void registerConfigCommand() {
-        LiteralArgumentBuilder<CommandSourceStack> literalArgumentBuilder = Commands.literal("createunlimited");
+        LiteralArgumentBuilder<CommandSourceStack> literalArgumentBuilder = Commands.literal("createunlimited").executes(context -> {
+			context.getSource().sendSuccess(nullToEmpty("Create Unlimited v" + CreateUnlimited.VERSION + "\nby rdh\nrhysdh540 on GitHub, rdh540 on Discord"), false);
+			return Command.SINGLE_SUCCESS;
+		});
 
         LiteralArgumentBuilder<CommandSourceStack> category = null;
         for (Field field : CUConfig.class.getDeclaredFields()) {
             //skip if not config value or string
-            if (field.getType() == ForgeConfigSpec.Builder.class || field.getType() == ForgeConfigSpec.class) continue;
+            if (!ForgeConfigSpec.ConfigValue.class.isAssignableFrom(field.getType()) && field.getType() != String.class) continue;
 
             //change category if needed
             if (field.getType() == String.class) {
@@ -62,27 +61,32 @@ public class CreateUnlimitedCommands {
             }
             assert category != null;
 
+			//category description
+			literalArgumentBuilder.then(literal(field.getName()).executes(context -> {
+				context.getSource().sendSuccess(nullToEmpty(field.getName() + ":\n" + CUConfig.comments.get(field.getName())), false);
+				return Command.SINGLE_SUCCESS;
+			}));
+
             // get config as ConfigValue
             ForgeConfigSpec.ConfigValue<?> value;
             try {
-                value = ((ForgeConfigSpec.ConfigValue<?>) field.get(null));
-            } catch (IllegalAccessException e) {
-                CreateUnlimited.LOGGER.error("Failed to get config value for " + field.getName());
+                value = (ForgeConfigSpec.ConfigValue<?>) field.get(null);
+            } catch (IllegalAccessException | ClassCastException e) {
+                CreateUnlimited.LOGGER.error("Failed to get config value for " + field.getName(), e);
                 continue;
             }
             assert value != null;
 
             // get and reset
-            category.then(literal(field.getName()).then(literal("get").executes(context -> {
+            category.then(literal(field.getName())
+				.executes(context -> {
+					context.getSource().sendSuccess(nullToEmpty(field.getName() + ":\n" + CUConfig.comments.get(field.getName())), false);
+					return Command.SINGLE_SUCCESS;
+				})
+				.then(literal("get").executes(context -> {
                 context.getSource().sendSuccess(nullToEmpty(field.getName() + " is: " + value.get()), false);
                 return Command.SINGLE_SUCCESS;
             })));
-
-			// description
-			category.then(literal(field.getName()).executes(context -> {
-				context.getSource().sendSuccess(nullToEmpty(field.getName() + ":\n" + getComment(value)), false);
-				return Command.SINGLE_SUCCESS;
-			}));
 
             //set for boolean
             if (field.getType() == ForgeConfigSpec.BooleanValue.class)
@@ -150,8 +154,4 @@ public class CreateUnlimitedCommands {
     private static boolean perms(CommandSourceStack source) {
         return source.hasPermission(4) || !source.getLevel().getServer().isDedicatedServer();
     }
-
-	private static String getComment(ForgeConfigSpec.ConfigValue<?> value) {
-		return CUConfig.SPEC.getLevelComment(value.getPath());
-	}
 }

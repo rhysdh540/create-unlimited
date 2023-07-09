@@ -16,7 +16,7 @@ quote_type = double
 indent_style = space
 indent_size = 2
 
-[*.java]
+[{*.java,*.gradle}]
 ij_continuation_indent_size = 4
 ij_java_class_count_to_use_import_on_demand = 99
 ij_java_names_count_to_use_import_on_demand = 99

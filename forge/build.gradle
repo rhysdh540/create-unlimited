@@ -63,7 +63,7 @@ processResources {
             "minecraft_version", minecraft_version,
             "create_version", create_forge_version.split("-")[0] // cut off build number
     )
-    properties.forEach(inputs::property)
+    properties.forEach((k, v) -> inputs.property(k, v))
 
     filesMatching("META-INF/mods.toml") {
         expand properties

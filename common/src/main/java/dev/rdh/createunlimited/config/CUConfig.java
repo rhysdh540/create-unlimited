@@ -8,6 +8,8 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import dev.rdh.createunlimited.CreateUnlimited;
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The configuration class for Create Unlimited.
@@ -20,6 +22,7 @@ import java.nio.file.Path;
  * @see <a href="https://github.com/TheElectronWill/night-config">Night Config on GitHub</a>
  */
 public class CUConfig {
+	private CUConfig() { throw new UnsupportedOperationException(); }
     public static final ForgeConfigSpec SPEC;
     public static ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
@@ -28,7 +31,29 @@ public class CUConfig {
         SURVIVAL_ONLY,
         OFF,
     }
-    public static String train;
+
+	public static final Map<String, String> comments = new HashMap<>();
+	static {
+		comments.put("trains", "Train Settings");
+		comments.put("placementChecks", "Whether or not to enable the placement checks for train tracks.");
+		comments.put("extendedDriving", "Whether or not to allow trains to drive on tracks with very small turn radii. Slightly buggy.");
+		comments.put("extendedDrivingValue", "The minimum turn that trains can drive on. Only works if extendedDriving is enabled.");
+		comments.put("maxTrainRelocationDistance", "Maximum distance a train can be relocated using the wrench.");
+		comments.put("maxAllowedStress", "Maximum stress from couplings before train derails. Set to -1 to disable.");
+
+		comments.put("glue", "Glue Settings");
+		comments.put("maxGlueConnectionRange", "Maximum distance between two blocks for them to be considered for glue connections.");
+		comments.put("physicalBlockConnection", "Require blocks to be connected for glue connections.");
+
+		comments.put("extendo", "Extendo Grip Settings");
+		comments.put("singleExtendoGripRange", "How much to extend your reach when holding an Extendo-Grip. Adds to your base reach.");
+		comments.put("doubleExtendoGripRange", "How much to extend your reach when holding two Extendo-Grips. Adds to your base reach.");
+
+		comments.put("copycat", "Copycat Settings");
+		comments.put("allowAllCopycatBlocks", "Whether or not to allow all blocks to be inserted into Copycat blocks.");
+	}
+
+    public static String trains;
     public static ForgeConfigSpec.EnumValue<PlacementCheck> placementChecks;
     public static ForgeConfigSpec.BooleanValue extendedDriving;
     public static ForgeConfigSpec.DoubleValue extendedDrivingValue;
@@ -53,23 +78,25 @@ public class CUConfig {
     static {
         BUILDER.comment("Create Unlimited Config").push("CreateUnlimited");
 
-        BUILDER.comment("Train Settings").push("Trains");
-        placementChecks = BUILDER.comment("Whether or not to enable the placement checks for train tracks.").defineEnum("placementChecks", PlacementCheck.ON);
-        extendedDriving = b(false, "extendedDriving", "Whether or not to allow trains to drive on tracks with very small turn radii. Slightly buggy.");
-        extendedDrivingValue = d(0.1, 0.0, 0.875, "extendedDrivingValue", "The maximum turn radius for trains to drive on. Only works if extendedDriving is enabled.");
-        maxTrainRelocationDistance = i(24, 0, "maxTrainRelocationDistance", "Maximum distance a train can be relocated using the wrench.");
-        maxAllowedStress = d(4.0, -1.0, "maxAllowedStress", "Maximum stress from couplings before train derails. Set to -1 to disable.");
+        cat("Trains");
+        placementChecks = BUILDER.comment(comments.get("placementChecks")).defineEnum("placementChecks", PlacementCheck.ON);
+        extendedDriving = b(false, "extendedDriving");
+        extendedDrivingValue = d(0.1, 0.0, 0.875, "extendedDrivingValue");
+        maxTrainRelocationDistance = i(24, 0, "maxTrainRelocationDistance");
+        maxAllowedStress = d(4.0, -1.0, "maxAllowedStress");
 
-        BUILDER.pop().comment("Glue Settings").push("SuperGlue");
-        maxGlueConnectionRange = i(24, 0, "maxGlueConnectionRange", "Maximum distance between two blocks for them to be considered for glue connections.");
-        physicalBlockConnection = b(true, "physicalBlockConnection", "Require blocks to be connected for glue connections.");
+        BUILDER.pop();
+		cat("Glue");
+        maxGlueConnectionRange = i(24, 0, "maxGlueConnectionRange");
+        physicalBlockConnection = b(true, "physicalBlockConnection");
 
-//        BUILDER.pop().comment("Extendo Grip Settings").push("ExtendoGrip");
-//        singleExtendoGripRange = i(3, 0, "singleExtendoGripRange", "How much to extend your reach when holding an Extendo-Grip. Adds to your base reach.");
-//        doubleExtendoGripRange = i(5, 0, "doubleExtendoGripRange", "How much to extend your reach when holding two Extendo-Grips. Adds to your base reach.");
+//        BUILDER.pop().comment(comments.get("extendo")).push("ExtendoGrip");
+//        singleExtendoGripRange = i(3, 0, "singleExtendoGripRange", comments.get("singleExtendoGripRange"));
+//        doubleExtendoGripRange = i(5, 0, "doubleExtendoGripRange", comments.get("doubleExtendoGripRange"));
 
-		BUILDER.pop().comment("Copycat Settings").push("Copycat");
-		allowAllCopycatBlocks = b(false, "allowAllCopycatBlocks", "Whether or not to allow all blocks to be inserted into Copycat blocks.");
+		BUILDER.pop();
+		cat("Copycat");
+		allowAllCopycatBlocks = b(false, "allowAllCopycatBlocks");
         BUILDER.pop(2);
 
         SPEC = BUILDER.build();
@@ -90,17 +117,21 @@ public class CUConfig {
         SPEC.setConfig(configData);
     }
 
-    // helper methods for declaring config values
-    public static ForgeConfigSpec.BooleanValue b(boolean normal, String path, String comment) {
-        return BUILDER.comment(comment).define(path, normal);
+    // helper methods for initializing config values
+	private static ForgeConfigSpec.BooleanValue b(boolean normal, String path) {
+        return BUILDER.comment(comments.get(path)).define(path, normal);
     }
-    public static ForgeConfigSpec.IntValue i(int normal, int min, String path, String comment) {
-        return BUILDER.comment(comment).defineInRange(path, normal, min, Integer.MAX_VALUE);
+	private static ForgeConfigSpec.IntValue i(int normal, int min, String path) {
+        return BUILDER.comment(comments.get(path)).defineInRange(path, normal, min, Integer.MAX_VALUE);
     }
-    public static ForgeConfigSpec.DoubleValue d(double normal, double min, String path, String comment) {
-        return d(normal, min, Double.MAX_VALUE, path, comment);
+	private static ForgeConfigSpec.DoubleValue d(double normal, double min, String path) {
+        return d(normal, min, Double.MAX_VALUE, path);
     }
-	public static ForgeConfigSpec.DoubleValue d(double normal, double min, double max, String path, String comment) {
-		return BUILDER.comment(comment).defineInRange(path, normal, min, max);
+	private static ForgeConfigSpec.DoubleValue d(double normal, double min, double max, String path) {
+		return BUILDER.comment(comments.get(path)).defineInRange(path, normal, min, max);
+	}
+
+	private static void cat(String path) {
+		BUILDER.comment(comments.get(path.toLowerCase())).push(path);
 	}
 }

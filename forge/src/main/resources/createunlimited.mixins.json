@@ -4,9 +4,7 @@
   "package": "dev.rdh.createunlimited.forge.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [],
-  "mixins": [
-    "TrackPlacementOverlayMixin"
-  ],
+  "mixins": [],
   "injectors": {
     "defaultRequire": 1
   }
