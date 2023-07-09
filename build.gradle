@@ -14,12 +14,16 @@ def getVersion() {
     // Formats the mod version to include the Minecraft version and build number (if present)
     // example: 0.0.1.69+1.19.2
     String buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-    return "${mod_version}" + (buildNumber != null ? ".${buildNumber}" : "") + "+mc${minecraft_version}"
+    return "${mod_version}" + (buildNumber != null ? ".${buildNumber}" : "")
+}
+
+def getVersionWithMC() {
+	return getVersion() + "+mc${minecraft_version}"
 }
 
 forgix {
     group = "dev.rdh.createunlimited"
-    mergedJarName = "createunlimited-${getVersion()}-merged.jar"
+    mergedJarName = "createunlimited-${getVersionWithMC()}.jar"
     outputDir = "build/libs/merged"
 }
 
