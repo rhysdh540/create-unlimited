@@ -6,6 +6,8 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import com.mojang.brigadier.context.CommandContext;
+
 import com.simibubi.create.foundation.utility.Components;
 
 import dev.rdh.createunlimited.CUPlatformFunctions;
@@ -17,6 +19,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
@@ -24,6 +27,7 @@ import net.minecraft.network.chat.MutableComponent;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mutable;
 
 import java.lang.reflect.Field;
@@ -62,10 +66,10 @@ public class CreateUnlimitedCommands {
 			link("https://discord.gg/2ubhDbMaZY", "Discord", ChatFormatting.BLUE)
 		);
 
-        LiteralArgumentBuilder<CommandSourceStack> literalArgumentBuilder = literal("createunlimited").executes(context -> {
-			context.getSource().sendSuccess(nullToEmpty("Create Unlimited v" + CreateUnlimited.VERSION + " by rdh"), false);
-			context.getSource().sendSuccess(nullToEmpty("Visit us on: "), false);
-			MutableComponent link = Component.literal("");
+        LiteralArgumentBuilder<CommandSourceStack> base = literal("createunlimited").executes(context -> {
+			message("Create Unlimited v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:", context);
+
+			MutableComponent link = (MutableComponent) CommonComponents.EMPTY;
 			links.forEach(a -> link.append(a).append(Component.literal(" ")));
 
 			context.getSource().sendSuccess(link, false);
@@ -79,12 +83,12 @@ public class CreateUnlimitedCommands {
 
             //change category if needed
             if (field.getType() == String.class) {
-                if (category != null) literalArgumentBuilder.then(category);
+                if (category != null) base.then(category);
                 category = literal(field.getName());
 
 				//add description for category
-				literalArgumentBuilder.then(literal(field.getName()).executes(context -> {
-					context.getSource().sendSuccess(nullToEmpty(field.getName() + ":\n" + CUConfig.comments.get(field.getName())), false);
+				base.then(literal(field.getName()).executes(context -> {
+					message(CUConfig.comments.get(field.getName()), context);
 					return Command.SINGLE_SUCCESS;
 				}));
 
@@ -105,25 +109,25 @@ public class CreateUnlimitedCommands {
             // get and description
             category.then(literal(field.getName())
 				.executes(context -> {
-					context.getSource().sendSuccess(nullToEmpty(field.getName() + ":\n" + CUConfig.comments.get(field.getName())), false);
+					message(CUConfig.comments.get(field.getName()), context);
 					return Command.SINGLE_SUCCESS;
 				})
 				.then(literal("get").executes(context -> {
-                context.getSource().sendSuccess(nullToEmpty(field.getName() + " is: " + value.get()), false);
-                return Command.SINGLE_SUCCESS;
-            })));
+					message(field.getName() + " is: " + value.get(), context);
+					return Command.SINGLE_SUCCESS;
+				})));
 
             //set for boolean
             if (field.getType() == ForgeConfigSpec.BooleanValue.class)
                 category.then(literal(field.getName()).then(literal("set").requires(CreateUnlimitedCommands::perms).then(argument("value", BoolArgumentType.bool()).executes(context -> {
                     boolean set = BoolArgumentType.getBool(context, "value");
                     ((ForgeConfigSpec.BooleanValue) value).set(set);
-                    context.getSource().sendSuccess(nullToEmpty(field.getName() + " set to: " + value.get()), false);
+                    message(field.getName() + " set to: " + set, context);
                     return Command.SINGLE_SUCCESS;
                 })))
                         .then(literal("reset").requires(CreateUnlimitedCommands::perms).executes(context -> {
                             ((ForgeConfigSpec.BooleanValue) value).set(((ForgeConfigSpec.BooleanValue) value).getDefault());
-                            context.getSource().sendSuccess(nullToEmpty(field.getName() + " reset to: " + value.get()), false);
+                            message(field.getName() + " reset to: " + value.get(), context);
                             return Command.SINGLE_SUCCESS;
                         })));
 
@@ -132,12 +136,12 @@ public class CreateUnlimitedCommands {
                 for (CUConfig.PlacementCheck placementCheck : CUConfig.PlacementCheck.values())
                     category.then(literal(field.getName()).then(literal("set").requires(CreateUnlimitedCommands::perms).then(literal(placementCheck.name().toLowerCase()).executes(context -> {
                         ((ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value).set(placementCheck);
-                        context.getSource().sendSuccess(nullToEmpty(field.getName() + " set to: " + value.get()), false);
+                        message(field.getName() + " set to: " + placementCheck.name().toLowerCase(), context);
                         return Command.SINGLE_SUCCESS;
                     })))
                             .then(literal("reset").requires(CreateUnlimitedCommands::perms).executes(context -> {
                                 ((ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value).set(((ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value).getDefault());
-                                context.getSource().sendSuccess(nullToEmpty(field.getName() + " reset to: " + value.get()), false);
+                                message(field.getName() + " reset to: " + ((CUConfig.PlacementCheck) value.get()).name().toLowerCase(), context);
                                 return Command.SINGLE_SUCCESS;
                             })));
 
@@ -145,12 +149,12 @@ public class CreateUnlimitedCommands {
             if (field.getType() == ForgeConfigSpec.IntValue.class)
                 category.then(literal(field.getName()).then(literal("set").requires(CreateUnlimitedCommands::perms).then(argument("value", IntegerArgumentType.integer()).executes(context -> {
                     ((ForgeConfigSpec.IntValue) value).set(IntegerArgumentType.getInteger(context, "value"));
-                    context.getSource().sendSuccess(nullToEmpty(field.getName() + " set to: " + value.get()), false);
+                    message(field.getName() + " set to: " + value.get(), context);
                     return Command.SINGLE_SUCCESS;
                 })))
                         .then(literal("reset").requires(CreateUnlimitedCommands::perms).executes(context -> {
                             ((ForgeConfigSpec.IntValue) value).set(((ForgeConfigSpec.IntValue) value).getDefault());
-                            context.getSource().sendSuccess(nullToEmpty(field.getName() + " reset to: " + value.get()), false);
+                            message(field.getName() + " reset to: " + value.get(), context);
                             return Command.SINGLE_SUCCESS;
                         })));
 
@@ -158,17 +162,17 @@ public class CreateUnlimitedCommands {
             if (field.getType() == ForgeConfigSpec.DoubleValue.class)
                 category.then(literal(field.getName()).then(literal("set").requires(CreateUnlimitedCommands::perms).then(argument("value", DoubleArgumentType.doubleArg()).executes(context -> {
                     ((ForgeConfigSpec.DoubleValue) value).set(DoubleArgumentType.getDouble(context, "value"));
-                    context.getSource().sendSuccess(nullToEmpty(field.getName() + " set to: " + value.get()), false);
+                    message(field.getName() + " set to: " + value.get(), context);
                     return Command.SINGLE_SUCCESS;
                 })))
                         .then(literal("reset").requires(CreateUnlimitedCommands::perms).executes(context -> {
                             ((ForgeConfigSpec.DoubleValue) value).set(((ForgeConfigSpec.DoubleValue) value).getDefault());
-                            context.getSource().sendSuccess(nullToEmpty(field.getName() + " reset to: " + value.get()), false);
+							message(field.getName() + " reset to: " + value.get(), context);
                             return Command.SINGLE_SUCCESS;
                         })));
         }
-        if (category != null) literalArgumentBuilder.then(category);
-        CUPlatformFunctions.registerCommand(literalArgumentBuilder);
+        if (category != null) base.then(category);
+        CUPlatformFunctions.registerCommand(base);
     }
 
     /**
@@ -187,5 +191,12 @@ public class CreateUnlimitedCommands {
 				.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link))
 				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Components.literal("Click to open " + display + " page")))
 				.withUnderlined(false));
+	}
+
+	private static void message(String message, CommandContext<CommandSourceStack> context) {
+		context.getSource().sendSuccess(nullToEmpty(message), false);
+	}
+	private static void message(@NotNull String message, CommandContext<CommandSourceStack> context, ChatFormatting color) {
+		context.getSource().sendSuccess(Component.literal(message).withStyle(color), false);
 	}
 }
