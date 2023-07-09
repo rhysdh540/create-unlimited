@@ -6,16 +6,28 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import com.simibubi.create.foundation.utility.Components;
+
 import dev.rdh.createunlimited.CUPlatformFunctions;
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfig;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import org.spongepowered.asm.mixin.Mutable;
+
 import java.lang.reflect.Field;
+import java.util.List;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
@@ -43,8 +55,20 @@ public class CreateUnlimitedCommands {
      * @see <a href="https://github.com/Mojang/brigadier">Brigadier on GitHub</a>
      */
     public static void registerConfigCommand() {
-        LiteralArgumentBuilder<CommandSourceStack> literalArgumentBuilder = Commands.literal("createunlimited").executes(context -> {
-			context.getSource().sendSuccess(nullToEmpty("Create Unlimited v" + CreateUnlimited.VERSION + "\nby rdh\nrhysdh540 on GitHub, rdh540 on Discord"), false);
+		List<MutableComponent> links = List.of(
+			link("https://github.com/rhysdh540/create-unlimited", "GitHub", ChatFormatting.GRAY),
+			link("https://modrinth.com/mod/create-unlimited", "Modrinth", ChatFormatting.GREEN),
+			link("https://curseforge.com/minecraft/mc-mods/create-unlimited", "CurseForge", ChatFormatting.GOLD),
+			link("https://discord.gg/2ubhDbMaZY", "Discord", ChatFormatting.BLUE)
+		);
+
+        LiteralArgumentBuilder<CommandSourceStack> literalArgumentBuilder = literal("createunlimited").executes(context -> {
+			context.getSource().sendSuccess(nullToEmpty("Create Unlimited v" + CreateUnlimited.VERSION + " by rdh"), false);
+			context.getSource().sendSuccess(nullToEmpty("Visit us on: "), false);
+			MutableComponent link = Component.literal("");
+			links.forEach(a -> link.append(a).append(Component.literal(" ")));
+
+			context.getSource().sendSuccess(link, false);
 			return Command.SINGLE_SUCCESS;
 		});
 
@@ -57,15 +81,16 @@ public class CreateUnlimitedCommands {
             if (field.getType() == String.class) {
                 if (category != null) literalArgumentBuilder.then(category);
                 category = literal(field.getName());
+
+				//add description for category
+				literalArgumentBuilder.then(literal(field.getName()).executes(context -> {
+					context.getSource().sendSuccess(nullToEmpty(field.getName() + ":\n" + CUConfig.comments.get(field.getName())), false);
+					return Command.SINGLE_SUCCESS;
+				}));
+
                 continue;
             }
             assert category != null;
-
-			//category description
-			literalArgumentBuilder.then(literal(field.getName()).executes(context -> {
-				context.getSource().sendSuccess(nullToEmpty(field.getName() + ":\n" + CUConfig.comments.get(field.getName())), false);
-				return Command.SINGLE_SUCCESS;
-			}));
 
             // get config as ConfigValue
             ForgeConfigSpec.ConfigValue<?> value;
@@ -77,7 +102,7 @@ public class CreateUnlimitedCommands {
             }
             assert value != null;
 
-            // get and reset
+            // get and description
             category.then(literal(field.getName())
 				.executes(context -> {
 					context.getSource().sendSuccess(nullToEmpty(field.getName() + ":\n" + CUConfig.comments.get(field.getName())), false);
@@ -154,4 +179,13 @@ public class CreateUnlimitedCommands {
     private static boolean perms(CommandSourceStack source) {
         return source.hasPermission(4) || !source.getLevel().getServer().isDedicatedServer();
     }
+
+	private static MutableComponent link(String link, String display, ChatFormatting color) {
+		return ComponentUtils.wrapInSquareBrackets(Component.nullToEmpty(display))
+			.withStyle(color)
+			.withStyle(style -> style
+				.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link))
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Components.literal("Click to open " + display + " page")))
+				.withUnderlined(false));
+	}
 }
