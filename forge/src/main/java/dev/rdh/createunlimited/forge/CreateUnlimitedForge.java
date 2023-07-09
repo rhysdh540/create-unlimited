@@ -1,12 +1,17 @@
 package dev.rdh.createunlimited.forge;
 
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+
+import dev.rdh.createunlimited.CreateUnlimited;
+
 import dev.rdh.createunlimited.config.CUConfig;
+
 import net.minecraft.commands.CommandSourceStack;
+
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import dev.rdh.createunlimited.CreateUnlimited;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;

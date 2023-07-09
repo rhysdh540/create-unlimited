@@ -1,11 +1,12 @@
 package dev.rdh.createunlimited;
 
+
 import com.simibubi.create.Create;
 
 import dev.rdh.createunlimited.command.CreateUnlimitedCommands;
 import dev.rdh.createunlimited.config.CUConfig;
 
-import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -24,15 +25,15 @@ public class CreateUnlimited {
 	}
 
 	@SuppressWarnings("SuspiciousNameCombination") // javac doesn't like when we pass a value called "y" to a method that expects a value called "x"
-	public static double[] intersect(Vec3 p1, Vec3 p2, Vec3 r, Vec3 s, Direction.Axis plane) {
-		if (plane == Direction.Axis.X) {
+	public static double[] intersect(Vec3 p1, Vec3 p2, Vec3 r, Vec3 s, Axis plane) {
+		if (plane == Axis.X) {
 			p1 = new Vec3(p1.y, 0, p1.z);
 			p2 = new Vec3(p2.y, 0, p2.z);
 			r = new Vec3(r.y, 0, r.z);
 			s = new Vec3(s.y, 0, s.z);
 		}
 
-		if (plane == Direction.Axis.Z) {
+		if (plane == Axis.Z) {
 			p1 = new Vec3(p1.x, 0, p1.y);
 			p2 = new Vec3(p2.x, 0, p2.y);
 			r = new Vec3(r.x, 0, r.y);

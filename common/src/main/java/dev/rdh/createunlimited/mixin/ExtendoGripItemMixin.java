@@ -1,15 +1,14 @@
 package dev.rdh.createunlimited.mixin;
 
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
+
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfig;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-/**
- * This mixin is responsible for changing the range of the Extendo-Grip. scratch that it's broken
- */
 @Mixin(ExtendoGripItem.class)
 public class ExtendoGripItemMixin {
 //    @ModifyArg(method = "<clinit>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;<init>(Ljava/util/UUID;Ljava/lang/String;DLnet/minecraft/world/entity/ai/attributes/AttributeModifier$Operation;)V", ordinal = 0, remap = false), index = 2, remap = false)

@@ -43,7 +43,11 @@ public class CUConfig {
 //    public static ForgeConfigSpec.IntValue singleExtendoGripRange;
 //    public static ForgeConfigSpec.IntValue doubleExtendoGripRange;
 
-    /* cant do javadoc on static initializers :(((
+	public static String copycat;
+	public static ForgeConfigSpec.BooleanValue allowAllCopycatBlocks;
+
+    /*
+     * cant do javadoc on static initializers :(((
      * but basically this builds the config and gives everything a default value and range
      */
     static {
@@ -52,7 +56,7 @@ public class CUConfig {
         BUILDER.comment("Train Settings").push("Trains");
         placementChecks = BUILDER.comment("Whether or not to enable the placement checks for train tracks.").defineEnum("placementChecks", PlacementCheck.ON);
         extendedDriving = b(false, "extendedDriving", "Whether or not to allow trains to drive on tracks with very small turn radii. Slightly buggy.");
-        extendedDrivingValue = d(0.1, 0.0, "extendedDrivingValue", "The maximum turn radius for trains to drive on. Only works if extendedDriving is enabled.");
+        extendedDrivingValue = d(0.1, 0.0, 0.875, "extendedDrivingValue", "The maximum turn radius for trains to drive on. Only works if extendedDriving is enabled.");
         maxTrainRelocationDistance = i(24, 0, "maxTrainRelocationDistance", "Maximum distance a train can be relocated using the wrench.");
         maxAllowedStress = d(4.0, -1.0, "maxAllowedStress", "Maximum stress from couplings before train derails. Set to -1 to disable.");
 
@@ -63,6 +67,9 @@ public class CUConfig {
 //        BUILDER.pop().comment("Extendo Grip Settings").push("ExtendoGrip");
 //        singleExtendoGripRange = i(3, 0, "singleExtendoGripRange", "How much to extend your reach when holding an Extendo-Grip. Adds to your base reach.");
 //        doubleExtendoGripRange = i(5, 0, "doubleExtendoGripRange", "How much to extend your reach when holding two Extendo-Grips. Adds to your base reach.");
+
+		BUILDER.pop().comment("Copycat Settings").push("Copycat");
+		allowAllCopycatBlocks = b(false, "allowAllCopycatBlocks", "Whether or not to allow all blocks to be inserted into Copycat blocks.");
         BUILDER.pop(2);
 
         SPEC = BUILDER.build();
@@ -91,6 +98,9 @@ public class CUConfig {
         return BUILDER.comment(comment).defineInRange(path, normal, min, Integer.MAX_VALUE);
     }
     public static ForgeConfigSpec.DoubleValue d(double normal, double min, String path, String comment) {
-        return BUILDER.comment(comment).defineInRange(path, normal, min, Double.MAX_VALUE);
+        return d(normal, min, Double.MAX_VALUE, path, comment);
     }
+	public static ForgeConfigSpec.DoubleValue d(double normal, double min, double max, String path, String comment) {
+		return BUILDER.comment(comment).defineInRange(path, normal, min, max);
+	}
 }

@@ -1,16 +1,20 @@
 package dev.rdh.createunlimited.mixin;
 
+
 import com.simibubi.create.content.contraptions.glue.SuperGlueSelectionHandler;
-import net.minecraft.core.BlockPos;
+
 import dev.rdh.createunlimited.config.CUConfig;
+
+import net.minecraft.core.BlockPos;
+
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Set;
 
-/**
- * This mixin modifies the SuperGlueSelectionHandler class to allow for configurable glue range and connection checks. It handles the client-side code that creates the green/yellow overlay when you hover over a block range with super glue.
- */
 @Mixin(SuperGlueSelectionHandler.class)
 public class SuperGlueSectionHandlerMixin {
 	@ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24), remap = false)
