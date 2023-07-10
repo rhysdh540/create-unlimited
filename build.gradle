@@ -10,7 +10,7 @@ architectury {
     minecraft = rootProject.minecraft_version
 }
 
-def getVersion0() {
+def getVersion0() { // getVersion() is already defined by gradle
     // Formats the mod version to include the Minecraft version and build number (if present)
     // example: 0.0.1.69+1.19.2
     String buildNumber = System.getenv("GITHUB_RUN_NUMBER")

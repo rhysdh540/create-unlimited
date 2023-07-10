@@ -16,7 +16,6 @@ import dev.rdh.createunlimited.config.CUConfig;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.CommonComponents;
@@ -27,8 +26,9 @@ import net.minecraft.network.chat.MutableComponent;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import net.minecraftforge.server.command.EnumArgument;
+
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Mutable;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -106,83 +106,111 @@ public class CreateUnlimitedCommands {
             }
             assert value != null;
 
-            // get and description
-            category.then(literal(field.getName())
-				.executes(context -> {
-					message(CUConfig.comments.get(field.getName()), context);
-					return Command.SINGLE_SUCCESS;
-				})
-				.then(literal("get").executes(context -> {
-					message(field.getName() + " is: " + value.get(), context);
-					return Command.SINGLE_SUCCESS;
-				})));
+			//get, description, reset
+            gdr(category, field, value);
 
             //set for boolean
-            if (field.getType() == ForgeConfigSpec.BooleanValue.class)
-                category.then(literal(field.getName()).then(literal("set").requires(CreateUnlimitedCommands::perms).then(argument("value", BoolArgumentType.bool()).executes(context -> {
-                    boolean set = BoolArgumentType.getBool(context, "value");
-                    ((ForgeConfigSpec.BooleanValue) value).set(set);
-                    message(field.getName() + " set to: " + set, context);
-                    return Command.SINGLE_SUCCESS;
-                })))
-                        .then(literal("reset").requires(CreateUnlimitedCommands::perms).executes(context -> {
-                            ((ForgeConfigSpec.BooleanValue) value).set(((ForgeConfigSpec.BooleanValue) value).getDefault());
-                            message(field.getName() + " reset to: " + value.get(), context);
-                            return Command.SINGLE_SUCCESS;
-                        })));
+            if (value instanceof ForgeConfigSpec.BooleanValue bValue)
+                bool(category, field, bValue);
 
             // set for PlacmentCheck enum
             if (value.get() instanceof CUConfig.PlacementCheck)
-                for (CUConfig.PlacementCheck placementCheck : CUConfig.PlacementCheck.values())
-                    category.then(literal(field.getName()).then(literal("set").requires(CreateUnlimitedCommands::perms).then(literal(placementCheck.name().toLowerCase()).executes(context -> {
-                        ((ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value).set(placementCheck);
-                        message(field.getName() + " set to: " + placementCheck.name().toLowerCase(), context);
-                        return Command.SINGLE_SUCCESS;
-                    })))
-                            .then(literal("reset").requires(CreateUnlimitedCommands::perms).executes(context -> {
-                                ((ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value).set(((ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value).getDefault());
-                                message(field.getName() + " reset to: " + ((CUConfig.PlacementCheck) value.get()).name().toLowerCase(), context);
-                                return Command.SINGLE_SUCCESS;
-                            })));
+                enumm(category, field, (ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value);
 
             // set for int
-            if (field.getType() == ForgeConfigSpec.IntValue.class)
-                category.then(literal(field.getName()).then(literal("set").requires(CreateUnlimitedCommands::perms).then(argument("value", IntegerArgumentType.integer()).executes(context -> {
-                    ((ForgeConfigSpec.IntValue) value).set(IntegerArgumentType.getInteger(context, "value"));
-                    message(field.getName() + " set to: " + value.get(), context);
-                    return Command.SINGLE_SUCCESS;
-                })))
-                        .then(literal("reset").requires(CreateUnlimitedCommands::perms).executes(context -> {
-                            ((ForgeConfigSpec.IntValue) value).set(((ForgeConfigSpec.IntValue) value).getDefault());
-                            message(field.getName() + " reset to: " + value.get(), context);
-                            return Command.SINGLE_SUCCESS;
-                        })));
+            if (value instanceof ForgeConfigSpec.IntValue iValue)
+                integer(category, field, iValue);
 
             // set for double
-            if (field.getType() == ForgeConfigSpec.DoubleValue.class)
-                category.then(literal(field.getName()).then(literal("set").requires(CreateUnlimitedCommands::perms).then(argument("value", DoubleArgumentType.doubleArg()).executes(context -> {
-                    ((ForgeConfigSpec.DoubleValue) value).set(DoubleArgumentType.getDouble(context, "value"));
-                    message(field.getName() + " set to: " + value.get(), context);
-                    return Command.SINGLE_SUCCESS;
-                })))
-                        .then(literal("reset").requires(CreateUnlimitedCommands::perms).executes(context -> {
-                            ((ForgeConfigSpec.DoubleValue) value).set(((ForgeConfigSpec.DoubleValue) value).getDefault());
-							message(field.getName() + " reset to: " + value.get(), context);
-                            return Command.SINGLE_SUCCESS;
-                        })));
+            if (value instanceof ForgeConfigSpec.DoubleValue dValue)
+				doub(category, field, dValue);
+
         }
-        if (category != null) base.then(category);
+        if (category != null)
+			base.then(category);
         CUPlatformFunctions.registerCommand(base);
     }
 
-    /**
-     * Checks if the player has permission to change config values.
-     * @param source the source of the command
-     * @return true if the player has permission to change config values (is operator or in singleplayer), false otherwise
-     */
     private static boolean perms(CommandSourceStack source) {
         return source.hasPermission(4) || !source.getLevel().getServer().isDedicatedServer();
     }
+
+
+	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.ConfigValue<T> value) {
+		category.then(literal(field.getName())
+			.executes(context -> {
+				message(CUConfig.comments.get(field.getName()), context);
+				return Command.SINGLE_SUCCESS;
+			})
+			.then(literal("reset").requires(CreateUnlimitedCommands::perms)
+				.executes(context -> {
+					if(value.get().equals(value.getDefault())) {
+						message("Value is already default!", context, ChatFormatting.RED);
+						return Command.SINGLE_SUCCESS;
+					}
+					value.set(value.getDefault());
+					message(field.getName() + " reset to: " + value.get(), context);
+					return Command.SINGLE_SUCCESS;
+				})
+			)
+		);
+	}
+
+	private static void bool(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.BooleanValue value) {
+		category.then(literal(field.getName())
+			.then(literal("set").requires(CreateUnlimitedCommands::perms)
+				.then(argument("value", BoolArgumentType.bool())
+					.executes(context -> {
+						boolean set = BoolArgumentType.getBool(context, "value");
+						value.set(set);
+						message(field.getName() + " set to: " + set, context);
+						return Command.SINGLE_SUCCESS;
+					})
+				)
+			)
+		);
+	}
+
+	private static void integer(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.IntValue value) {
+		category.then(literal(field.getName())
+			.then(literal("set").requires(CreateUnlimitedCommands::perms)
+				.then(argument("value", IntegerArgumentType.integer())
+					.executes(context -> {
+						int set = IntegerArgumentType.getInteger(context, "value");
+						value.set(set);
+						message(field.getName() + " set to: " + set, context);
+						return Command.SINGLE_SUCCESS;
+					})
+				)
+			)
+		);
+	}
+
+	private static void doub(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.DoubleValue value) {
+		category.then(literal(field.getName())
+			.then(literal("set").requires(CreateUnlimitedCommands::perms)
+				.then(argument("value", DoubleArgumentType.doubleArg())
+					.executes(context -> {
+						double set = DoubleArgumentType.getDouble(context, "value");
+						value.set(set);
+						message(field.getName() + " set to: " + set, context);
+						return Command.SINGLE_SUCCESS;
+					}))));
+	}
+
+	private static <T extends Enum<T>> void enumm(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.EnumValue<T> value) {
+		category.then(literal(field.getName())
+			.then(literal("set").requires(CreateUnlimitedCommands::perms)
+				.then(argument("value", EnumArgument.enumArgument(value.get().getClass()))
+					.executes(context -> {
+						T set = (T) context.getArgument("value", value.get().getClass());
+						value.set(set);
+						message(field.getName() + " set to: " + set.name().toLowerCase(), context);
+						return Command.SINGLE_SUCCESS;
+					}))));
+	}
+
+
 
 	private static MutableComponent link(String link, String display, ChatFormatting color) {
 		return ComponentUtils.wrapInSquareBrackets(Component.nullToEmpty(display))
