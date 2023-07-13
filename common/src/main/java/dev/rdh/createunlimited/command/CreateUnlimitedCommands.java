@@ -66,8 +66,8 @@ public class CreateUnlimitedCommands {
 			link("https://discord.gg/2ubhDbMaZY", "Discord", ChatFormatting.BLUE)
 		);
 
-        LiteralArgumentBuilder<CommandSourceStack> base = literal("createunlimited").executes(context -> {
-			message("Create Unlimited v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:", context);
+        LiteralArgumentBuilder<CommandSourceStack> base = literal(CreateUnlimited.MOD_ID).executes(context -> {
+			message(CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:", context);
 
 			MutableComponent link = (MutableComponent) CommonComponents.EMPTY;
 			links.forEach(a -> link.append(a).append(Component.literal(" ")));
@@ -94,7 +94,8 @@ public class CreateUnlimitedCommands {
 
                 continue;
             }
-            assert category != null;
+            if(category == null)
+				category = base; // if no category, append everything to base
 
             // get config as ConfigValue
             ForgeConfigSpec.ConfigValue<?> value;
@@ -104,26 +105,25 @@ public class CreateUnlimitedCommands {
                 CreateUnlimited.LOGGER.error("Failed to get config value for " + field.getName(), e);
                 continue;
             }
-            assert value != null;
 
 			//get, description, reset
             gdr(category, field, value);
 
             //set for boolean
             if (value instanceof ForgeConfigSpec.BooleanValue bValue)
-                bool(category, field, bValue);
+                setBoolean(category, field, bValue);
 
             // set for PlacmentCheck enum
-            if (value.get() instanceof CUConfig.PlacementCheck)
-                enumm(category, field, (ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value);
+            else if (value.get() instanceof CUConfig.PlacementCheck)
+                setEnum(category, field, (ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value);
 
             // set for int
-            if (value instanceof ForgeConfigSpec.IntValue iValue)
-                integer(category, field, iValue);
+			else if (value instanceof ForgeConfigSpec.IntValue iValue)
+                setInt(category, field, iValue);
 
             // set for double
-            if (value instanceof ForgeConfigSpec.DoubleValue dValue)
-				doub(category, field, dValue);
+			else if (value instanceof ForgeConfigSpec.DoubleValue dValue)
+				setDouble(category, field, dValue);
 
         }
         if (category != null)
@@ -156,7 +156,7 @@ public class CreateUnlimitedCommands {
 		);
 	}
 
-	private static void bool(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.BooleanValue value) {
+	private static void setBoolean(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.BooleanValue value) {
 		category.then(literal(field.getName())
 			.then(literal("set").requires(CreateUnlimitedCommands::perms)
 				.then(argument("value", BoolArgumentType.bool())
@@ -171,7 +171,7 @@ public class CreateUnlimitedCommands {
 		);
 	}
 
-	private static void integer(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.IntValue value) {
+	private static void setInt(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.IntValue value) {
 		category.then(literal(field.getName())
 			.then(literal("set").requires(CreateUnlimitedCommands::perms)
 				.then(argument("value", IntegerArgumentType.integer())
@@ -186,7 +186,7 @@ public class CreateUnlimitedCommands {
 		);
 	}
 
-	private static void doub(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.DoubleValue value) {
+	private static void setDouble(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.DoubleValue value) {
 		category.then(literal(field.getName())
 			.then(literal("set").requires(CreateUnlimitedCommands::perms)
 				.then(argument("value", DoubleArgumentType.doubleArg())
@@ -198,7 +198,7 @@ public class CreateUnlimitedCommands {
 					}))));
 	}
 
-	private static <T extends Enum<T>> void enumm(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.EnumValue<T> value) {
+	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.EnumValue<T> value) {
 		category.then(literal(field.getName())
 			.then(literal("set").requires(CreateUnlimitedCommands::perms)
 				.then(argument("value", EnumArgument.enumArgument(value.get().getClass()))

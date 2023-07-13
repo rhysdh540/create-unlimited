@@ -3,13 +3,20 @@ package dev.rdh.createunlimited;
 
 import com.simibubi.create.Create;
 
+import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
+
 import dev.rdh.createunlimited.command.CreateUnlimitedCommands;
 import dev.rdh.createunlimited.config.CUConfig;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
+import net.minecraftforge.fml.config.ModConfig;
+
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +28,10 @@ public class CreateUnlimited {
 
 	public static void init() {
 		LOGGER.info("{} initializing! Create version: {} on platform: {}", NAME, Create.VERSION, CUPlatformFunctions.platformName());
+
+		CUPlatformFunctions.registerConfig(MOD_ID, ModConfig.Type.SERVER, CUConfig.SPEC, "createunlimited.toml");
 		CUConfig.init(CUPlatformFunctions.getConfigDirectory().resolve("createunlimited-IGNOREME.toml"));
+
 		CreateUnlimitedCommands.registerConfigCommand();
 	}
 
@@ -55,5 +65,13 @@ public class CreateUnlimited {
 		ItemStack copy = stack.copy();
 		copy.setCount(size);
 		return copy;
+	}
+
+	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
+		BaseConfigScreen.setDefaultActionFor(MOD_ID, (base) ->
+			base.withSpecs(null, null, CUConfig.SPEC)
+				.withTitles(" ", " ", "Settings")
+		);
+		return new BaseConfigScreen(parent, MOD_ID);
 	}
 }

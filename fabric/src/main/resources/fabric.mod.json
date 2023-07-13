@@ -16,6 +16,9 @@
   "entrypoints": {
     "main": [
       "dev.rdh.createunlimited.fabric.CreateUnlimitedFabric"
+    ],
+    "modmenu": [
+      "dev.rdh.createunlimited.fabric.ModMenuIntegration"
     ]
   },
   "mixins": [
