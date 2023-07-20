@@ -26,8 +26,6 @@ import net.minecraft.network.chat.MutableComponent;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
-import net.minecraftforge.server.command.EnumArgument;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -72,7 +70,7 @@ public class CreateUnlimitedCommands {
 			MutableComponent link = (MutableComponent) CommonComponents.EMPTY;
 			links.forEach(a -> link.append(a).append(Component.literal(" ")));
 
-			context.getSource().sendSuccess(link, false);
+			context.getSource().sendSuccess(() -> link, false);
 			return Command.SINGLE_SUCCESS;
 		});
 
@@ -222,9 +220,9 @@ public class CreateUnlimitedCommands {
 	}
 
 	private static void message(String message, CommandContext<CommandSourceStack> context) {
-		context.getSource().sendSuccess(nullToEmpty(message), false);
+		context.getSource().sendSuccess(() -> nullToEmpty(message), false);
 	}
 	private static void message(@NotNull String message, CommandContext<CommandSourceStack> context, ChatFormatting color) {
-		context.getSource().sendSuccess(Component.literal(message).withStyle(color), false);
+		context.getSource().sendSuccess(() -> Component.literal(message).withStyle(color), false);
 	}
 }

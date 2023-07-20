@@ -142,8 +142,8 @@ public class TrackPlacementMixin {
 		if (level.isClientSide) {
 			Vec3 offset1 = axis1.scale(((PlacementInfoAccessor)info).getEnd1Extent());
 			Vec3 offset2 = axis2.scale(((PlacementInfoAccessor)info).getEnd2Extent());
-			BlockPos targetPos1 = pos1.offset(offset1.x, offset1.y, offset1.z);
-			BlockPos targetPos2 = pos2.offset(offset2.x, offset2.y, offset2.z);
+			BlockPos targetPos1 = pos1.offset(BlockPos.containing(offset1));
+			BlockPos targetPos2 = pos2.offset(BlockPos.containing(offset2));
 			((PlacementInfoAccessor)info).setCurve(new BezierConnection(Couple.create(targetPos1, targetPos2),
 					Couple.create(end1.add(offset1), end2.add(offset2)), Couple.create(normedAxis1, normedAxis2),
 					Couple.create(normal1, normal2), true, girder, TrackMaterial.fromItem(stack.getItem())));
@@ -301,8 +301,8 @@ public class TrackPlacementMixin {
 
 		Vec3 offset1 = axis1.scale(((PlacementInfoAccessor)info).getEnd1Extent());
 		Vec3 offset2 = axis2.scale(((PlacementInfoAccessor)info).getEnd2Extent());
-		BlockPos targetPos1 = pos1.offset(offset1.x, offset1.y, offset1.z);
-		BlockPos targetPos2 = pos2.offset(offset2.x, offset2.y, offset2.z);
+		BlockPos targetPos1 = pos1.offset(BlockPos.containing(offset1));
+		BlockPos targetPos2 = pos2.offset(BlockPos.containing(offset2));
 
 		((PlacementInfoAccessor)info).setCurve(skipCurve ? null
 				: new BezierConnection(Couple.create(targetPos1, targetPos2),

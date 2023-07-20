@@ -36,7 +36,7 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive = false }
 
     // dependencies
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}+${minecraft_version}")
 
     // Create - dependencies are added transitively
     modImplementation("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
