@@ -142,10 +142,10 @@ public class CUConfig {
 	}
 
 	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
-		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.MOD_ID, (base) ->
+		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, (base) ->
 			base.withSpecs(null, null, CUConfig.SPEC)
 				.withTitles(" ", " ", "Settings")
 		);
-		return new BaseConfigScreen(parent, CreateUnlimited.MOD_ID);
+		return new BaseConfigScreen(parent, CreateUnlimited.ID);
 	}
 }

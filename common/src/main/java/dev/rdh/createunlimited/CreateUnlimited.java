@@ -19,15 +19,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CreateUnlimited {
-	public static final String MOD_ID = "createunlimited";
+	public static final String ID = "createunlimited";
 	public static final String NAME = "Create Unlimited";
-	public static final String VERSION = "0.4.0";
+	public static final String VERSION = "0.4.1";
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
 	public static void init() {
 		LOGGER.info("{} initializing! Create version: {} on platform: {}", NAME, Create.VERSION, CUPlatformFunctions.platformName());
 
-		CUPlatformFunctions.registerConfig(MOD_ID, ModConfig.Type.SERVER, CUConfig.SPEC, "createunlimited.toml");
+		CUPlatformFunctions.registerConfig(ID, ModConfig.Type.SERVER, CUConfig.SPEC, "createunlimited.toml");
 		CUConfig.init(CUPlatformFunctions.getConfigDirectory().resolve("createunlimited-IGNOREME.toml"));
 
 
@@ -68,6 +68,6 @@ public class CreateUnlimited {
 	}
 
 	public static ResourceLocation asResource(String id) {
-		return new ResourceLocation(MOD_ID, id);
+		return new ResourceLocation(ID, id);
 	}
 }

@@ -44,7 +44,7 @@ public class CreateUnlimitedCommands {
 			link("https://discord.gg/2ubhDbMaZY", "Discord", ChatFormatting.BLUE)
 		);
 
-        LiteralArgumentBuilder<CommandSourceStack> base = literal(CreateUnlimited.MOD_ID).executes(context -> {
+        LiteralArgumentBuilder<CommandSourceStack> base = literal(CreateUnlimited.ID).executes(context -> {
 			message(CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:", context);
 
 			MutableComponent link = (MutableComponent) CommonComponents.EMPTY;

@@ -19,8 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 
-import org.intellij.lang.annotations.Identifier;
-
 import java.nio.file.Path;
 
 public class CUPlatformFunctionsImpl {

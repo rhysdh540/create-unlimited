@@ -18,8 +18,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory;
 
-@Mod(CreateUnlimited.MOD_ID)
-@Mod.EventBusSubscriber(modid = CreateUnlimited.MOD_ID)
+@Mod(CreateUnlimited.ID)
+@Mod.EventBusSubscriber(modid = CreateUnlimited.ID)
 public class CreateUnlimitedForge {
 
     public CreateUnlimitedForge() {
@@ -36,7 +36,7 @@ public class CreateUnlimitedForge {
 	@SubscribeEvent
 	static void onLoadComplete(FMLLoadCompleteEvent event) {
 		ModContainer container = ModList.get()
-			.getModContainerById(CreateUnlimited.MOD_ID)
+			.getModContainerById(CreateUnlimited.ID)
 			.orElseThrow(() -> new IllegalStateException("Create Unlimited mod container missing on LoadComplete"));
 		container.registerExtensionPoint(ConfigScreenFactory.class,
 			() -> new ConfigScreenFactory(CUConfig::createConfigScreen));
