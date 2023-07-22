@@ -179,7 +179,7 @@ public class CreateUnlimitedCommands {
 	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.EnumValue<T> value) {
 		category.then(literal(field.getName())
 			.then(literal("set").requires(CreateUnlimitedCommands::perms)
-				.then(argument("value", EnumArgument.enumArgument(value.get().getClass()))
+				.then(argument("value", EnumArgument.enumArg(value.get().getClass(), true))
 					.executes(context -> {
 						T set = (T) context.getArgument("value", value.get().getClass());
 						value.set(set);

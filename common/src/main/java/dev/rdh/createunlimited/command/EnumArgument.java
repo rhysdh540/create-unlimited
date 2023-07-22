@@ -27,17 +27,21 @@ import java.util.stream.Stream;
 
 /**
  * copied from froge since the config api port removed it
+ * <p>
+ * oh yeah i also added configurable lowercase because yes
  */
 public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	private static final Dynamic2CommandExceptionType INVALID_ENUM = new Dynamic2CommandExceptionType(
 		(found, constants) -> Component.translatable("commands.forge.arguments.enum.invalid", constants, found));
 	private final Class<T> enumClass;
+	private final boolean lowercase;
 
-	public static <R extends Enum<R>> EnumArgument<R> enumArgument(Class<R> enumClass) {
-		return new EnumArgument<>(enumClass);
+	public static <R extends Enum<R>> EnumArgument<R> enumArg(Class<R> enumClass, boolean lowercase) {
+		return new EnumArgument<>(enumClass, lowercase);
 	}
-	private EnumArgument(final Class<T> enumClass) {
+	private EnumArgument(final Class<T> enumClass, final boolean lowercase) {
 		this.enumClass = enumClass;
+		this.lowercase = lowercase;
 	}
 
 	@Override
@@ -46,31 +50,33 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 		try {
 			return Enum.valueOf(enumClass, name);
 		} catch (IllegalArgumentException e) {
-			throw INVALID_ENUM.createWithContext(reader, name, Arrays.toString(Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).toArray()));
+			throw INVALID_ENUM.createWithContext(reader, name, Arrays.toString(Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).map(this::lowercase).toArray()));
 		}
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-		return SharedSuggestionProvider.suggest(Stream.of(enumClass.getEnumConstants()).map(Enum::name).map(String::toLowerCase), builder);
+		return SharedSuggestionProvider.suggest(Stream.of(enumClass.getEnumConstants()).map(Enum::name).map(this::lowercase), builder);
 	}
 
 	@Override
 	public Collection<String> getExamples() {
-		return Stream.of(enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.toList());
+		return Stream.of(enumClass.getEnumConstants()).map(Enum::name).map(this::lowercase).collect(Collectors.toList());
 	}
 
 	public static class Info<T extends Enum<T>> implements ArgumentTypeInfo<EnumArgument<T>, Info<T>.Template> {
 		@Override
 		public void serializeToNetwork(Template template, FriendlyByteBuf buffer) {
 			buffer.writeUtf(template.enumClass.getName());
+			buffer.writeBoolean(template.lowercase);
 		}
 
 		@Override
 		public Template deserializeFromNetwork(FriendlyByteBuf buffer) {
 			try {
 				String name = buffer.readUtf();
-				return new Template((Class<T>) Class.forName(name));
+				boolean l = buffer.readBoolean();
+				return new Template((Class<T>) Class.forName(name), l);
 			}
 			catch (ClassNotFoundException e) {
 				return null;
@@ -84,19 +90,21 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 
 		@Override
 		public Template unpack(EnumArgument<T> argument) {
-			return new Template(argument.enumClass);
+			return new Template(argument.enumClass, argument.lowercase);
 		}
 
 		public class Template implements ArgumentTypeInfo.Template<EnumArgument<T>> {
 			final Class<T> enumClass;
+			final boolean lowercase;
 
-			Template(Class<T> enumClass) {
+			Template(Class<T> enumClass, boolean lowercase) {
 				this.enumClass = enumClass;
+				this.lowercase = lowercase;
 			}
 
 			@Override
-			public EnumArgument<T> instantiate(CommandBuildContext p_223435_) {
-				return new EnumArgument<>(this.enumClass);
+			public EnumArgument<T> instantiate(CommandBuildContext ctx) {
+				return new EnumArgument<>(this.enumClass, this.lowercase);
 			}
 
 			@Override
@@ -104,5 +112,9 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 				return Info.this;
 			}
 		}
+	}
+
+	private String lowercase(String s) {
+		return lowercase ? s.toLowerCase() : s;
 	}
 }
