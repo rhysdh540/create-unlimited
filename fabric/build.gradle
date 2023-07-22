@@ -44,7 +44,7 @@ dependencies {
     // Development QOL
     modLocalRuntime("maven.modrinth:lazydfu:${lazydfu_version}")
     modImplementation("com.terraformersmc:modmenu:${modmenu_version}")
-    modLocalRuntime("maven.modrinth:smoothboot-fabric:1.19-1.7.1")
+    //modLocalRuntime("maven.modrinth:smoothboot-fabric:${smoothboot_version}")
 }
 
 processResources {

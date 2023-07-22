@@ -36,26 +36,6 @@ import static net.minecraft.commands.Commands.literal;
 import static net.minecraft.network.chat.Component.nullToEmpty;
 
 public class CreateUnlimitedCommands {
-    /**
-     * Builds and registers the {@code /createunlimited} command, that changes configuration values.
-     * <p>
-     * Base command: {@code /createunlimited}
-     * <br>
-     * Subcommands:
-     * <ul>
-     *     <li>{@code /createunlimited <category> <config> get} - Gets the value of the config</li>
-     *     <li>{@code /createunlimited <category> <config> set <value>} - Sets the value of the config
-     *     <ul>
-     *         <li>Requires operator permissions on servers.</li>
-     *     </ul></li>
-     *     <li>{@code /createunlimited <category> <config> reset} - Resets the value of the config to its default value
-     *     <ul>
-     *         <li>Requires operator permissions on servers.</li>
-     *     </ul></li>
-     * </ul>
-     * This command uses Mojang's {@link com.mojang.brigadier Brigadier} library to parse arguments and send them to the server.
-     * @see <a href="https://github.com/Mojang/brigadier">Brigadier on GitHub</a>
-     */
     public static void registerConfigCommand() {
 		List<MutableComponent> links = List.of(
 			link("https://github.com/rhysdh540/create-unlimited", "GitHub", ChatFormatting.GRAY),

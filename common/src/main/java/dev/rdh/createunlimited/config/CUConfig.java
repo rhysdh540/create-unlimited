@@ -3,9 +3,16 @@ package dev.rdh.createunlimited.config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 
+import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import dev.rdh.createunlimited.CreateUnlimited;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -130,8 +137,15 @@ public class CUConfig {
 	private static ForgeConfigSpec.DoubleValue d(double normal, double min, double max, String path) {
 		return BUILDER.comment(comments.get(path)).defineInRange(path, normal, min, max);
 	}
-
 	private static void cat(String path) {
 		BUILDER.comment(comments.get(path.toLowerCase())).push(path);
+	}
+
+	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
+		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.MOD_ID, (base) ->
+			base.withSpecs(null, null, CUConfig.SPEC)
+				.withTitles(" ", " ", "Settings")
+		);
+		return new BaseConfigScreen(parent, CreateUnlimited.MOD_ID);
 	}
 }

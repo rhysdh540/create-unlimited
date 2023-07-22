@@ -48,11 +48,9 @@ dependencies {
     modImplementation("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_minecraft_version}:${flywheel_forge_version}")
 
     // Development QOL
-    modLocalRuntime("curse.maven:better-mods-button-541584:3963202")
-    modLocalRuntime("curse.maven:ferritecore-429235:4117906")
-    modLocalRuntime("curse.maven:catalogue-459701:4171024")
-//    modLocalRuntime("curse.maven:configured-457570:4462837")
-
+    modLocalRuntime("curse.maven:better-mods-button-541584:${rootProject.bmb_version}")
+    modLocalRuntime("curse.maven:ferritecore-429235:${rootProject.ferritecore_version}")
+    modLocalRuntime("curse.maven:catalogue-459701:${rootProject.catalogue_version}")
 }
 
 processResources {

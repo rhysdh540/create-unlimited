@@ -3,8 +3,6 @@ package dev.rdh.createunlimited.forge;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
-import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
-
 import dev.rdh.createunlimited.CreateUnlimited;
 
 import dev.rdh.createunlimited.config.CUConfig;
@@ -16,9 +14,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory;
 
@@ -39,10 +35,10 @@ public class CreateUnlimitedForge {
 
 	@SubscribeEvent
 	static void onLoadComplete(FMLLoadCompleteEvent event) {
-		ModContainer createContainer = ModList.get()
+		ModContainer container = ModList.get()
 			.getModContainerById(CreateUnlimited.MOD_ID)
 			.orElseThrow(() -> new IllegalStateException("Create Unlimited mod container missing on LoadComplete"));
-		createContainer.registerExtensionPoint(ConfigScreenFactory.class,
-			() -> new ConfigScreenFactory(CreateUnlimited::createConfigScreen));
+		container.registerExtensionPoint(ConfigScreenFactory.class,
+			() -> new ConfigScreenFactory(CUConfig::createConfigScreen));
 	}
 }
