@@ -28,6 +28,7 @@ import java.util.Map;
  *
  * @see <a href="https://github.com/TheElectronWill/night-config">Night Config on GitHub</a>
  */
+@SuppressWarnings("SameParameterValue")
 public class CUConfig {
 	private CUConfig() { throw new UnsupportedOperationException(); }
     public static final ForgeConfigSpec SPEC;
