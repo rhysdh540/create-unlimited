@@ -8,6 +8,6 @@ import dev.rdh.createunlimited.config.CUConfig;
 public class ModMenuIntegration implements ModMenuApi {
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
-		return screen -> CUConfig.createConfigScreen(null, screen);
+		return CUConfig::createConfigScreen;
 	}
 }

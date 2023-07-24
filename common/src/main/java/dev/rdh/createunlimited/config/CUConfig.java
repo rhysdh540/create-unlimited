@@ -141,11 +141,14 @@ public class CUConfig {
 		BUILDER.comment(comments.get(path.toLowerCase())).push(path);
 	}
 
-	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
+	public static BaseConfigScreen createConfigScreen(Screen parent) {
 		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, (base) ->
 			base.withSpecs(null, null, CUConfig.SPEC)
-				.withTitles(" ", " ", "Settings")
+				.withTitles("", "", "Settings")
 		);
 		return new BaseConfigScreen(parent, CreateUnlimited.ID);
+	}
+	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
+		return createConfigScreen(parent);
 	}
 }
