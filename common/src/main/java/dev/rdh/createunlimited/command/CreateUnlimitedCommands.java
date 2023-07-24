@@ -26,8 +26,6 @@ import net.minecraft.network.chat.MutableComponent;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -91,9 +89,9 @@ public class CreateUnlimitedCommands {
             if (value instanceof ForgeConfigSpec.BooleanValue bValue)
                 setBoolean(category, field, bValue);
 
-            // set for PlacmentCheck enum
-            else if (value.get() instanceof CUConfig.PlacementCheck)
-                setEnum(category, field, (ForgeConfigSpec.EnumValue<CUConfig.PlacementCheck>) value);
+            // set for enums
+            else if (value.get() instanceof Enum<?>)
+                setEnum(category, field, (ForgeConfigSpec.EnumValue<? extends Enum<?>>) value);
 
             // set for int
 			else if (value instanceof ForgeConfigSpec.IntValue iValue)
@@ -123,8 +121,8 @@ public class CreateUnlimitedCommands {
 			.then(literal("reset").requires(CreateUnlimitedCommands::perms)
 				.executes(context -> {
 					if(value.get().equals(value.getDefault())) {
-						message("Value is already default!", context, ChatFormatting.RED);
-						return Command.SINGLE_SUCCESS;
+						error("Value is already default!", context);
+						return 0;
 					}
 					value.set(value.getDefault());
 					message(field.getName() + " reset to: " + value.get(), context);
@@ -188,8 +186,6 @@ public class CreateUnlimitedCommands {
 					}))));
 	}
 
-
-
 	private static MutableComponent link(String link, String display, ChatFormatting color) {
 		return ComponentUtils.wrapInSquareBrackets(Component.nullToEmpty(display))
 			.withStyle(color)
@@ -202,7 +198,7 @@ public class CreateUnlimitedCommands {
 	private static void message(String message, CommandContext<CommandSourceStack> context) {
 		context.getSource().sendSuccess(() -> nullToEmpty(message), false);
 	}
-	private static void message(@NotNull String message, CommandContext<CommandSourceStack> context, ChatFormatting color) {
-		context.getSource().sendSuccess(() -> Component.literal(message).withStyle(color), false);
+	private static void error(String message, CommandContext<CommandSourceStack> context) {
+		context.getSource().sendFailure(nullToEmpty(message));
 	}
 }

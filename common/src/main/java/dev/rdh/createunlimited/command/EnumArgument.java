@@ -39,6 +39,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	public static <R extends Enum<R>> EnumArgument<R> enumArg(Class<R> enumClass, boolean lowercase) {
 		return new EnumArgument<>(enumClass, lowercase);
 	}
+
 	private EnumArgument(final Class<T> enumClass, final boolean lowercase) {
 		this.enumClass = enumClass;
 		this.lowercase = lowercase;
