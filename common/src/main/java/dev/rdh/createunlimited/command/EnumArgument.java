@@ -48,7 +48,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	public T parse(final StringReader reader) throws CommandSyntaxException {
 		String name = reader.readUnquotedString();
 		try {
-			return Enum.valueOf(enumClass, name);
+			return Enum.valueOf(enumClass, unlowercase(name));
 		} catch (IllegalArgumentException e) {
 			throw INVALID_ENUM.createWithContext(reader, name, Arrays.toString(Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).map(this::lowercase).toArray()));
 		}
@@ -116,5 +116,8 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 
 	private String lowercase(String s) {
 		return lowercase ? s.toLowerCase() : s;
+	}
+	private String unlowercase(String s) {
+		return lowercase ? s.toUpperCase() : s;
 	}
 }
