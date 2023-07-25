@@ -50,8 +50,6 @@ subprojects {
             it.parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
             it.officialMojangMappings { nameSyntheticMembers = false }
         })
-		include("systems.manifold:manifold-rt:2023.1.10")
-		annotationProcessor group: 'systems.manifold', name: 'manifold', version: '2023.1.10'
 
         // see each subproject for dependencies.
     }
