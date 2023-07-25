@@ -7,15 +7,6 @@ architectury {
     forge()
 }
 
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
-
-    forge {
-        convertAccessWideners = true
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-    }
-}
-
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -25,63 +16,40 @@ configurations {
 }
 
 repositories {
-    // mavens for Forge-exclusives
-    maven { url = "https://maven.theillusivec4.top/" } // Curios
-    maven { // Create Forge and Registrate Forge
-        url = "https://maven.tterrag.com/"
-        content {
-            includeGroup("com.tterrag.registrate")
-            includeGroup("com.simibubi.create")
-        }
-    }
-    maven { url = "https://cursemaven.com" }
+    maven { url "https://maven.shedaniel.me/" }
 }
 
 dependencies {
-    forge("net.minecraftforge:forge:${minecraft_version}-${forge_version}")
-    common(project(path: ":common", configuration: "namedElements")) { transitive = false }
+    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+
+    if (minecraft_version == "1.16.5") {
+        addJar "me.shedaniel:architectury-forge:${rootProject.architectury_version}"
+    } else {
+        addJar "dev.architectury:architectury-forge:${rootProject.architectury_version}"
+    }
+
+    modImplementation "me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}"
+
+    common "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-
-    // Create and its dependencies
-    modImplementation("com.simibubi.create:create-${minecraft_version}:${create_forge_version}:slim") { transitive = false }
-    modImplementation("com.tterrag.registrate:Registrate:${registrate_forge_version}")
-    modImplementation("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_minecraft_version}:${flywheel_forge_version}")
-
-    // Development QOL
-    modLocalRuntime("curse.maven:better-mods-button-541584:${rootProject.bmb_version}")
-    modLocalRuntime("curse.maven:ferritecore-429235:${rootProject.ferritecore_version}")
-    modLocalRuntime("curse.maven:catalogue-459701:${rootProject.catalogue_version}")
-}
-
-processResources {
-    // set up properties for filling into metadata
-    Map<String, String> properties = Map.of(
-            "version", version,
-            "forge_version", forge_version.split("\\.")[0], // only specify major version of forge
-            "minecraft_version", minecraft_version,
-            "create_version", create_forge_version.split("-")[0] // cut off build number
-    )
-    properties.forEach((k, v) -> inputs.property(k, v))
-
-    filesMatching("META-INF/mods.toml") {
-        expand properties
-    }
-}
-
-loom {
-    forge {
-        mixinConfig(
-                "createunlimited-common.mixins.json",
-                "createunlimited.mixins.json"
-        )
-    }
 }
 
 shadowJar {
     exclude "fabric.mod.json"
     exclude "architectury.common.json"
 
-    configurations = [project.configurations.shadowCommon]
+    configurations = [project.configurations.shadowCommon, project.configurations.shade]
+
+    if (minecraft_version == "1.16.5") {
+        // This is because 1.18.1- doesn't support JarJar
+        relocate "com.llamalad7.mixinextras", "${rootProject.mod_id}.libraries.com.llamalad7.mixinextras"
+    }
+
+    if (minecraft_version == "1.16.5") {
+        exclude "META-INF/accesstransformer.cfg"
+    }
+
     classifier "dev-shadow"
 }
 
