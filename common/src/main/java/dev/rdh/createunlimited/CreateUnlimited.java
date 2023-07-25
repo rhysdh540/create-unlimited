@@ -1,8 +1,6 @@
 package dev.rdh.createunlimited;
 
-
 import com.simibubi.create.Create;
-
 
 import dev.rdh.createunlimited.command.CreateUnlimitedCommands;
 import dev.rdh.createunlimited.command.EnumArgument;
@@ -25,7 +23,7 @@ public class CreateUnlimited {
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
 	public static void init() {
-		LOGGER.info("{} initializing! Create version: {} on platform: {}", NAME, Create.VERSION, CUPlatformFunctions.platformName());
+		LOGGER.info("{} v{} initializing! Create {} version: {}", NAME, VERSION, Create.VERSION, CUPlatformFunctions.platformName());
 
 		CUPlatformFunctions.registerConfig(ID, ModConfig.Type.SERVER, CUConfig.SPEC, "createunlimited.toml");
 		CUConfig.init(CUPlatformFunctions.getConfigDirectory().resolve("createunlimited-IGNOREME.toml"));

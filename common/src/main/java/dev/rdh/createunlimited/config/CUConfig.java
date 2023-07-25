@@ -149,7 +149,7 @@ public class CUConfig {
 		);
 		return new BaseConfigScreen(parent, CreateUnlimited.ID);
 	}
-	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
+	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) { // because METHOD REFERENCES :: omg
 		return createConfigScreen(parent);
 	}
 }
