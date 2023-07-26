@@ -1,4 +1,4 @@
-package net.examplemod;
+package dev.rdh.createunlimited;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 #if POST_MC_1_16_5
@@ -17,9 +17,9 @@ public class ExampleExpectPlatform {
      * platform sub-package, with its class suffixed with {@code Impl}.
      * <p>
      * Example:
-     * Expect: net.examplemod.ExampleExpectPlatform#getConfigDirectory()
-     * Actual Fabric: net.examplemod.fabric.ExampleExpectPlatformImpl#getConfigDirectory()
-     * Actual Forge: net.examplemod.forge.ExampleExpectPlatformImpl#getConfigDirectory()
+     * Expect: dev.rdh.createunlimited.ExampleExpectPlatform#getConfigDirectory()
+     * Actual Fabric: net.createunlimited.fabric.ExampleExpectPlatformImpl#getConfigDirectory()
+     * Actual Forge: net.createunlimited.forge.ExampleExpectPlatformImpl#getConfigDirectory()
      * <p>
      * <a href="https://plugins.jetbrains.com/plugin/16210-architectury">You should also get the IntelliJ plugin to help with @ExpectPlatform.</a>
      */

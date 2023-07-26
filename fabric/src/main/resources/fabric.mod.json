@@ -16,10 +16,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.examplemod.fabric.ExampleModFabric"
+      "dev.rdh.createunlimited.fabric.ExampleModFabric"
     ],
     "preLaunch": [
-      "net.examplemod.fabric.PreLaunchSetup"
+      "dev.rdh.createunlimited.fabric.PreLaunchSetup"
     ]
   },
   "mixins": [

@@ -1,6 +1,7 @@
-package net.examplemod.fabric;
+package dev.rdh.createunlimited.fabric;
 
-import net.examplemod.ExampleExpectPlatform;
+import dev.rdh.createunlimited.ExampleExpectPlatform;
+
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.nio.file.Path;

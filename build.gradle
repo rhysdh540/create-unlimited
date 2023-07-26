@@ -1,6 +1,8 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "0.12.0-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.0.326" apply false
+	id "io.github.juuxel.loom-quiltflower" version "1.10.0" apply false
+	id "io.github.p03w.machete" version "2.0.1"
     id "io.github.pacifistmc.forgix" version "1.2.6"
 }
 
@@ -8,10 +10,7 @@ plugins {
 
 // These are the access wideners depending on the minecraft version
 def mcVersionToAccessWidenerVersion = [
-        "1.16.5": "1_19_3",
-        "1.18.2": "1_19_3",
         "1.19.2": "1_19_2",
-        "1.19.4": "1_19_4",
         "1.20.1": "1_20_1",
 ]
 rootProject.ext.set("accessWideners", mcVersionToAccessWidenerVersion)
@@ -22,7 +21,8 @@ defineMixins()
 
 forgix {
     group = rootProject.maven_group
-    mergedJarName = "${rootProject.mod_id}-${rootProject.mod_version}-${rootProject.minecraft_version}.jar"
+    mergedJarName = "${rootProject.mod_id}-${rootProject.mod_version}${getBuildNumber()}+mc${rootProject.minecraft_version}.jar"
+	outputDir = "build/libs/merged"
 }
 
 architectury {
@@ -31,6 +31,7 @@ architectury {
 
 subprojects { p ->
     apply plugin: "dev.architectury.loom"
+	apply plugin: "io.github.juuxel.loom-quiltflower"
 
     loom {
         silentMojangMappingsLicense()
@@ -59,40 +60,38 @@ subprojects { p ->
         shade // I recommend using "addJar" instead of "shade"
         addJar
 
-        if (minecraft_version == "1.16.5") { // This is because 1.18.1- doesn't support JarJar
-            if (p == project(":forge")) {
-                shade.extendsFrom addJar
-            } else {
-                if (p != project(":common")) {
-                    include.extendsFrom addJar
-                } else {
-                    shade.extendsFrom addJar
-                }
-            }
-        } else {
-            if (p != project(":common")) {
-                include.extendsFrom addJar
-            }
-        }
+		if (p != project(":common")) {
+			include.extendsFrom addJar
+		}
 
         implementation.extendsFrom shade
         modImplementation.extendsFrom addJar
     }
 
+	repositories {
+		mavenCentral()
+		maven { url = "https://maven.parchmentmc.org" }
+		maven { url = "https://maven.quiltmc.org/repository/release" }
+		maven {
+			url = "https://maven.tterrag.com/"
+			content { includeGroup("com.jozufozu.flywheel") }
+		}
+	}
+
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings loom.officialMojangMappings()
+		mappings(loom.layered {
+			it.mappings("org.quiltmc:quilt-mappings:${minecraft_version}+build.${qm_version}:intermediary-v2")
+			it.parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
+			it.officialMojangMappings { nameSyntheticMembers = false }
+		})
 
         annotationProcessor "systems.manifold:manifold-preprocessor:${rootProject.manifold_version}"
 
         // https://github.com/LlamaLad7/MixinExtras/wiki
         addJar "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
         annotationProcessor("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
-        
-        
-        
-        
-        
+
         // Dev Env Optimizations
         //// https://www.cursemaven.com/
         //// https://docs.modrinth.com/docs/tutorials/maven/
@@ -199,7 +198,10 @@ allprojects {
     }
 }
 
-
+def getBuildNumber() {
+	String buildNumber = System.getenv("GITHUB_RUN_NUMBER")
+	return (buildNumber != null ? ".${buildNumber}" : "")
+}
 
 
 /* Cursed stuff is defined below! Beware of dog */

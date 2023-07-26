@@ -1,6 +1,7 @@
-package net.examplemod.fabric;
+package dev.rdh.createunlimited.fabric;
 
-import net.examplemod.ExampleMod;
+import dev.rdh.createunlimited.ExampleMod;
+
 import net.fabricmc.api.ModInitializer;
 
 public class ExampleModFabric implements ModInitializer {

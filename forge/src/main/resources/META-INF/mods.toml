@@ -7,9 +7,9 @@ license = "${license}"
 modId = "${id}"
 version = "${version}"
 displayName = "${displayName}"
-authors = "Me!"
+authors = "rdh"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+Remove all the limits!
 '''
 logoFile = "assets/${id}/icon.png"
 

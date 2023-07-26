@@ -11,4 +11,4 @@ include("common")
 include("fabric")
 include("forge")
 
-rootProject.name = "Example Mod"
+rootProject.name = "Create Unlimited"

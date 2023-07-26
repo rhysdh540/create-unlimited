@@ -16,26 +16,25 @@ configurations {
 }
 
 repositories {
-    maven { url "https://maven.terraformersmc.com/" }
     maven { url "https://maven.shedaniel.me/" }
+	maven { url = "https://api.modrinth.com/maven" } // LazyDFU
+	maven { url = "https://maven.terraformersmc.com/releases/" } // Mod Menu
+	maven { url = "https://mvn.devos.one/snapshots/" } // Create Fabric, Porting Lib, Forge Tags, Milk Lib, Registrate Fabric
+	maven { url = "https://cursemaven.com" } // Forge Config API Port
+	maven { url = "https://maven.cafeteria.dev/releases" } // Fake Player API
+	maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
+	maven { url = "https://jitpack.io/" } // Mixin Extras, Fabric ASM
 }
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}+${rootProject.minecraft_version}"
     runtimeOnly 'org.joml:joml:1.10.4' // Don't know why fabric api needs this
 
-    if (minecraft_version == "1.16.5") {
-        modImplementation "me.shedaniel:architectury-fabric:${rootProject.architectury_version}"
-    } else {
-        modImplementation "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
-    }
-
     modImplementation "com.terraformersmc:modmenu:${rootProject.modmenu_version}"
-    modImplementation("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
+
+	modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric_version}+mc${rootProject.minecraft_version}")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

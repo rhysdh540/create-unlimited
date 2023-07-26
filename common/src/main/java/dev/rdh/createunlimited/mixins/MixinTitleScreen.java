@@ -1,4 +1,4 @@
-package net.examplemod.mixins;
+package dev.rdh.createunlimited.mixins;
 
 import net.minecraft.client.gui.screens.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
