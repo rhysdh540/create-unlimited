@@ -30,14 +30,14 @@ repositories {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
+    forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-	modImplementation("com.simibubi.create:create-${minecraft_version}:${create_forge_version}:slim") { transitive = false }
-	modImplementation("com.tterrag.registrate:Registrate:${registrate_forge_version}")
-	modImplementation("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_minecraft_version}:${flywheel_forge_version}")
+	modImplementation("com.simibubi.create:create-${minecraft_version}:${create_forge}:slim") { transitive = false }
+	modImplementation("com.tterrag.registrate:Registrate:${registrate}")
+	modImplementation("com.jozufozu.flywheel:flywheel-forge-${flywheel_mc}:${flywheel}")
 }
 
 shadowJar {

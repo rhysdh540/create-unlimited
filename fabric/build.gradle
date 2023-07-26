@@ -27,14 +27,14 @@ repositories {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric}"
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}+${rootProject.minecraft_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api}+${rootProject.minecraft_version}"
     runtimeOnly 'org.joml:joml:1.10.4' // Don't know why fabric api needs this
 
     modImplementation "com.terraformersmc:modmenu:${rootProject.modmenu}"
 
-	modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric_version}+mc${rootProject.minecraft_version}")
+	modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric}+mc${rootProject.minecraft_version}")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

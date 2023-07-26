@@ -79,8 +79,8 @@ subprojects { p ->
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 		mappings(loom.layered {
-			it.mappings("org.quiltmc:quilt-mappings:${rootProject.minecraft_version}+build.${rootProject.qm_version}:intermediary-v2")
-			it.parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment_version}@zip")
+			it.mappings("org.quiltmc:quilt-mappings:${rootProject.minecraft_version}+build.${rootProject.quilt}:intermediary-v2")
+			it.parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment}@zip")
 			it.officialMojangMappings { nameSyntheticMembers = false }
 		})
 
