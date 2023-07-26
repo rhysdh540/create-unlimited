@@ -32,7 +32,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}+${rootProject.minecraft_version}"
     runtimeOnly 'org.joml:joml:1.10.4' // Don't know why fabric api needs this
 
-    modImplementation "com.terraformersmc:modmenu:${rootProject.modmenu_version}"
+    modImplementation "com.terraformersmc:modmenu:${rootProject.modmenu}"
 
 	modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric_version}+mc${rootProject.minecraft_version}")
 

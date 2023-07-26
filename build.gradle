@@ -33,9 +33,7 @@ subprojects { p ->
     apply plugin: "dev.architectury.loom"
 	apply plugin: "io.github.juuxel.loom-quiltflower"
 
-    loom {
-        silentMojangMappingsLicense()
-    }
+    loom { silentMojangMappingsLicense() }
 
     def awFile = project(":common").file("src/main/resources/${rootProject.mod_id}.accesswidener")
 
@@ -81,46 +79,39 @@ subprojects { p ->
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 		mappings(loom.layered {
-			it.mappings("org.quiltmc:quilt-mappings:${minecraft_version}+build.${qm_version}:intermediary-v2")
-			it.parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
+			it.mappings("org.quiltmc:quilt-mappings:${rootProject.minecraft_version}+build.${rootProject.qm_version}:intermediary-v2")
+			it.parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment_version}@zip")
 			it.officialMojangMappings { nameSyntheticMembers = false }
 		})
 
         annotationProcessor "systems.manifold:manifold-preprocessor:${rootProject.manifold_version}"
-
-        // https://github.com/LlamaLad7/MixinExtras/wiki
-        addJar "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
-        annotationProcessor("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
 
         // Dev Env Optimizations
         //// https://www.cursemaven.com/
         //// https://docs.modrinth.com/docs/tutorials/maven/
 
         if (p == project(":fabric")) {
-            if (rootProject.hasProperty("sodium")) {
-                modImplementation "maven.modrinth:sodium:${rootProject.sodium}"
-            }
-            if (rootProject.hasProperty("lazydfu_fabric")) {
-                modImplementation "maven.modrinth:lazydfu:${rootProject.lazydfu_fabric}"
+            if (rootProject.hasProperty("lazydfu")) {
+				modRuntimeOnly "maven.modrinth:lazydfu:${rootProject.lazydfu}"
             }
             if (rootProject.hasProperty("smoothboot_fabric")) {
-                modImplementation "curse.maven:smooth-boot-415758:${rootProject.smoothboot_fabric}"
-            }
-            if (rootProject.hasProperty("starlight_fabric")) {
-                modImplementation "curse.maven:starlight-521783:${rootProject.starlight_fabric}"
+				modRuntimeOnly "curse.maven:smooth-boot-415758:${rootProject.smoothboot_fabric}"
             }
         }
 
         if (p == project(":forge")) {
-            if (rootProject.hasProperty("rubidium")) {
-                modImplementation "curse.maven:rubidium-574856:${rootProject.rubidium}"
+            if (rootProject.hasProperty("bmb")) {
+				modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
             }
             if (rootProject.hasProperty("smoothboot_forge")) {
-                modImplementation "curse.maven:smooth-boot-reloaded-633412:${rootProject.smoothboot_forge}"
+				modRuntimeOnly "curse.maven:smooth-boot-reloaded-633412:${rootProject.smoothboot_forge}"
             }
-            if (rootProject.hasProperty("starlight_forge")) {
-                modImplementation "curse.maven:starlight-forge-526854:${rootProject.starlight_forge}"
-            }
+            if (rootProject.hasProperty("catalogue")) {
+				modRuntimeOnly "curse.maven:catalogue-459701:${rootProject.catalogue}"
+			}
+			if (rootProject.hasProperty("ferritecore")) {
+				modRuntimeOnly "curse.maven:ferritecore-429235:${rootProject.ferritecore}"
+			}
         }
     }
 
@@ -196,6 +187,11 @@ allprojects {
     java {
         withSourcesJar()
     }
+
+	machete {
+		// disable machete locally for faster builds
+		enabled = System.getenv("GITHUB_RUN_NUMBER") != null
+	}
 }
 
 def getBuildNumber() {
