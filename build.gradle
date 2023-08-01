@@ -21,7 +21,7 @@ defineMixins()
 
 forgix {
     group = rootProject.maven_group
-    mergedJarName = "${rootProject.mod_id}-${rootProject.mod_version}${getBuildNumber()}+mc${rootProject.minecraft_version}.jar"
+    mergedJarName = "createunlimited-${rootProject.mod_version}${getBuildNumber()}+mc${rootProject.minecraft_version}.jar"
 	outputDir = "build/libs/merged"
 }
 
@@ -35,7 +35,7 @@ subprojects { p ->
 
     loom { silentMojangMappingsLicense() }
 
-    def awFile = project(":common").file("src/main/resources/${rootProject.mod_id}.accesswidener")
+    def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
 
     if (awFile.exists()) {
         if (p != project(":forge")) {
@@ -95,7 +95,7 @@ subprojects { p ->
 				modRuntimeOnly "maven.modrinth:lazydfu:${rootProject.lazydfu}"
             }
             if (rootProject.hasProperty("smoothboot_fabric")) {
-				modRuntimeOnly "curse.maven:smooth-boot-415758:${rootProject.smoothboot_fabric}"
+				modRuntimeOnly "curse.maven:smoothboot-fabric-415758:${rootProject.smoothboot_fabric}"
             }
         }
 
@@ -104,7 +104,7 @@ subprojects { p ->
 				modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
             }
             if (rootProject.hasProperty("smoothboot_forge")) {
-				modRuntimeOnly "curse.maven:smooth-boot-reloaded-633412:${rootProject.smoothboot_forge}"
+				modRuntimeOnly "curse.maven:smoothboot-forge-633412:${rootProject.smoothboot_forge}"
             }
             if (rootProject.hasProperty("catalogue")) {
 				modRuntimeOnly "curse.maven:catalogue-459701:${rootProject.catalogue}"
@@ -117,12 +117,14 @@ subprojects { p ->
 
     processResources {
         def properties = [
-                accessWidener: rootProject.accessWidener,
-                id: rootProject.mod_id,
-                displayName: rootProject.display_name,
-                version: rootProject.mod_version,
-                license: rootProject.license,
-                javaVersion: rootProject.java_version
+			access_widener: rootProject.accessWidener,
+			version: rootProject.mod_version,
+			minecraft_version: rootProject.minecraft_version,
+			forge: rootProject.forge.split("\\.")[0],
+			fabric: rootProject.fabric,
+			fabric_api: rootProject.fabric_api,
+			create_forge: rootProject.create_forge.split("-")[0],
+			create_fabric: rootProject.create_fabric,
         ]
 
         inputs.properties properties
@@ -137,12 +139,6 @@ subprojects { p ->
 
         filesMatching("META-INF/mods.toml") {
             expand properties
-        }
-
-        for (String mixinFile : rootProject.ext.get("mixins")) {
-            filesMatching(mixinFile) {
-                expand properties
-            }
         }
     }
 
@@ -159,32 +155,25 @@ allprojects {
     group = rootProject.maven_group
 
     repositories {
-        // For Manifold
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-
-        // For lots of stuff
-        maven { url 'https://jitpack.io' }
-
-        // Modrinth Mods
-        maven {
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' } // manifold
+        maven { url 'https://jitpack.io' } // idk a lot of stuff
+        maven { // modrinth
             url "https://api.modrinth.com/maven"
             content { includeGroup "maven.modrinth" }
         }
-
-        // CurseForge Mods
-        maven {
+        maven { // curseforge
             url "https://www.cursemaven.com"
             content { includeGroup "curse.maven" }
         }
     }
 
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = rootProject.java_version as Integer
-        options.compilerArgs += ['-Xplugin:Manifold']
-    }
+	tasks.withType(JavaCompile).configureEach {
+		options.encoding = "UTF-8"
+		options.release = 17
+		options.compilerArgs += ['-Xplugin:Manifold']
+	}
 
-    java {
+	java {
         withSourcesJar()
     }
 
@@ -194,7 +183,7 @@ allprojects {
 	}
 }
 
-def getBuildNumber() {
+static def getBuildNumber() {
 	String buildNumber = System.getenv("GITHUB_RUN_NUMBER")
 	return (buildNumber != null ? ".${buildNumber}" : "")
 }
@@ -280,8 +269,8 @@ def loadProperties() {
 
 // Sets up the accesswideners
 def makeAccessWidener() {
-    def accessWidenerFile = project(":common").file("src/main/resources/${rootProject.mod_id}.accesswidener")
-    def versionAccessWidenerFile = project(":common").file("src/main/resources/${rootProject.accessWidenerVersion}.${rootProject.mod_id}.aw")
+    def accessWidenerFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
+    def versionAccessWidenerFile = project(":common").file("src/main/resources/${rootProject.accessWidenerVersion}.createunlimited.aw")
 
     if (accessWidenerFile.exists()) {
         delete accessWidenerFile
@@ -291,7 +280,7 @@ def makeAccessWidener() {
         copy {
             from versionAccessWidenerFile
             into project(":common").file("src/main/resources/")
-            rename "${rootProject.accessWidenerVersion}.${rootProject.mod_id}.aw", "${rootProject.mod_id}.accesswidener"
+            rename "${rootProject.accessWidenerVersion}.createunlimited.aw", "createunlimited.accesswidener"
         }
         def text = accessWidenerFile.text
         text = text + "\n# Do not edit this file. It is automatically generated by the build script. Edit ${versionAccessWidenerFile.name} instead!"
@@ -301,7 +290,7 @@ def makeAccessWidener() {
         versionAccessWidenerFile.createNewFile()
         versionAccessWidenerFile.text = "accessWidener   v2  named"
     }
-    rootProject.ext.set("accessWidener", "${rootProject.accessWidenerVersion}.${rootProject.mod_id}.aw")
+    rootProject.ext.set("accessWidener", "${rootProject.accessWidenerVersion}.createunlimited.aw")
 }
 
 // Defines the mixins

@@ -1,33 +1,30 @@
 {
   "schemaVersion": 1,
-  "id": "${id}",
+  "id": "createunlimited",
   "version": "${version}",
-  "name": "${displayName}",
-  "description": "This is an example description! Tell everyone what your mod is about!",
-  "authors": [
-    "Me!"
-  ],
+  "name": "Create Unlimited",
+  "description": "Remove all the limits!",
+  "authors": [ "rdh" ],
   "contact": {
     "homepage": "https://fabricmc.net/",
     "sources": "https://github.com/FabricMC/fabric-example-mod"
   },
-  "license": "${license}",
-  "icon": "assets/${id}/icon.png",
+  "license": "GPL-3.0",
+  "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.rdh.createunlimited.fabric.ExampleModFabric"
-    ],
-    "preLaunch": [
-      "dev.rdh.createunlimited.fabric.PreLaunchSetup"
+      "dev.rdh.createunlimited.fabric.CreateUnlimitedFabric"
     ]
   },
   "mixins": [
-    "examplemod.mixins.json",
-    "examplemod-common.mixins.json"
+    "createunlimited.mixins.json",
+    "createunlimited-common.mixins.json"
   ],
   "depends": {
-    "fabric": "*",
-    "minecraft": "*"
+    "minecraft": "${minecraft_version}",
+    "fabricloader": ">=${fabric}",
+    "fabric-api": ">=${fabric_api}",
+    "create": ">=${create_fabric}"
   }
 }

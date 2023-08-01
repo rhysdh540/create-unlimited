@@ -1,21 +1,35 @@
 modLoader = "javafml"
-loaderVersion = "[0,)"
-#issueTrackerURL = ""
-license = "${license}"
+loaderVersion = "[${forge},)"
+issueTrackerURL = "https://github.com/rhysdh540/createunlimited/issues"
+license = "GPL-3.0"
 
 [[mods]]
-modId = "${id}"
+modId = "createunlimited"
 version = "${version}"
-displayName = "${displayName}"
+displayName = "Create Unlimited"
 authors = "rdh"
 description = '''
 Remove all the limits!
 '''
-logoFile = "assets/${id}/icon.png"
+logoFile = "icon.png"
 
-[[dependencies.${id}]]
+[[dependencies.createunlimited]]
 modId = "forge"
 mandatory = true
-versionRange = "[0.0.0,)"
+versionRange = "[${forge},)"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.createunlimited]]
+modId = "minecraft"
+mandatory = true
+versionRange = "${minecraft_version}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.createunlimited]]
+modId="create"
+mandatory=true
+versionRange="[${create_forge},)"
+ordering="NONE"
+side="BOTH"
