@@ -25,7 +25,7 @@ import net.minecraftforge.fml.config.ModConfig;
 
 import java.nio.file.Path;
 
-public class PlatformUtilsImpl {
+public class UtilImpl {
 
 	public static String platformName() {
 		return FabricLoader.getInstance().isModLoaded("quilt_loader") ? "Quilt" : "Fabric";

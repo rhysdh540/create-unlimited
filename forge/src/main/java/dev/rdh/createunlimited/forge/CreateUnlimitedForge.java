@@ -9,12 +9,15 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(CreateUnlimited.ID)
 public class CreateUnlimitedForge {
+
     public CreateUnlimitedForge() {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get()
 			.getModEventBus();
 		IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
 
 		forgeEventBus.register(Events.ClientModBusEvents.class);
+		forgeEventBus.addListener(Events::registerCommands);
+		modEventBus.addListener(Events.ClientModBusEvents::onLoadComplete);
 		CreateUnlimited.init();
     }
 }

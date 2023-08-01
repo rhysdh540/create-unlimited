@@ -22,7 +22,7 @@ import java.util.List;
 #if MC_1_19_2
 @SuppressWarnings("UnstableApiUsage")
 #endif
-public class PlatformUtilsImpl {
+public class UtilImpl {
 
 	public static List<LiteralArgumentBuilder<CommandSourceStack>> commands = new ArrayList<>();
 

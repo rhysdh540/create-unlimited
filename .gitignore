@@ -17,3 +17,6 @@ classes/
 .vscode
 .settings
 *.launch
+
+build.properties
+common/src/main/resources/*.accesswidener
