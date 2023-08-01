@@ -15,7 +15,11 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 
 import net.minecraft.resources.ResourceLocation;
 
+#if PRE_CURRENT_MC_1_19_2
 import net.minecraftforge.api.ModLoadingContext;
+#elif POST_CURRENT_MC_1_20_1
+import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
+#endif
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 
@@ -36,7 +40,11 @@ public class PlatformUtilsImpl {
 	}
 
 	public static void registerConfig(String id, ModConfig.Type type, IConfigSpec<?> spec, String fileName) {
+		#if PRE_CURRENT_MC_1_19_2
 		ModLoadingContext.registerConfig(id, type, spec, fileName);
+		#elif POST_CURRENT_MC_1_20_1
+		ForgeConfigRegistry.INSTANCE.register(id, type, spec, fileName);
+		#endif
 	}
 
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
