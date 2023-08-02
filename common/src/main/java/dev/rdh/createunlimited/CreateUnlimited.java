@@ -22,7 +22,7 @@ public class CreateUnlimited {
 
     public static void init() {
 		LOGGER.info("{} v{} initializing! Create version: {} on platform: {}", NAME, VERSION, Create.VERSION, Util.platformName());
-
+		asd
 		EnumArgument.init();
 		Util.registerConfig(ID, ModConfig.Type.SERVER, CUConfig.SPEC, "createunlimited.toml");
 		CUConfig.init(Util.getConfigDirectory().resolve("createunlimited-IGNOREME.toml"));
