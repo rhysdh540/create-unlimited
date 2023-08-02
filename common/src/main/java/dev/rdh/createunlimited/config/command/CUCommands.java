@@ -192,7 +192,7 @@ public class CUCommands {
 			)
 		);
 	}
-
+	@SuppressWarnings("unchecked")
 	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.EnumValue<T> value) {
 		category.then(literal(field.getName())
 			.then(argument("value", EnumArgument.enumArg(value.get().getClass(), true))
