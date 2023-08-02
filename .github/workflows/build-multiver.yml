@@ -85,6 +85,8 @@ jobs:
             - name: send build failure message to discord
               if: failure()
               uses: ilshidur/action-discord@master
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               with:
                   args: 'Build failed for 1.20.1!'
 
@@ -151,5 +153,7 @@ jobs:
             - name: send build failure message to discord
               if: failure()
               uses: ilshidur/action-discord@master
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               with:
                   args: 'Build failed for 1.20.1!'
