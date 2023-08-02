@@ -1,4 +1,4 @@
-package dev.rdh.createunlimited.util;
+package dev.rdh.createunlimited;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 

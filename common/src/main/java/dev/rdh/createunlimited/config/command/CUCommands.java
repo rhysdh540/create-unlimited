@@ -10,7 +10,7 @@ import com.mojang.brigadier.context.CommandContext;
 
 import com.simibubi.create.foundation.utility.Components;
 
-import dev.rdh.createunlimited.util.Util;
+import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfig;
 

@@ -6,8 +6,6 @@ import dev.rdh.createunlimited.CreateUnlimited;
 
 import dev.rdh.createunlimited.config.CUConfig;
 
-import dev.rdh.createunlimited.util.forge.UtilImpl;
-
 import net.minecraft.commands.CommandSourceStack;
 
 import net.minecraftforge.api.distmarker.Dist;

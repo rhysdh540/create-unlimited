@@ -15,7 +15,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
-import dev.rdh.createunlimited.util.Util;
+import dev.rdh.createunlimited.Util;
 
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.SharedSuggestionProvider;
