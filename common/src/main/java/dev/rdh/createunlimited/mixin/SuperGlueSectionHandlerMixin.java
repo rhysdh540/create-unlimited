@@ -15,18 +15,21 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Set;
 
+/**
+ * code for client-side modification
+ */
 @Mixin(SuperGlueSelectionHandler.class)
 public class SuperGlueSectionHandlerMixin {
 	@ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24), remap = false)
 	private double modifyMaxSuperGlueDistance(double original) {
 		return CUConfig.maxGlueConnectionRange.get();
 	}
-	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
-	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
-		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
-	}
-	@Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
-	private boolean modifyNeedsConnectedClick(Set<BlockPos> instance, Object o) {
-		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
-	}
+//	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
+//	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
+//		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
+//	}
+//	@Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
+//	private boolean modifyNeedsConnectedClick(Set<BlockPos> instance, Object o) {
+//		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
+//	}
 }

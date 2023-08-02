@@ -41,17 +41,12 @@ public class TrackPlacementMixin {
 	@Shadow static int hoveringAngle;
 	@Shadow static ItemStack lastItem;
 	/**
-	 * This method is overwritten to remove the checks for placing track blocks. (you can turn them back on but really why would you if you downloaded this mod)
 	 * @author idk whoever wrote the original method
 	 * @reason Remove checks for placing track blocks
 	 */
 	@Overwrite
 	public static PlacementInfo tryConnect(Level level, Player player, BlockPos pos2, BlockState state2, ItemStack stack, boolean girder, boolean maximiseTurn) {
-		boolean modEnabled = switch(CUConfig.placementChecks.get()) {
-			case ON -> true;
-			case OFF -> false;
-			case SURVIVAL_ONLY -> !player.isCreative();
-		};
+		boolean modEnabled = CUConfig.placementChecks.get().isEnabled(player);
 
 		Vec3 lookVec = player.getLookAngle();
 		int lookAngle = (int) (22.5 + AngleHelper.deg(Mth.atan2(lookVec.z, lookVec.x)) % 360) / 8;

@@ -11,7 +11,10 @@
     "SuperGlueSectionHandlerMixin",
     "SuperGlueSelectionPacketMixin",
     "TrackEdgeMixin",
-    "TrackPlacementMixin"
+    "TrackPlacementMixin",
+    "TrainMixin",
+    "TrainRelocatorMixin",
+    "accessor.PlacementInfoAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

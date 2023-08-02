@@ -15,14 +15,18 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Set;
 
+/**
+ * code for server-side modification
+ */
 @Mixin(SuperGlueSelectionPacket.class)
 public class SuperGlueSelectionPacketMixin {
 	@ModifyConstant(method = "lambda$handle$0", constant = @Constant(doubleValue = 25), remap = false)
 	private double modifyMaxSuperGlueDistance(double original) {
 		return CUConfig.maxGlueConnectionRange.get();
 	}
-	@Redirect(method = "lambda$handle$0", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z", remap = false), remap = false)
-	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
-		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
-	}
+	//todo make this work
+//	@Redirect(method = "lambda$handle$0", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z", remap = false), remap = false)
+//	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
+//		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
+//	}
 }

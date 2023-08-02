@@ -7,9 +7,6 @@ import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-/**
- * This interface is used to access private fields in {@link PlacementInfo PlacementInfo}.
- */
 @Mixin(PlacementInfo.class)
 public interface PlacementInfoAccessor {
 	@Accessor(value = "curve", remap = false)
