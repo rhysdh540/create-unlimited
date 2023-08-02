@@ -2,6 +2,26 @@ name: build (multiversion branch)
 on: [ pull_request, push ]
 
 jobs:
+    webhook-message:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get branch name
+              id: get_branch
+              run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+            - name: send building message to discord
+              if: "!startsWith(github.event.head_commit.message, '[skip]')"
+              uses: realRobotix/action-discord-notifier@release-master
+              with:
+                  webhook: ${{ secrets.DISCORD_WEBHOOK }}
+                  message-title: Building mod from branch ${{ steps.get_branch.outputs.branch }}
+
+            - name: send not building message to discord
+              if: "startsWith(github.event.head_commit.message, '[skip]')"
+              uses: realRobotix/action-discord-notifier@release-master
+              with:
+                  webhook: ${{ secrets.DISCORD_WEBHOOK }}
+                  message-title: Build skipped for branch ${{ steps.get_branch.outputs.branch }}
     build_1_19:
         if: "!startsWith(github.event.head_commit.message, '[skip]')"
         strategy:
@@ -45,12 +65,19 @@ jobs:
                   name: cu-artifacts-fabric
                   path: fabric/build/libs/*.jar
 
-            - name: upload merged build artifact
+            - name: upload merged build artifact to github
               uses: actions/upload-artifact@v3
               with:
                   name: cu-artifacts-merged
                   path: |
                       build/libs/merged/*.jar
+
+            - name: upload merged build artifact to discord
+              uses: sinshutu/upload-to-discord@master
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+              with:
+                  args: build/libs/merged/*.jar
     build_1_20:
         if: "!startsWith(github.event.head_commit.message, '[skip]')"
         strategy:
@@ -95,9 +122,16 @@ jobs:
                     name: cu-artifacts-fabric
                     path: fabric/build/libs/*.jar
 
-            -   name: upload merged build artifact
+            -   name: upload merged build artifact to github
                 uses: actions/upload-artifact@v3
                 with:
                     name: cu-artifacts-merged
                     path: |
                         build/libs/merged/*.jar
+
+            - name: upload merged build artifact to discord
+              uses: sinshutu/upload-to-discord@master
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+              with:
+                  args: build/libs/merged/*.jar
