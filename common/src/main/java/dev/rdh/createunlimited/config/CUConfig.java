@@ -21,22 +21,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
+@SuppressWarnings({"SameParameterValue", "unused"})
 public class CUConfig {
 	private CUConfig() { throw new UnsupportedOperationException(); }
 	public static final ForgeConfigSpec SPEC;
 	public static ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
 	public enum PlacementCheck {
-		ON(player -> true),
-		SURVIVAL_ONLY(player -> !player.isCreative()),
-		OFF(player -> false);
+		ON(p -> true),
+		SURVIVAL_ONLY(p -> !p.isCreative()),
+		OFF(p -> false);
 
 		final Predicate<Player> enabled;
 
 		PlacementCheck(Predicate<Player> enabled) {
 			this.enabled = enabled;
 		}
-		public boolean isEnabled(Player player) {
+		public boolean isEnabledFor(Player player) {
 			return enabled.test(player);
 		}
 	}

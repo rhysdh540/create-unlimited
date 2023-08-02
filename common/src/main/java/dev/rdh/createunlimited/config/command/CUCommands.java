@@ -34,26 +34,6 @@ import static net.minecraft.commands.Commands.literal;
 import static net.minecraft.network.chat.Component.nullToEmpty;
 
 public class CUCommands {
-	/**
-	 * Builds and registers the {@code /createunlimited} command, that changes configuration values.
-	 * <p>
-	 * Base command: {@code /createunlimited}
-	 * <br>
-	 * Subcommands:
-	 * <ul>
-	 *     <li>{@code /createunlimited <category> <config> get} - Gets the value of the config</li>
-	 *     <li>{@code /createunlimited <category> <config> set <value>} - Sets the value of the config
-	 *     <ul>
-	 *         <li>Requires operator permissions on servers.</li>
-	 *     </ul></li>
-	 *     <li>{@code /createunlimited <category> <config> reset} - Resets the value of the config to its default value
-	 *     <ul>
-	 *         <li>Requires operator permissions on servers.</li>
-	 *     </ul></li>
-	 * </ul>
-	 * This command uses Mojang's {@link com.mojang.brigadier Brigadier} library to parse arguments and send them to the server.
-	 * @see <a href="https://github.com/Mojang/brigadier">Brigadier on GitHub</a>
-	 */
 	public static void registerConfigCommand() {
 		List<MutableComponent> links = List.of(
 			link("https://github.com/rhysdh540/create-unlimited", "GitHub", ChatFormatting.GRAY),
@@ -72,7 +52,7 @@ public class CUCommands {
 			return Command.SINGLE_SUCCESS;
 		});
 
-		LiteralArgumentBuilder<CommandSourceStack> category = base;
+		LiteralArgumentBuilder<CommandSourceStack> category = null;
 
 		for (Field field : CUConfig.class.getDeclaredFields()) {
 			//skip if not config value or string
@@ -92,6 +72,7 @@ public class CUCommands {
 
 				continue;
 			}
+			if(category == null) category = base;
 
 			// get config as ConfigValue
 			ForgeConfigSpec.ConfigValue<?> value;
@@ -162,6 +143,10 @@ public class CUCommands {
 			.then(argument("value", BoolArgumentType.bool()).requires(CUCommands::perms)
 				.executes(context -> {
 					boolean set = BoolArgumentType.getBool(context, "value");
+					if(set == value.get()) {
+						error("Value is already set to " + set, context);
+						return 0;
+					}
 					value.set(set);
 					message(field.getName() + " set to: " + set, context);
 					return Command.SINGLE_SUCCESS;
@@ -175,6 +160,10 @@ public class CUCommands {
 			.then(argument("value", IntegerArgumentType.integer()).requires(CUCommands::perms)
 				.executes(context -> {
 					int set = IntegerArgumentType.getInteger(context, "value");
+					if(set == value.get()) {
+						error("Value is already set to " + set, context);
+						return 0;
+					}
 					value.set(set);
 					message(field.getName() + " set to: " + set, context);
 					return Command.SINGLE_SUCCESS;
@@ -188,6 +177,10 @@ public class CUCommands {
 			.then(argument("value", DoubleArgumentType.doubleArg()).requires(CUCommands::perms)
 				.executes(context -> {
 					double set = DoubleArgumentType.getDouble(context, "value");
+					if(set == value.get()) {
+						error("Value is already set to " + set, context);
+						return 0;
+					}
 					value.set(set);
 					message(field.getName() + " set to: " + set, context);
 					return Command.SINGLE_SUCCESS;
@@ -201,6 +194,10 @@ public class CUCommands {
 			.then(argument("value", EnumArgument.enumArg(value.get().getClass(), true)).requires(CUCommands::perms)
 				.executes(context -> {
 					T set = (T) context.getArgument("value", value.get().getClass());
+					if(set == value.get()) {
+						error("Value is already set to " + set.name().toLowerCase(), context);
+						return 0;
+					}
 					value.set(set);
 					message(field.getName() + " set to: " + set.name().toLowerCase(), context);
 					return Command.SINGLE_SUCCESS;
