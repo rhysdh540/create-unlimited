@@ -2,14 +2,13 @@ name: build (multiversion branch)
 on: [ pull_request, push ]
 
 jobs:
-    build:
+    build_1_19:
         if: "!startsWith(github.event.head_commit.message, '[skip]')"
         strategy:
             matrix:
                 java: [ 17 ]
         runs-on: ubuntu-latest
         steps:
-
             - name: steal code from repository
               uses: actions/checkout@v3
 
@@ -31,11 +30,8 @@ jobs:
             - name: give gradle permission to murder github servers
               run: chmod +x ./gradlew
 
-            - name: gradle murders github servers (1.19.2)
+            - name: gradle murders github servers
               run: ./gradlew assemble -PmcVer="1.19.2"
-
-            - name: gradle murders github servers (1.20.1)
-              run: ./gradlew assemble -PmcVer="1.20.1"
 
             - name: upload forge build artifacts
               uses: actions/upload-artifact@v3
@@ -55,3 +51,53 @@ jobs:
                   name: cu-artifacts-merged
                   path: |
                       build/libs/merged/*.jar
+    build_1_20:
+        if: "!startsWith(github.event.head_commit.message, '[skip]')"
+        strategy:
+            matrix:
+                java: [ 17 ]
+        runs-on: ubuntu-latest
+        steps:
+
+            -   name: steal code from repository
+                uses: actions/checkout@v3
+
+            -   name: setup jdk ${{ matrix.java }}
+                uses: actions/setup-java@v1
+                with:
+                    java-version: ${{ matrix.java }}
+
+            -   name: cache gradle
+                uses: actions/cache@v3
+                with:
+                    path: |
+                        ~/.gradle/caches
+                        ~/.gradle/loom-cache
+                        ~/.gradle/wrapper
+                    key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties') }}
+                    restore-keys: ${{ runner.os }}-gradle
+
+            -   name: give gradle permission to murder github servers
+                run: chmod +x ./gradlew
+
+            -   name: gradle murders github servers
+                run: ./gradlew assemble -PmcVer="1.20.1"
+
+            -   name: upload forge build artifacts
+                uses: actions/upload-artifact@v3
+                with:
+                    name: cu-artifacts-forge
+                    path: forge/build/libs/*.jar
+
+            -   name: upload fabric build artifacts
+                uses: actions/upload-artifact@v3
+                with:
+                    name: cu-artifacts-fabric
+                    path: fabric/build/libs/*.jar
+
+            -   name: upload merged build artifact
+                uses: actions/upload-artifact@v3
+                with:
+                    name: cu-artifacts-merged
+                    path: |
+                        build/libs/merged/*.jar
