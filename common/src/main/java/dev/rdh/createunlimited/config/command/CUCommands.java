@@ -226,6 +226,7 @@ public class CUCommands {
 		#else
 			#error "Unsupported Minecraft version"
 		#endif
+
 	}
 	private static void error(String message, CommandContext<CommandSourceStack> context) {
 		context.getSource().sendFailure(nullToEmpty(message));
