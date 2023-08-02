@@ -13,11 +13,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+
+import dev.rdh.createunlimited.CreateUnlimited;
+import dev.rdh.createunlimited.util.Util;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +41,10 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 		(found, constants) -> Component.literal(String.format("Invalid enum value '%s', expected one of: %s", found, constants)));
 	private final Class<T> enumClass;
 	private final boolean lowercase;
+
+	public static void init() {
+		Util.registerArgument("enumargument", EnumArgument.class, new EnumArgument.Info(), CreateUnlimited.asResource("enumargument"));
+	}
 
 	public static <R extends Enum<R>> EnumArgument<R> enumArg(Class<R> enumClass, boolean lowercase) {
 		return new EnumArgument<>(enumClass, lowercase);
@@ -90,7 +100,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 		}
 
 		@Override
-		public Template unpack(EnumArgument<T> argument) {
+		public @NotNull Template unpack(EnumArgument<T> argument) {
 			return new Template(argument.enumClass, argument.lowercase);
 		}
 
@@ -104,12 +114,12 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 			}
 
 			@Override
-			public EnumArgument<T> instantiate(CommandBuildContext ctx) {
+			public @NotNull EnumArgument<T> instantiate(@NotNull CommandBuildContext ctx) {
 				return new EnumArgument<>(this.enumClass, this.lowercase);
 			}
 
 			@Override
-			public ArgumentTypeInfo<EnumArgument<T>, ?> type() {
+			public @NotNull ArgumentTypeInfo<EnumArgument<T>, ?> type() {
 				return Info.this;
 			}
 		}

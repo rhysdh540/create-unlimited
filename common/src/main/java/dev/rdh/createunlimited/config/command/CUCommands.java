@@ -72,7 +72,8 @@ public class CUCommands {
 			return Command.SINGLE_SUCCESS;
 		});
 
-		LiteralArgumentBuilder<CommandSourceStack> category = null;
+		LiteralArgumentBuilder<CommandSourceStack> category = base;
+
 		for (Field field : CUConfig.class.getDeclaredFields()) {
 			//skip if not config value or string
 			if (!ForgeConfigSpec.ConfigValue.class.isAssignableFrom(field.getType()) && field.getType() != String.class) continue;
@@ -83,6 +84,7 @@ public class CUCommands {
 				category = literal(field.getName());
 
 				//add description for category
+				assert base != null;
 				base.then(literal(field.getName()).executes(context -> {
 					message(CUConfig.comments.get(field.getName()), context);
 					return Command.SINGLE_SUCCESS;
@@ -90,8 +92,6 @@ public class CUCommands {
 
 				continue;
 			}
-			if(category == null)
-				category = base; // if no category, append everything to base
 
 			// get config as ConfigValue
 			ForgeConfigSpec.ConfigValue<?> value;
@@ -109,15 +109,15 @@ public class CUCommands {
 			if (value instanceof ForgeConfigSpec.BooleanValue bValue)
 				setBoolean(category, field, bValue);
 
-				// set for enums
+			// set for enums
 			else if (value.get() instanceof Enum<?>)
 				setEnum(category, field, (ForgeConfigSpec.EnumValue<? extends Enum<?>>) value);
 
-				// set for int
+			// set for int
 			else if (value instanceof ForgeConfigSpec.IntValue iValue)
 				setInt(category, field, iValue);
 
-				// set for double
+			// set for double
 			else if (value instanceof ForgeConfigSpec.DoubleValue dValue)
 				setDouble(category, field, dValue);
 
@@ -131,6 +131,9 @@ public class CUCommands {
 		return source.hasPermission(4) || !source.getLevel().getServer().isDedicatedServer();
 	}
 
+	private static boolean perms(Object o) {
+		return o instanceof CommandSourceStack source && perms(source);
+	}
 
 	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.ConfigValue<T> value) {
 		category.then(literal(field.getName())
@@ -195,7 +198,7 @@ public class CUCommands {
 	@SuppressWarnings("unchecked")
 	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.EnumValue<T> value) {
 		category.then(literal(field.getName())
-			.then(argument("value", EnumArgument.enumArg(value.get().getClass(), true))
+			.then(argument("value", EnumArgument.enumArg(value.get().getClass(), true)).requires(CUCommands::perms)
 				.executes(context -> {
 					T set = (T) context.getArgument("value", value.get().getClass());
 					value.set(set);
