@@ -22,6 +22,8 @@ jobs:
               with:
                   webhook: ${{ secrets.DISCORD_WEBHOOK }}
                   message-title: Build skipped for branch ${{ steps.get_branch.outputs.branch }}
+
+
     build_1_19:
         if: "!startsWith(github.event.head_commit.message, '[skip]')"
         strategy:
@@ -73,11 +75,20 @@ jobs:
                       build/libs/merged/*.jar
 
             - name: upload merged build artifact to discord
+              if: success()
               uses: sinshutu/upload-to-discord@master
               env:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               with:
                   args: build/libs/merged/*.jar
+
+            - name: send build failure message to discord
+              if: failure()
+              uses: ilshidur/action-discord@master
+              with:
+                  args: 'Build failed for 1.20.1!'
+
+
     build_1_20:
         if: "!startsWith(github.event.head_commit.message, '[skip]')"
         strategy:
@@ -130,8 +141,15 @@ jobs:
                         build/libs/merged/*.jar
 
             - name: upload merged build artifact to discord
+              if: success()
               uses: sinshutu/upload-to-discord@master
               env:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               with:
                   args: build/libs/merged/*.jar
+
+            - name: send build failure message to discord
+              if: failure()
+              uses: ilshidur/action-discord@master
+              with:
+                  args: 'Build failed for 1.20.1!'
