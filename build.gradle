@@ -84,8 +84,6 @@ subprojects { p ->
 
         annotationProcessor "systems.manifold:manifold-preprocessor:${rootProject.manifold_version}"
 
-		api(include "systems.manifold:manifold-ext:${rootProject.manifold_version}")
-
         // Dev Env Optimizations
         //// https://www.cursemaven.com/
         //// https://docs.modrinth.com/docs/tutorials/maven/
