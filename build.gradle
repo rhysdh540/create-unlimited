@@ -53,15 +53,20 @@ subprojects { p ->
     }
 
     configurations {
-        shade // I recommend using "addJar" instead of "shade"
-        addJar
+        addJarCompile
+		addJarRuntime
+		shade
 
 		if (p != project(":common")) {
-			include.extendsFrom addJar
+			include.extendsFrom addJarCompile
+			include.extendsFrom addJarRuntime
 		}
 
-        implementation.extendsFrom shade
-        modImplementation.extendsFrom addJar
+        compileOnly.extendsFrom addJarCompile
+		annotationProcessor.extendsFrom addJarCompile
+        implementation.extendsFrom addJarRuntime
+
+		implementation.extendsFrom shade
     }
 
 	repositories {
@@ -82,7 +87,10 @@ subprojects { p ->
 			it.officialMojangMappings { nameSyntheticMembers = false }
 		})
 
-        annotationProcessor "systems.manifold:manifold-preprocessor:${rootProject.manifold_version}"
+        addJarCompile "systems.manifold:manifold-preprocessor:${rootProject.manifold_version}"
+		addJarCompile "systems.manifold:manifold-ext:${rootProject.manifold_version}"
+		addJarRuntime "systems.manifold:manifold-ext-rt:${rootProject.manifold_version}"
+		addJarRuntime "systems.manifold:manifold-rt:${rootProject.manifold_version}"
 
         // Dev Env Optimizations
         //// https://www.cursemaven.com/
