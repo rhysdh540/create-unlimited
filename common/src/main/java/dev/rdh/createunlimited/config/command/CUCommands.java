@@ -14,6 +14,8 @@ import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfig;
 
+import manifold.ext.rt.api.auto;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 
@@ -24,7 +26,7 @@ import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.*;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -45,7 +47,7 @@ public class CUCommands {
 		LiteralArgumentBuilder<CommandSourceStack> base = literal(CreateUnlimited.ID).executes(context -> {
 			message(CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:", context);
 
-			MutableComponent link = (MutableComponent) CommonComponents.EMPTY;
+			auto link = (MutableComponent) CommonComponents.EMPTY;
 			links.forEach(a -> link.append(a).append(Component.literal(" ")));
 
 			message(link, context);
@@ -54,9 +56,9 @@ public class CUCommands {
 
 		LiteralArgumentBuilder<CommandSourceStack> category = null;
 
-		for (Field field : CUConfig.class.getDeclaredFields()) {
+		for (var field : CUConfig.class.getDeclaredFields()) {
 			//skip if not config value or string
-			if (!ForgeConfigSpec.ConfigValue.class.isAssignableFrom(field.getType()) && field.getType() != String.class) continue;
+			if (!ConfigValue.class.isAssignableFrom(field.getType()) && field.getType() != String.class) continue;
 
 			//change category if needed
 			if (field.getType() == String.class) {
@@ -75,9 +77,9 @@ public class CUCommands {
 			if(category == null) category = base;
 
 			// get config as ConfigValue
-			ForgeConfigSpec.ConfigValue<?> value;
+			ConfigValue<?> value;
 			try {
-				value = (ForgeConfigSpec.ConfigValue<?>) field.get(null);
+				value = (ConfigValue<?>) field.get(null);
 			} catch (IllegalAccessException | ClassCastException e) {
 				CreateUnlimited.LOGGER.error("Failed to get config value for " + field.getName(), e);
 				continue;
@@ -87,19 +89,19 @@ public class CUCommands {
 			gdr(category, field, value);
 
 			//set for boolean
-			if (value instanceof ForgeConfigSpec.BooleanValue bValue)
+			if (value instanceof BooleanValue bValue)
 				setBoolean(category, field, bValue);
 
 			// set for enums
 			else if (value.get() instanceof Enum<?>)
-				setEnum(category, field, (ForgeConfigSpec.EnumValue<? extends Enum<?>>) value);
+				setEnum(category, field, (EnumValue<? extends Enum<?>>) value);
 
 			// set for int
-			else if (value instanceof ForgeConfigSpec.IntValue iValue)
+			else if (value instanceof IntValue iValue)
 				setInt(category, field, iValue);
 
 			// set for double
-			else if (value instanceof ForgeConfigSpec.DoubleValue dValue)
+			else if (value instanceof DoubleValue dValue)
 				setDouble(category, field, dValue);
 
 		}
@@ -116,7 +118,7 @@ public class CUCommands {
 		return o instanceof CommandSourceStack source && perms(source);
 	}
 
-	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.ConfigValue<T> value) {
+	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ConfigValue<T> value) {
 		category.then(literal(field.getName())
 			.executes(context -> {
 				message(field.getName() + ": " + CUConfig.comments.get(field.getName()), context);
@@ -138,11 +140,11 @@ public class CUCommands {
 		);
 	}
 
-	private static void setBoolean(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.BooleanValue value) {
+	private static void setBoolean(LiteralArgumentBuilder<CommandSourceStack> category, Field field, BooleanValue value) {
 		category.then(literal(field.getName())
 			.then(argument("value", BoolArgumentType.bool()).requires(CUCommands::perms)
 				.executes(context -> {
-					boolean set = BoolArgumentType.getBool(context, "value");
+					auto set = BoolArgumentType.getBool(context, "value");
 					if(set == value.get()) {
 						error("Value is already set to " + set, context);
 						return 0;
@@ -155,11 +157,11 @@ public class CUCommands {
 		);
 	}
 
-	private static void setInt(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.IntValue value) {
+	private static void setInt(LiteralArgumentBuilder<CommandSourceStack> category, Field field, IntValue value) {
 		category.then(literal(field.getName())
 			.then(argument("value", IntegerArgumentType.integer()).requires(CUCommands::perms)
 				.executes(context -> {
-					int set = IntegerArgumentType.getInteger(context, "value");
+					auto set = IntegerArgumentType.getInteger(context, "value");
 					if(set == value.get()) {
 						error("Value is already set to " + set, context);
 						return 0;
@@ -172,11 +174,11 @@ public class CUCommands {
 		);
 	}
 
-	private static void setDouble(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.DoubleValue value) {
+	private static void setDouble(LiteralArgumentBuilder<CommandSourceStack> category, Field field, DoubleValue value) {
 		category.then(literal(field.getName())
 			.then(argument("value", DoubleArgumentType.doubleArg()).requires(CUCommands::perms)
 				.executes(context -> {
-					double set = DoubleArgumentType.getDouble(context, "value");
+					auto set = DoubleArgumentType.getDouble(context, "value");
 					if(set == value.get()) {
 						error("Value is already set to " + set, context);
 						return 0;
@@ -188,12 +190,13 @@ public class CUCommands {
 			)
 		);
 	}
+
 	@SuppressWarnings("unchecked")
-	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ForgeConfigSpec.EnumValue<T> value) {
+	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, Field field, EnumValue<T> value) {
 		category.then(literal(field.getName())
 			.then(argument("value", EnumArgument.enumArg(value.get().getClass(), true)).requires(CUCommands::perms)
 				.executes(context -> {
-					T set = (T) context.getArgument("value", value.get().getClass());
+					auto set = (T) context.getArgument("value", value.get().getClass());
 					if(set == value.get()) {
 						error("Value is already set to " + set.name().toLowerCase(), context);
 						return 0;
@@ -226,7 +229,6 @@ public class CUCommands {
 		#else
 			#error "Unsupported Minecraft version"
 		#endif
-
 	}
 	private static void error(String message, CommandContext<CommandSourceStack> context) {
 		context.getSource().sendFailure(nullToEmpty(message));

@@ -31,34 +31,33 @@ subprojects { p ->
     apply plugin: "dev.architectury.loom"
 	apply plugin: "io.github.juuxel.loom-quiltflower"
 
-    loom { silentMojangMappingsLicense() }
+	def froge = p == project(":forge")
+	def fabric = p == project(":fabric")
+	def common = p == project(":common")
 
-    def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
+	def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
 
-    if (awFile.exists()) {
-        if (p != project(":forge")) {
-            loom {
-                accessWidenerPath = awFile
-            }
-        } else {
-            loom {
-                accessWidenerPath = awFile
+    loom {
+		silentMojangMappingsLicense()
 
-                forge {
-                    convertAccessWideners = true
-                    extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-                }
-            }
-        }
-    }
+		if(awFile.exists()) {
+			accessWidenerPath = awFile
+
+			if(froge) {
+				forge {
+					convertAccessWideners = true
+					extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+				}
+			}
+		}
+	}
 
     configurations {
         addJarCompile
 		addJarRuntime
 		shade
 
-		if (p != project(":common")) {
-			include.extendsFrom addJarCompile
+		if (!common) {
 			include.extendsFrom addJarRuntime
 		}
 
@@ -90,13 +89,14 @@ subprojects { p ->
         addJarCompile "systems.manifold:manifold-preprocessor:${rootProject.manifold_version}"
 		addJarCompile "systems.manifold:manifold-ext:${rootProject.manifold_version}"
 		addJarRuntime "systems.manifold:manifold-ext-rt:${rootProject.manifold_version}"
-		addJarRuntime "systems.manifold:manifold-rt:${rootProject.manifold_version}"
+        addJarRuntime "systems.manifold:manifold-rt:${rootProject.manifold_version}"
+        include "systems.manifold:manifold-util:${rootProject.manifold_version}"
 
         // Dev Env Optimizations
         //// https://www.cursemaven.com/
         //// https://docs.modrinth.com/docs/tutorials/maven/
 
-        if (p == project(":fabric")) {
+        if (fabric) {
             if (rootProject.hasProperty("lazydfu")) {
 				modRuntimeOnly "maven.modrinth:lazydfu:${rootProject.lazydfu}"
             }
@@ -105,7 +105,7 @@ subprojects { p ->
             }
         }
 
-        if (p == project(":forge")) {
+        if (froge) {
             if (rootProject.hasProperty("bmb")) {
 				modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
             }

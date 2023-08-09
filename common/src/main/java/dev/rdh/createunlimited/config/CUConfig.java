@@ -5,12 +5,15 @@ import com.electronwill.nightconfig.core.io.WritingMode;
 
 import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
 
+import manifold.ext.rt.api.auto;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
 import net.minecraft.world.entity.player.Player;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.*;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
@@ -25,7 +28,7 @@ import java.util.function.Predicate;
 public class CUConfig {
 	private CUConfig() { throw new UnsupportedOperationException(); }
 	public static final ForgeConfigSpec SPEC;
-	public static ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+	public static auto BUILDER = new Builder();
 
 	public enum PlacementCheck {
 		ON(p -> true),
@@ -64,22 +67,22 @@ public class CUConfig {
 	}
 
 	public static String trains;
-	public static ForgeConfigSpec.EnumValue<PlacementCheck> placementChecks;
-	public static ForgeConfigSpec.BooleanValue extendedDriving;
-	public static ForgeConfigSpec.DoubleValue extendedDrivingValue;
-	public static ForgeConfigSpec.IntValue maxTrainRelocationDistance;
-	public static ForgeConfigSpec.DoubleValue maxAllowedStress;
+	public static EnumValue<PlacementCheck> placementChecks;
+	public static BooleanValue extendedDriving;
+	public static DoubleValue extendedDrivingValue;
+	public static IntValue maxTrainRelocationDistance;
+	public static DoubleValue maxAllowedStress;
 
 	public static String glue;
-	public static ForgeConfigSpec.IntValue maxGlueConnectionRange;
-//	public static ForgeConfigSpec.BooleanValue physicalBlockConnection; // todo make this work
+	public static IntValue maxGlueConnectionRange;
+//	public static BooleanValue physicalBlockConnection; // todo make this work
 
 //	public static String extendo;
-//	public static ForgeConfigSpec.IntValue singleExtendoGripRange;
-//	public static ForgeConfigSpec.IntValue doubleExtendoGripRange;
+//	public static IntValue singleExtendoGripRange;
+//	public static IntValue doubleExtendoGripRange;
 
 	public static String copycat;
-	public static ForgeConfigSpec.BooleanValue allowAllCopycatBlocks;
+	public static BooleanValue allowAllCopycatBlocks;
 
 	static {
 		BUILDER.comment("Create Unlimited Config").push("CreateUnlimited");
@@ -120,19 +123,19 @@ public class CUConfig {
 	}
 
 	// helper methods for initializing config values
-	private static ForgeConfigSpec.BooleanValue b(boolean normal, String path) {
+	private static BooleanValue b(boolean normal, String path) {
 		return BUILDER.comment(comments.get(path)).define(path, normal);
 	}
 
-	private static ForgeConfigSpec.IntValue i(int normal, int min, String path) {
+	private static IntValue i(int normal, int min, String path) {
 		return BUILDER.comment(comments.get(path)).defineInRange(path, normal, min, Integer.MAX_VALUE);
 	}
 
-	private static ForgeConfigSpec.DoubleValue d(double normal, double min, String path) {
+	private static DoubleValue d(double normal, double min, String path) {
 		return d(normal, min, Double.MAX_VALUE, path);
 	}
 
-	private static ForgeConfigSpec.DoubleValue d(double normal, double min, double max, String path) {
+	private static DoubleValue d(double normal, double min, double max, String path) {
 		return BUILDER.comment(comments.get(path)).defineInRange(path, normal, min, max);
 	}
 
