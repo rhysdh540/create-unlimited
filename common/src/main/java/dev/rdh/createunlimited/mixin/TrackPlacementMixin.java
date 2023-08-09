@@ -9,9 +9,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfig;
-import dev.rdh.createunlimited.mixin.accessor.PlacementInfoAccessor;
 
-import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
 import manifold.ext.rt.api.Jailbreak;
 import manifold.ext.rt.api.auto;
 import net.minecraft.core.BlockPos;
@@ -389,7 +387,7 @@ public class TrackPlacementMixin {
 							count - Math.min(isTrack ? tracks - foundTracks : pavement - foundPavement, count);
 						if (i == inv.selected)
 							stackInSlot.setTag(null);
-						ItemStack newItem = ItemHandlerHelper.copyStackWithSize(stackInSlot, remainingItems);
+						ItemStack newItem = Util.copyStackWithSize(stackInSlot, remainingItems);
 						if (offhand)
 							player.setItemInHand(InteractionHand.OFF_HAND, newItem);
 						else
