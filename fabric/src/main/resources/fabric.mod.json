@@ -6,19 +6,16 @@
   "description": "Remove all the limits!",
   "authors": [ "rdh" ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/rhysdh540/createunlimited",
+    "sources": "https://github.com/rhysdh540/createunlimited",
+    "issues": "https://github.com/rhysdh540/createunlimited/issues"
   },
   "license": "GPL-3.0",
   "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "dev.rdh.createunlimited.fabric.CreateUnlimitedFabric"
-    ],
-    "modmenu": [
-      "dev.rdh.createunlimited.fabric.ModMenuIntegration"
-    ]
+    "main": [ "dev.rdh.createunlimited.fabric.CreateUnlimitedFabric" ],
+    "modmenu": [ "dev.rdh.createunlimited.fabric.ModMenuIntegration" ]
   },
   "mixins": [
     "createunlimited.mixins.json",
@@ -29,5 +26,17 @@
     "fabricloader": ">=${fabric}",
     "fabric-api": ">=${fabric_api}",
     "create": ">=${create_fabric}"
+  },
+  "custom": {
+    "modmenu": {
+      "parent": {
+        "id": "create"
+      },
+      "links": {
+        "Modrinth": "https://modrinth.com/mod/create-unlimited",
+        "CurseForge": "https://curseforge.com/minecraft/mc-mods/create-unlimited",
+        "Discord": "https://discord.gg/2ubhDbMaZY"
+      }
+    }
   }
 }
