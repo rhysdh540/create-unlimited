@@ -11,6 +11,9 @@ import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfig;
 import dev.rdh.createunlimited.mixin.accessor.PlacementInfoAccessor;
 
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
+import manifold.ext.rt.api.Jailbreak;
+import manifold.ext.rt.api.auto;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -44,18 +47,19 @@ public class TrackPlacementMixin {
 	 * @reason Remove checks for placing track blocks
 	 */
 	@Overwrite
-	public static PlacementInfo tryConnect(Level level, Player player, BlockPos pos2, BlockState state2, ItemStack stack, boolean girder, boolean maximiseTurn) {
-		boolean modEnabled = CUConfig.placementChecks.get().isEnabledFor(player);
+	public static PlacementInfo tryConnect(Level level, Player player, BlockPos pos2, BlockState state2,
+										   ItemStack stack, boolean girder, boolean maximiseTurn) {
+		auto enabled = CUConfig.placementChecks.get().isEnabledFor(player);
 
 		Vec3 lookVec = player.getLookAngle();
 		int lookAngle = (int) (22.5 + AngleHelper.deg(Mth.atan2(lookVec.z, lookVec.x)) % 360) / 8;
 		int maxLength = AllConfigs.server().trains.maxTrackPlacementLength.get();
 
 		if (level.isClientSide && cached != null && pos2.equals(hoveringPos) && stack.equals(lastItem)
-				&& hoveringMaxed == maximiseTurn && lookAngle == hoveringAngle)
+			&& hoveringMaxed == maximiseTurn && lookAngle == hoveringAngle)
 			return cached;
 
-		PlacementInfo info = new PlacementInfo(TrackMaterial.fromItem(stack.getItem()));
+		@Jailbreak PlacementInfo info = new PlacementInfo(TrackMaterial.fromItem(stack.getItem()));
 		hoveringMaxed = maximiseTurn;
 		hoveringAngle = lookAngle;
 		hoveringPos = pos2;
@@ -65,9 +69,9 @@ public class TrackPlacementMixin {
 		ITrackBlock track = (ITrackBlock) state2.getBlock();
 		Pair<Vec3, Direction.AxisDirection> nearestTrackAxis = track.getNearestTrackAxis(level, pos2, state2, lookVec);
 		Vec3 axis2 = nearestTrackAxis.getFirst()
-				.scale(nearestTrackAxis.getSecond() == Direction.AxisDirection.POSITIVE ? -1 : 1);
+			.scale(nearestTrackAxis.getSecond() == Direction.AxisDirection.POSITIVE ? -1 : 1);
 		Vec3 normal2 = track.getUpNormal(level, pos2, state2)
-				.normalize();
+			.normalize();
 		Vec3 normedAxis2 = axis2.normalize();
 		Vec3 end2 = track.getCurveStart(level, pos2, state2, axis2);
 
@@ -82,19 +86,19 @@ public class TrackPlacementMixin {
 		BlockState state1 = level.getBlockState(pos1);
 
 		if (level.isClientSide) {
-			((PlacementInfoAccessor)info).setEnd1(end1);
-			((PlacementInfoAccessor)info).setEnd2(end2);
-			((PlacementInfoAccessor)info).setNormal1(normal1);
-			((PlacementInfoAccessor)info).setNormal2(normal2);
-			((PlacementInfoAccessor)info).setAxis1(axis1);
-			((PlacementInfoAccessor)info).setAxis2(axis2);
+			info.end1 = end1;
+			info.end2 = end2;
+			info.normal1 = normal1;
+			info.normal2 = normal2;
+			info.axis1 = axis1;
+			info.axis2 = axis2;
 		}
 
 		if (pos1.equals(pos2))
 			return info.withMessage("second_point");
 		if (pos1.distSqr(pos2) > maxLength * maxLength)
 			return info.withMessage("too_far")
-					.tooJumbly();
+				.tooJumbly();
 		if (!state1.hasProperty(TrackBlock.HAS_BE))
 			return info.withMessage("original_missing");
 		if (level.getBlockEntity(pos2) instanceof TrackBlockEntity tbe && tbe.isTilted())
@@ -106,8 +110,8 @@ public class TrackPlacementMixin {
 			front1 = !front1;
 			end1 = track.getCurveStart(level, pos1, state1, axis1);
 			if (level.isClientSide) {
-				((PlacementInfoAccessor)info).setEnd1(end1);
-				((PlacementInfoAccessor)info).setAxis1(axis1);
+				info.end1 = end1;
+				info.axis1 = axis1;
 			}
 		}
 
@@ -120,8 +124,8 @@ public class TrackPlacementMixin {
 			normedAxis2 = normedAxis2.scale(-1);
 			end2 = track.getCurveStart(level, pos2, state2, axis2);
 			if (level.isClientSide) {
-				((PlacementInfoAccessor)info).setEnd2(end2);
-				((PlacementInfoAccessor)info).setAxis2(axis2);
+				info.end2 = end2;
+				info.axis2 = axis2;
 			}
 		}
 
@@ -135,8 +139,8 @@ public class TrackPlacementMixin {
 		boolean slope = !normal1.equals(normal2);
 
 		if (level.isClientSide) {
-			Vec3 offset1 = axis1.scale(((PlacementInfoAccessor)info).getEnd1Extent());
-			Vec3 offset2 = axis2.scale(((PlacementInfoAccessor)info).getEnd2Extent());
+			Vec3 offset1 = axis1.scale(info.end1Extent);
+			Vec3 offset2 = axis2.scale(info.end2Extent);
 			#if PRE_CURRENT_MC_1_19_2
 				BlockPos targetPos1 = pos1.offset(offset1.x, offset1.y, offset1.z);
 				BlockPos targetPos2 = pos2.offset(offset2.x, offset2.y, offset2.z);
@@ -146,9 +150,9 @@ public class TrackPlacementMixin {
 			#else
 				#error "Unsupported Minecraft Version"
 			#endif
-			((PlacementInfoAccessor)info).setCurve(new BezierConnection(Couple.create(targetPos1, targetPos2),
-					Couple.create(end1.add(offset1), end2.add(offset2)), Couple.create(normedAxis1, normedAxis2),
-					Couple.create(normal1, normal2), true, girder, TrackMaterial.fromItem(stack.getItem())));
+			info.curve = new BezierConnection(Couple.create(targetPos1, targetPos2),
+				Couple.create(end1.add(offset1), end2.add(offset2)), Couple.create(normedAxis1, normedAxis2),
+				Couple.create(normal1, normal2), true, girder, TrackMaterial.fromItem(stack.getItem()));
 		}
 
 		// S curve or Straight
@@ -163,29 +167,32 @@ public class TrackPlacementMixin {
 
 				skipCurve = Mth.equal(u, 0);
 
-				if ((!skipCurve && sTest[0] < 0) && modEnabled)
-					return info.withMessage("perpendicular")
+				if (!skipCurve && sTest[0] < 0)
+					if(enabled)
+						return info.withMessage("perpendicular")
 							.tooJumbly();
 
 				if (skipCurve) {
 					dist = VecHelper.getCenterOf(pos1)
-							.distanceTo(VecHelper.getCenterOf(pos2));
-					((PlacementInfoAccessor)info).setEnd1Extent((int) Math.round((dist + 1) / axis1.length()));
+						.distanceTo(VecHelper.getCenterOf(pos2));
+					info.end1Extent = (int) Math.round((dist + 1) / axis1.length());
 
 				} else {
-					if ((!Mth.equal(ascend, 0) || normedAxis1.y != 0) && modEnabled)
-						return info.withMessage("ascending_s_curve");
+					if (!Mth.equal(ascend, 0) || normedAxis1.y != 0)
+						if(enabled)
+							return info.withMessage("ascending_s_curve");
 
 					double targetT = u <= 1 ? 3 : u * 2;
 
-					if (t < targetT && modEnabled)
-						return info.withMessage("too_sharp");
+					if (t < targetT)
+						if(enabled)
+							return info.withMessage("too_sharp");
 
 					// This is for standardising s curve sizes
 					if (t > targetT) {
 						int correction = (int) ((t - targetT) / axis1.length());
-						((PlacementInfoAccessor)info).setEnd1Extent(maximiseTurn ? 0 : correction / 2 + (correction % 2));
-						((PlacementInfoAccessor)info).setEnd2Extent(maximiseTurn ? 0 : correction / 2);
+						info.end1Extent = maximiseTurn ? 0 : correction / 2 + (correction % 2);
+						info.end2Extent = maximiseTurn ? 0 : correction / 2;
 					}
 				}
 			}
@@ -194,7 +201,7 @@ public class TrackPlacementMixin {
 		// Slope
 
 		if (slope) {
-			if(modEnabled) {
+			if(enabled) {
 				if (!skipCurve)
 					return info.withMessage("slope_turn");
 				if (Mth.equal(normal1.dot(normal2), 0))
@@ -206,8 +213,8 @@ public class TrackPlacementMixin {
 			}
 
 			skipCurve = false;
-			((PlacementInfoAccessor)info).setEnd1Extent(0);
-			((PlacementInfoAccessor)info).setEnd2Extent(0);
+			info.end1Extent = 0;
+			info.end2Extent = 0;
 
 			Direction.Axis plane = Mth.equal(axis1.x, 0) ? Direction.Axis.X : Direction.Axis.Z;
 			intersect = Util.intersect(end1, end2, normedAxis1, normedAxis2, plane);
@@ -215,21 +222,23 @@ public class TrackPlacementMixin {
 			double dist2 = Math.abs(intersect[1] / axis2.length());
 
 			if (dist1 > dist2)
-				((PlacementInfoAccessor)info).setEnd1Extent((int) Math.round(dist1 - dist2));
+				info.end1Extent = (int) Math.round(dist1 - dist2);
 			if (dist2 > dist1)
-				((PlacementInfoAccessor)info).setEnd2Extent((int) Math.round(dist2 - dist1));
+				info.end2Extent = (int) Math.round(dist2 - dist1);
 
 			double turnSize = Math.min(dist1, dist2);
-			if ((intersect[0] < 0 || intersect[1] < 0) && modEnabled)
-				return info.withMessage("too_sharp")
+			if (intersect[0] < 0 || intersect[1] < 0)
+				if(enabled)
+					return info.withMessage("too_sharp")
 						.tooJumbly();
-			if (turnSize < 2 && modEnabled)
-				return info.withMessage("too_sharp");
+			if (turnSize < 2)
+				if(enabled)
+					return info.withMessage("too_sharp");
 
 			// This is for standardising curve sizes
 			if (turnSize > 2 && !maximiseTurn) {
-				((PlacementInfoAccessor)info).setEnd1Extent((int) (((PlacementInfoAccessor)info).getEnd1Extent() + turnSize - 2));
-				((PlacementInfoAccessor)info).setEnd2Extent((int) (((PlacementInfoAccessor)info).getEnd2Extent() + turnSize - 2));
+				info.end1Extent += turnSize - 2;
+				info.end2Extent += turnSize - 2;
 				turnSize = 2;
 			}
 		}
@@ -237,21 +246,24 @@ public class TrackPlacementMixin {
 		// Straight ascend
 
 		if (skipCurve && !Mth.equal(ascend, 0)) {
-			int hDistance = ((PlacementInfoAccessor)info).getEnd1Extent();
+			int hDistance = info.end1Extent;
 			if (axis1.y == 0 || !Mth.equal(absAscend + 1, dist / axis1.length())) {
 
-				if ((axis1.y != 0 && axis1.y == -axis2.y) && modEnabled)
-					return info.withMessage("ascending_s_curve");
+				if (axis1.y != 0 && axis1.y == -axis2.y)
+					if(enabled)
+						return info.withMessage("ascending_s_curve");
 
-				((PlacementInfoAccessor)info).setEnd1Extent(0);
+				info.end1Extent = 0;
 				double minHDistance = Math.max(absAscend < 4 ? absAscend * 4 : absAscend * 3, 6) / axis1.length();
-				if (hDistance < minHDistance && modEnabled)
-					return info.withMessage("too_steep");
+				if (hDistance < minHDistance)
+					if(enabled)
+						return info.withMessage("too_steep");
 				if (hDistance > minHDistance) {
 					int correction = (int) (hDistance - minHDistance);
-					((PlacementInfoAccessor)info).setEnd1Extent(maximiseTurn ? 0 : correction / 2 + (correction % 2));
-					((PlacementInfoAccessor)info).setEnd2Extent(maximiseTurn ? 0 : correction / 2);
+					info.end1Extent = maximiseTurn ? 0 : correction / 2 + (correction % 2);
+					info.end2Extent = maximiseTurn ? 0 : correction / 2;
 				}
+
 				skipCurve = false;
 			}
 		}
@@ -260,8 +272,9 @@ public class TrackPlacementMixin {
 
 		if (!parallel) {
 			float absAngle = Math.abs(AngleHelper.deg(angle));
-			if ((absAngle < 60 || absAngle > 300) && modEnabled)
-				return info.withMessage("turn_90")
+			if (absAngle < 60 || absAngle > 300)
+				if(enabled)
+					return info.withMessage("turn_90")
 						.tooJumbly();
 
 			intersect = Util.intersect(end1, end2, normedAxis1, normedAxis2, Direction.Axis.Y);
@@ -278,31 +291,33 @@ public class TrackPlacementMixin {
 			double turnSize = Math.min(dist1, dist2) - .1d;
 			boolean ninety = (absAngle + .25f) % 90 < 1;
 
-			if ((intersect[0] < 0 || intersect[1] < 0) && modEnabled)
-				return info.withMessage("too_sharp")
+			if (intersect[0] < 0 || intersect[1] < 0)
+				if(enabled)
+					return info.withMessage("too_sharp")
 						.tooJumbly();
 
 			double minTurnSize = ninety ? 7 : 3.25;
 			double turnSizeToFitAscend =
-					minTurnSize + (ninety ? Math.max(0, absAscend - 3) * 2f : Math.max(0, absAscend - 1.5f) * 1.5f);
-
-			if ((turnSize < minTurnSize) && modEnabled)
-				return info.withMessage("too_sharp");
-			if ((turnSize < turnSizeToFitAscend) && modEnabled)
-				return info.withMessage("too_steep");
+				minTurnSize + (ninety ? Math.max(0, absAscend - 3) * 2f : Math.max(0, absAscend - 1.5f) * 1.5f);
+			if(enabled) {
+				if (turnSize < minTurnSize)
+					return info.withMessage("too_sharp");
+				if (turnSize < turnSizeToFitAscend)
+					return info.withMessage("too_steep");
+			}
 
 			// This is for standardising curve sizes
 			if (!maximiseTurn) {
 				ex1 += (turnSize - turnSizeToFitAscend) / axis1.length();
 				ex2 += (turnSize - turnSizeToFitAscend) / axis2.length();
 			}
-			((PlacementInfoAccessor)info).setEnd1Extent(Mth.floor(ex1));
-			((PlacementInfoAccessor)info).setEnd2Extent(Mth.floor(ex2));
+			info.end1Extent = Mth.floor(ex1);
+			info.end2Extent = Mth.floor(ex2);
 			turnSize = turnSizeToFitAscend;
 		}
 
-		Vec3 offset1 = axis1.scale(((PlacementInfoAccessor)info).getEnd1Extent());
-		Vec3 offset2 = axis2.scale(((PlacementInfoAccessor)info).getEnd2Extent());
+		Vec3 offset1 = axis1.scale(info.end1Extent);
+		Vec3 offset2 = axis2.scale(info.end2Extent);
 		#if PRE_CURRENT_MC_1_19_2
 			BlockPos targetPos1 = pos1.offset(offset1.x, offset1.y, offset1.z);
 			BlockPos targetPos2 = pos2.offset(offset2.x, offset2.y, offset2.z);
@@ -313,22 +328,22 @@ public class TrackPlacementMixin {
 			#error "Unsupported Minecraft Version"
 		#endif
 
-		((PlacementInfoAccessor)info).setCurve(skipCurve ? null
-				: new BezierConnection(Couple.create(targetPos1, targetPos2),
-				Couple.create(end1.add(offset1), end2.add(offset2)), Couple.create(normedAxis1, normedAxis2),
-				Couple.create(normal1, normal2), true, girder, TrackMaterial.fromItem(stack.getItem())));
+		info.curve = skipCurve ? null
+			: new BezierConnection(Couple.create(targetPos1, targetPos2),
+			Couple.create(end1.add(offset1), end2.add(offset2)), Couple.create(normedAxis1, normedAxis2),
+			Couple.create(normal1, normal2), true, girder, TrackMaterial.fromItem(stack.getItem()));
 
-		((PlacementInfoAccessor)info).setValid(true);
+		info.valid = true;
 
-		((PlacementInfoAccessor)info).setPos1(pos1);
-		((PlacementInfoAccessor)info).setPos2(pos2);
-		((PlacementInfoAccessor)info).setAxis1(axis1);
-		((PlacementInfoAccessor)info).setAxis2(axis2);
+		info.pos1 = pos1;
+		info.pos2 = pos2;
+		info.axis1 = axis1;
+		info.axis2 = axis2;
 
 		placeTracks(level, info, state1, state2, targetPos1, targetPos2, true);
 
 		ItemStack offhandItem = player.getOffhandItem()
-				.copy();
+			.copy();
 		boolean shouldPave = offhandItem.getItem() instanceof BlockItem;
 		if (shouldPave) {
 			BlockItem paveItem = (BlockItem) offhandItem.getItem();
@@ -371,10 +386,10 @@ public class TrackPlacementMixin {
 
 					if (!simulate) {
 						int remainingItems =
-								count - Math.min(isTrack ? tracks - foundTracks : pavement - foundPavement, count);
+							count - Math.min(isTrack ? tracks - foundTracks : pavement - foundPavement, count);
 						if (i == inv.selected)
 							stackInSlot.setTag(null);
-						ItemStack newItem = Util.copyStackWithSize(stackInSlot, remainingItems);
+						ItemStack newItem = ItemHandlerHelper.copyStackWithSize(stackInSlot, remainingItems);
 						if (offhand)
 							player.setItemInHand(InteractionHand.OFF_HAND, newItem);
 						else
@@ -388,14 +403,14 @@ public class TrackPlacementMixin {
 				}
 
 				if (simulate && foundTracks < tracks) {
-					((PlacementInfoAccessor)info).setValid(false);
+					info.valid = false;
 					info.tooJumbly();
 					info.hasRequiredTracks = false;
 					return info.withMessage("not_enough_tracks");
 				}
 
 				if (simulate && foundPavement < pavement) {
-					((PlacementInfoAccessor)info).setValid(false);
+					info.valid = false;
 					info.tooJumbly();
 					info.hasRequiredPavement = false;
 					return info.withMessage("not_enough_pavement");
