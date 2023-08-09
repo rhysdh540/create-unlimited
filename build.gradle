@@ -53,17 +53,22 @@ subprojects { p ->
 	}
 
     configurations {
-        addJarCompile
-		addJarRuntime
+		addJar
 		shade
 
+        addJarCompile
+		addJarRuntime
+
 		if (!common) {
-			include.extendsFrom addJarRuntime
+			include.extendsFrom addJar
 		}
 
         compileOnly.extendsFrom addJarCompile
 		annotationProcessor.extendsFrom addJarCompile
         implementation.extendsFrom addJarRuntime
+
+		addJar.extendsFrom addJarCompile
+		addJar.extendsFrom addJarRuntime
 
 		implementation.extendsFrom shade
     }
@@ -90,7 +95,7 @@ subprojects { p ->
 		addJarCompile "systems.manifold:manifold-ext:${rootProject.manifold_version}"
 		addJarRuntime "systems.manifold:manifold-ext-rt:${rootProject.manifold_version}"
         addJarRuntime "systems.manifold:manifold-rt:${rootProject.manifold_version}"
-        include "systems.manifold:manifold-util:${rootProject.manifold_version}"
+        addJar "systems.manifold:manifold-util:${rootProject.manifold_version}"
 
         // Dev Env Optimizations
         //// https://www.cursemaven.com/
