@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+	id "com.github.johnrengelman.shadow" version "${shadow_version}"
 }
 
 architectury {
@@ -17,16 +17,15 @@ configurations {
 
 repositories {
 	// mavens for Forge-exclusives
-	maven { url = "https://maven.theillusivec4.top/" } // Curios
+	maven { url "https://maven.theillusivec4.top/" } // Curios
 	maven { // Create Forge and Registrate Forge
-		url = "https://maven.tterrag.com/"
+		url "https://maven.tterrag.com/"
 		content {
 			includeGroup("com.tterrag.registrate")
 			includeGroup("com.simibubi.create")
 		}
 	}
-	maven { url = "https://cursemaven.com" }
-    maven { url "https://maven.shedaniel.me/" }
+	maven { url "https://cursemaven.com" }
 }
 
 dependencies {
@@ -36,8 +35,8 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
 	modImplementation("com.simibubi.create:create-${minecraft_version}:${create_forge}:slim") { transitive = false }
-	modImplementation("com.tterrag.registrate:Registrate:${registrate}")
-	modImplementation("com.jozufozu.flywheel:flywheel-forge-${flywheel_mc}:${flywheel}")
+	modImplementation "com.tterrag.registrate:Registrate:${registrate}"
+	modImplementation "com.jozufozu.flywheel:flywheel-forge-${flywheel_mc}:${flywheel}"
 }
 
 shadowJar {
@@ -46,17 +45,17 @@ shadowJar {
 
     configurations = [project.configurations.shadowCommon, project.configurations.shade]
 
-    classifier "dev-shadow"
+    archiveClassifier.set "dev-shadow"
 }
 
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
+    archiveClassifier.set null
 }
 
 jar {
-    classifier "dev"
+    archiveClassifier.set "dev"
 }
 
 sourcesJar {

@@ -1,9 +1,8 @@
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.0.326" apply false
-	id "io.github.juuxel.loom-quiltflower" version "1.10.0" apply false
-	id "io.github.p03w.machete" version "2.0.1"
-    id "io.github.pacifistmc.forgix" version "1.2.6"
+    id "architectury-plugin" version "${arch_plugin_version}"
+    id "dev.architectury.loom" version "${loom_version}" apply false
+	id "io.github.juuxel.loom-vineflower" version "${vineflower_version}" apply false
+    id "io.github.pacifistmc.forgix" version "${forgix_version}"
 }
 
 // These are the access wideners depending on the minecraft version
@@ -11,29 +10,29 @@ def mcVersionToAccessWidenerVersion = [
         "1.19.2": "1_19_2",
         "1.20.1": "1_20_1",
 ]
-rootProject.ext.set("accessWideners", mcVersionToAccessWidenerVersion)
+ext.set("access_wideners", mcVersionToAccessWidenerVersion)
 
 loadProperties()
 makeAccessWidener()
 defineMixins()
 
 forgix {
-    group = rootProject.maven_group
-    mergedJarName = "createunlimited-${rootProject.mod_version}${getBuildNumber()}+mc${rootProject.minecraft_version}.jar"
+    group = maven_group
+    mergedJarName = "createunlimited-${mod_version}${getBuildNumber()}+mc${minecraft_version}.jar"
 	outputDir = "build/libs/merged"
 }
 
 architectury {
-    minecraft = rootProject.minecraft_version
+    minecraft = minecraft_version
 }
 
-subprojects { p ->
+subprojects {
     apply plugin: "dev.architectury.loom"
-	apply plugin: "io.github.juuxel.loom-quiltflower"
+	apply plugin: "io.github.juuxel.loom-vineflower"
 
-	def froge = p == project(":forge")
-	def fabric = p == project(":fabric")
-	def common = p == project(":common")
+	def froge = it == project(":forge")
+	def fabric = it == project(":fabric")
+	def common = it == project(":common")
 
 	def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
 
@@ -50,6 +49,10 @@ subprojects { p ->
 				}
 			}
 		}
+
+		runs {
+			remove server
+		}
 	}
 
     configurations {
@@ -58,17 +61,22 @@ subprojects { p ->
 
         addJarCompile
 		addJarRuntime
+		addJarEverywhere
 
 		if (!common) {
 			include.extendsFrom addJar
 		}
+		if(froge)
+			forgeRuntimeLibrary.extendsFrom addJar
 
         compileOnly.extendsFrom addJarCompile
 		annotationProcessor.extendsFrom addJarCompile
         implementation.extendsFrom addJarRuntime
+		api.extendsFrom addJarEverywhere
 
 		addJar.extendsFrom addJarCompile
 		addJar.extendsFrom addJarRuntime
+		addJar.extendsFrom addJarEverywhere
 
 		implementation.extendsFrom shade
     }
@@ -95,7 +103,7 @@ subprojects { p ->
 		addJarCompile "systems.manifold:manifold-ext:${rootProject.manifold_version}"
 		addJarRuntime "systems.manifold:manifold-ext-rt:${rootProject.manifold_version}"
         addJarRuntime "systems.manifold:manifold-rt:${rootProject.manifold_version}"
-        addJar "systems.manifold:manifold-util:${rootProject.manifold_version}"
+        addJarEverywhere "systems.manifold:manifold-util:${rootProject.manifold_version}"
 
         // Dev Env Optimizations
         //// https://www.cursemaven.com/
@@ -127,31 +135,31 @@ subprojects { p ->
     }
 
     processResources {
-        def properties = [
-			access_widener: rootProject.accessWidener,
-			version: rootProject.mod_version,
-			minecraft_version: rootProject.minecraft_version,
-			forge: rootProject.forge.split("\\.")[0],
-			fabric: rootProject.fabric,
-			fabric_api: rootProject.fabric_api,
-			create_forge: rootProject.create_forge.split("-")[0],
-			create_fabric: rootProject.create_fabric,
-        ]
+		def properties = [
+			aw	 			 : access_widener,
+			version          : mod_version,
+			minecraft_version: minecraft_version,
+			forge            : forge.split("\\.")[0],
+			fabric           : fabric,
+			fabric_api       : fabric_api,
+			create_forge     : create_forge.split("-")[0],
+			create_fabric    : create_fabric,
+		]
 
-        inputs.properties properties
+		inputs.properties properties
 
-        filesMatching("architectury.common.json") {
-            expand properties
-        }
+		filesMatching("architectury.common.json") {
+			expand properties
+		}
 
-        filesMatching("fabric.mod.json") {
-            expand properties
-        }
+		filesMatching("fabric.mod.json") {
+			expand properties
+		}
 
-        filesMatching("META-INF/mods.toml") {
-            expand properties
-        }
-    }
+		filesMatching("META-INF/mods.toml") {
+			expand properties
+		}
+	}
 
     remapJar.finalizedBy(mergeJars)
 }
@@ -187,11 +195,6 @@ allprojects {
 	java {
         withSourcesJar()
     }
-
-	machete {
-		// disable machete locally for faster builds
-		enabled = System.getenv("GITHUB_RUN_NUMBER") != null
-	}
 }
 
 static def getBuildNumber() {
@@ -206,34 +209,29 @@ static def getBuildNumber() {
 
 // Defines the preprocessors
 def setupManifoldProcessors(List<String> mcVers, int mcIndex) {
-    ArrayList<String> redefineList = new ArrayList<String>()
+    def redefineList = new ArrayList<String>()
     for (int i = 0; i < mcVers.size(); i++) {
-        String mcStr = mcVers.get(i).replace(".", "_")
+        String mcStr = "MC_" + mcVers.get(i).replace(".", "_")
 
-        if (mcIndex < i) {
-            redefineList.add("PRE_MC_" + mcStr)
-        }
+        if (mcIndex < i)
+            redefineList.add("PRE_$mcStr")
 
-        if (mcIndex <= i) {
-            redefineList.add("PRE_CURRENT_MC_" + mcStr)
-        }
+        if (mcIndex <= i)
+            redefineList.add("PRE_CURRENT_$mcStr")
 
-        if (mcIndex == i) {
-            redefineList.add("MC_" + mcStr)
-        }
+        if (mcIndex == i)
+            redefineList.add(mcStr)
 
-        if (mcIndex > i) {
-            redefineList.add("POST_MC_" + mcStr)
-        }
+        if (mcIndex > i)
+            redefineList.add("POST_$mcStr")
 
-        if (mcIndex >= i) {
-            redefineList.add("POST_CURRENT_MC_" + mcStr)
-        }
+        if (mcIndex >= i)
+            redefineList.add("POST_CURRENT_$mcStr")
     }
 
     StringBuilder sb = new StringBuilder()
-    sb.append("# DO NOT EDIT\n")
-	.append("# Generated by the build script. Change mcVer property to change minecraft version.\n\n")
+		.append("# DO NOT EDIT\n")
+		.append("# Generated by the build script. Change mcVer property to change minecraft version.\n\n")
 
     for (String redefinedVersion : redefineList) {
         sb.append(redefinedVersion).append("=\n")
@@ -257,13 +255,13 @@ def loadProperties() {
 
     if (mcIndex == -1) {
         println "Defaulting to ${rootProject.default_mc_version} since the set mcVer is invalid."
-        println "Use -PmcVer='${rootProject.default_mc_version}' to set the mcVer."
+        println "Use -PmcVer='${rootProject.default_mc_version}' or edit gradle.properties to set the minecraft version."
 
         mcVersion = default_mc_version
         mcIndex = Arrays.asList(mcVers).indexOf(default_mc_version)
     }
 
-    println "Using " + mcVersion + ".properties"
+    println "Using " + mcVersion + ".properties."
     def properties = new Properties()
 
     properties.load(new FileInputStream("$rootProject.rootDir/"+"$mcVersion"+".properties"))
@@ -274,13 +272,13 @@ def loadProperties() {
 
     setupManifoldProcessors(Arrays.asList(mcVers), mcIndex)
 
-    rootProject.ext.set("accessWidenerVersion", rootProject.accessWideners.get(mcVersion))
+    rootProject.ext.set("access_widener_version", rootProject.access_wideners.get(mcVersion))
 }
 
 // Sets up the accesswideners
 def makeAccessWidener() {
     def accessWidenerFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
-    def versionAccessWidenerFile = project(":common").file("src/main/resources/${rootProject.accessWidenerVersion}.createunlimited.aw")
+    def versionAccessWidenerFile = project(":common").file("src/main/resources/${rootProject.access_widener_version}.createunlimited.aw")
 
     if (accessWidenerFile.exists()) {
         delete accessWidenerFile
@@ -290,17 +288,17 @@ def makeAccessWidener() {
         copy {
             from versionAccessWidenerFile
             into project(":common").file("src/main/resources/")
-            rename "${rootProject.accessWidenerVersion}.createunlimited.aw", "createunlimited.accesswidener"
+            rename "${rootProject.access_widener_version}.createunlimited.aw", "createunlimited.accesswidener"
         }
         def text = accessWidenerFile.text
-        text = text + "\n# DO NOT EDIT\n# Generated by the build script. Edit ${versionAccessWidenerFile.name} instead!"
+        text += "\n# DO NOT EDIT\n# Generated by the build script. Edit ${versionAccessWidenerFile.name} instead!"
 
         accessWidenerFile.text = text
     } else {
         versionAccessWidenerFile.createNewFile()
         versionAccessWidenerFile.text = "accessWidener   v2  named"
     }
-    rootProject.ext.set("accessWidener", "${rootProject.accessWidenerVersion}.createunlimited.aw")
+    rootProject.ext.set("access_widener", "${rootProject.access_widener_version}.createunlimited.aw")
 }
 
 // Defines the mixins

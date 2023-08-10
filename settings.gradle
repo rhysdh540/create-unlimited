@@ -5,6 +5,7 @@ pluginManagement {
         maven { url "https://maven.minecraftforge.net/" }
         gradlePluginPortal()
     }
+	//includeBuild '../../imag'
 }
 
 include("common")
