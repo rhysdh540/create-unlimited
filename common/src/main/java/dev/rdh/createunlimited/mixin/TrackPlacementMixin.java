@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(value = TrackPlacement.class, remap = false)
+@Mixin(value = TrackPlacement.class, remap = false, priority = 999) // inject before snr does
 @SuppressWarnings("unused")
 public class TrackPlacementMixin {
 	@Shadow public static PlacementInfo cached;

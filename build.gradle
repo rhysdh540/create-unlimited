@@ -83,11 +83,24 @@ subprojects {
 
 	repositories {
 		mavenCentral()
-		maven { url = "https://maven.parchmentmc.org" }
-		maven { url = "https://maven.quiltmc.org/repository/release" }
+		maven { url "https://maven.parchmentmc.org" }
+		maven { url "https://maven.quiltmc.org/repository/release" }
+		maven { url 'https://maven.ithundxr.dev/releases' }
 		maven {
-			url = "https://maven.tterrag.com/"
-			content { includeGroup("com.jozufozu.flywheel") }
+			url "https://maven.tterrag.com/"
+			content {
+				includeGroup("com.jozufozu.flywheel")
+				includeGroup("com.tterrag.registrate")
+				includeGroup("com.simibubi.create")
+			}
+		}
+		maven { // modrinth
+			url "https://api.modrinth.com/maven"
+			content { includeGroup "maven.modrinth" }
+		}
+		maven { // curseforge
+			url "https://www.cursemaven.com"
+			content { includeGroup "curse.maven" }
 		}
 	}
 
@@ -176,14 +189,6 @@ allprojects {
     repositories {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' } // manifold
         maven { url 'https://jitpack.io' } // idk a lot of stuff
-        maven { // modrinth
-            url "https://api.modrinth.com/maven"
-            content { includeGroup "maven.modrinth" }
-        }
-        maven { // curseforge
-            url "https://www.cursemaven.com"
-            content { includeGroup "curse.maven" }
-        }
     }
 
 	tasks.withType(JavaCompile).configureEach {

@@ -16,16 +16,15 @@ configurations {
 }
 
 repositories {
-	maven { url "https://api.modrinth.com/maven" } // LazyDFU
 	maven { url "https://maven.terraformersmc.com/releases/" } // Mod Menu
 	maven { url "https://mvn.devos.one/snapshots/" } // Create Fabric, Porting Lib, Forge Tags, Milk Lib, Registrate Fabric
-	maven { url "https://cursemaven.com" } // Forge Config API Port
 	maven { url "https://maven.cafeteria.dev/releases" } // Fake Player API
 	maven { url "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
-	maven { url "https://jitpack.io/" } // Mixin Extras, Fabric ASM
 }
 
 dependencies {
+	common(project(path: ":common", configuration: "namedElements")) { transitive false }
+	shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api}+${rootProject.minecraft_version}"
@@ -35,8 +34,7 @@ dependencies {
 
 	modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric}+mc${rootProject.minecraft_version}")
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+	modImplementation("com.railwayteam.railways:Steam_Rails-fabric-${minecraft_version}:${snr}+fabric-mc${minecraft_version}-build.${snr_build}") { transitive = false }
 }
 
 shadowJar {

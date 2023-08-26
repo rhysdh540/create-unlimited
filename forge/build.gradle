@@ -16,16 +16,7 @@ configurations {
 }
 
 repositories {
-	// mavens for Forge-exclusives
 	maven { url "https://maven.theillusivec4.top/" } // Curios
-	maven { // Create Forge and Registrate Forge
-		url "https://maven.tterrag.com/"
-		content {
-			includeGroup("com.tterrag.registrate")
-			includeGroup("com.simibubi.create")
-		}
-	}
-	maven { url "https://cursemaven.com" }
 }
 
 dependencies {
@@ -37,6 +28,8 @@ dependencies {
 	modImplementation("com.simibubi.create:create-${minecraft_version}:${create_forge}:slim") { transitive = false }
 	modImplementation "com.tterrag.registrate:Registrate:${registrate}"
 	modImplementation "com.jozufozu.flywheel:flywheel-forge-${flywheel_mc}:${flywheel}"
+
+	modImplementation("com.railwayteam.railways:Steam_Rails-forge-${minecraft_version}:${snr}+forge-mc${minecraft_version}-build.${snr_build}")
 }
 
 shadowJar {
