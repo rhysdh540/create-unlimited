@@ -29,7 +29,9 @@ dependencies {
 	modImplementation "com.tterrag.registrate:Registrate:${registrate}"
 	modImplementation "com.jozufozu.flywheel:flywheel-forge-${flywheel_mc}:${flywheel}"
 
-	modImplementation("com.railwayteam.railways:Steam_Rails-forge-${minecraft_version}:${snr}+forge-mc${minecraft_version}-build.${snr_build}")
+	if(rootProject.hasProperty("snr")) {
+		modImplementation("com.railwayteam.railways:Steam_Rails-forge-${minecraft_version}:${snr}+forge-mc${minecraft_version}-build.${snr_build}")
+	}
 }
 
 shadowJar {

@@ -34,7 +34,9 @@ dependencies {
 
 	modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric}+mc${rootProject.minecraft_version}")
 
-	modImplementation("com.railwayteam.railways:Steam_Rails-fabric-${minecraft_version}:${snr}+fabric-mc${minecraft_version}-build.${snr_build}") { transitive = false }
+	if(rootProject.hasProperty("snr")) {
+		modImplementation("com.railwayteam.railways:Steam_Rails-fabric-${minecraft_version}:${snr}+fabric-mc${minecraft_version}-build.${snr_build}") { transitive = false }
+	}
 }
 
 shadowJar {

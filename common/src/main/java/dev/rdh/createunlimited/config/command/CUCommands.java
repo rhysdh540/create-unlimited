@@ -47,7 +47,7 @@ public class CUCommands {
 		LiteralArgumentBuilder<CommandSourceStack> base = literal(CreateUnlimited.ID).executes(context -> {
 			message(CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:", context);
 
-			auto link = (MutableComponent) CommonComponents.EMPTY;
+			auto link = MutableComponent.create(CommonComponents.EMPTY.getContents());
 			links.forEach(a -> link.append(a).append(Component.literal(" ")));
 
 			message(link, context);
