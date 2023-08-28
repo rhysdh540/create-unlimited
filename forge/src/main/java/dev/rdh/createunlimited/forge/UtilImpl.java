@@ -81,6 +81,10 @@ public class UtilImpl {
 	}
 
 	public static Attribute getReachAttribute() {
+		#if POST_CURRENT_MC_1_20_1
 		return ForgeMod.BLOCK_REACH.get();
+		#elif PRE_CURRENT_MC_1_19_2
+		return ForgeMod.REACH_DISTANCE.get();
+		#endif
 	}
 }
