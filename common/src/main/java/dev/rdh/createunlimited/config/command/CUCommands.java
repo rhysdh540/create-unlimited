@@ -8,13 +8,14 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import com.mojang.brigadier.context.CommandContext;
 
+import com.simibubi.create.foundation.config.ConfigBase.*;
 import com.simibubi.create.foundation.utility.Components;
 
 import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.CreateUnlimited;
-import dev.rdh.createunlimited.config.CUConfig;
+import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.ext.rt.api.auto;
+import dev.rdh.createunlimited.config.CUServer;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -28,7 +29,6 @@ import net.minecraft.network.chat.MutableComponent;
 
 import net.minecraftforge.common.ForgeConfigSpec.*;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import static net.minecraft.commands.Commands.argument;
@@ -47,7 +47,7 @@ public class CUCommands {
 		LiteralArgumentBuilder<CommandSourceStack> base = literal(CreateUnlimited.ID).executes(context -> {
 			message(CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:", context);
 
-			auto link = MutableComponent.create(CommonComponents.EMPTY.getContents());
+			var link = MutableComponent.create(CommonComponents.EMPTY.getContents());
 			links.forEach(a -> link.append(a).append(Component.literal(" ")));
 
 			message(link, context);
@@ -56,19 +56,21 @@ public class CUCommands {
 
 		LiteralArgumentBuilder<CommandSourceStack> category = null;
 
-		for (var field : CUConfig.class.getDeclaredFields()) {
+		for (var field : CUServer.class.getDeclaredFields()) {
 			//skip if not config value or string
-			if (!ConfigValue.class.isAssignableFrom(field.getType()) && field.getType() != String.class) continue;
+			if (!CValue.class.isAssignableFrom(field.getType())) continue;
+
+			String name = field.getName();
 
 			//change category if needed
-			if (field.getType() == String.class) {
+			if (field.getType() == ConfigGroup.class) {
 				if (category != null) base.then(category);
-				category = literal(field.getName());
+				category = literal(name);
 
 				//add description for category
 				assert base != null;
 				base.then(literal(field.getName()).executes(context -> {
-					message(CUConfig.comments.get(field.getName()), context);
+					message(CUServer.getComment(name), context);
 					return Command.SINGLE_SUCCESS;
 				}));
 
@@ -76,52 +78,65 @@ public class CUCommands {
 			}
 			if(category == null) category = base;
 
-			// get config as ConfigValue
-			ConfigValue<?> value;
+			// get config as CValue
+			CValue<?, ?> cValue;
 			try {
-				value = (ConfigValue<?>) field.get(null);
+				cValue = (CValue<?, ?>) field.get(CUConfigs.server());
 			} catch (IllegalAccessException | ClassCastException e) {
 				CreateUnlimited.LOGGER.error("Failed to get config value for " + field.getName(), e);
 				continue;
 			}
 
+			ConfigValue<?> value = createToForge(cValue);
+
 			//get, description, reset
-			gdr(category, field, value);
+			gdr(category, name, value);
 
 			//set for boolean
 			if (value instanceof BooleanValue bValue)
-				setBoolean(category, field, bValue);
+				setBoolean(category, name, bValue);
 
 			// set for enums
-			else if (value.get() instanceof Enum<?>)
-				setEnum(category, field, (EnumValue<? extends Enum<?>>) value);
+			else if (value instanceof EnumValue<? extends Enum<?>> eValue)
+				setEnum(category, name, eValue);
 
 			// set for int
 			else if (value instanceof IntValue iValue)
-				setInt(category, field, iValue);
+				setInt(category, name, iValue);
 
 			// set for double
 			else if (value instanceof DoubleValue dValue)
-				setDouble(category, field, dValue);
+				setDouble(category, name, dValue);
 
 		}
+
+		base.then(literal("disableEverything")).requires(CUCommands::perms)
+			.executes(context -> {
+				CUConfigs.server().placementChecks.set(CUServer.PlacementCheck.OFF);
+				CUConfigs.server().extendedDriving.set(0.01);
+				CUConfigs.server().maxTrainRelocationDistance.set(128d);
+				CUConfigs.server().maxAllowedStress.set(-1d);
+				CUConfigs.server().maxGlueConnectionRange.set(128d);
+				CUConfigs.server().physicalBlockConnection.set(false);
+				CUConfigs.server().singleExtendoGripRange.set(128);
+				CUConfigs.server().doubleExtendoGripRange.set(128);
+				CUConfigs.server().allowAllCopycatBlocks.set(true);
+				return Command.SINGLE_SUCCESS;
+			});
+
 		if (category != null)
 			base.then(category);
 		Util.registerCommand(base);
 	}
 
-	private static boolean perms(CommandSourceStack source) {
-		return source.hasPermission(4) || !source.getLevel().getServer().isDedicatedServer();
-	}
-
 	private static boolean perms(Object o) {
-		return o instanceof CommandSourceStack source && perms(source);
+		return o instanceof CommandSourceStack source && (source.hasPermission(4) || !source.getLevel().getServer().isDedicatedServer());
 	}
 
-	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, Field field, ConfigValue<T> value) {
-		category.then(literal(field.getName())
+	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, String name, ConfigValue<T> value) {
+		category.then(literal(name)
 			.executes(context -> {
-				message(field.getName() + ": " + CUConfig.comments.get(field.getName()), context);
+				message(name + ": " + CUServer.getComment(name), context);
 				message("Current value: " + value.get(), context);
 				message("Default value: " + value.getDefault(), context);
 				return Command.SINGLE_SUCCESS;
@@ -133,58 +148,58 @@ public class CUCommands {
 						return 0;
 					}
 					value.set(value.getDefault());
-					message(field.getName() + " reset to: " + value.get(), context);
+					message(name + " reset to: " + value.get(), context);
 					return Command.SINGLE_SUCCESS;
 				})
 			)
 		);
 	}
 
-	private static void setBoolean(LiteralArgumentBuilder<CommandSourceStack> category, Field field, BooleanValue value) {
-		category.then(literal(field.getName())
+	private static void setBoolean(LiteralArgumentBuilder<CommandSourceStack> category, String name, BooleanValue value) {
+		category.then(literal(name)
 			.then(argument("value", BoolArgumentType.bool()).requires(CUCommands::perms)
 				.executes(context -> {
-					auto set = BoolArgumentType.getBool(context, "value");
+					var set = BoolArgumentType.getBool(context, "value");
 					if(set == value.get()) {
 						error("Value is already set to " + set, context);
 						return 0;
 					}
 					value.set(set);
-					message(field.getName() + " set to: " + set, context);
+					message(name + " set to: " + set, context);
 					return Command.SINGLE_SUCCESS;
 				})
 			)
 		);
 	}
 
-	private static void setInt(LiteralArgumentBuilder<CommandSourceStack> category, Field field, IntValue value) {
-		category.then(literal(field.getName())
+	private static void setInt(LiteralArgumentBuilder<CommandSourceStack> category, String name, IntValue value) {
+		category.then(literal(name)
 			.then(argument("value", IntegerArgumentType.integer()).requires(CUCommands::perms)
 				.executes(context -> {
-					auto set = IntegerArgumentType.getInteger(context, "value");
+					var set = IntegerArgumentType.getInteger(context, "value");
 					if(set == value.get()) {
 						error("Value is already set to " + set, context);
 						return 0;
 					}
 					value.set(set);
-					message(field.getName() + " set to: " + set, context);
+					message(name + " set to: " + set, context);
 					return Command.SINGLE_SUCCESS;
 				})
 			)
 		);
 	}
 
-	private static void setDouble(LiteralArgumentBuilder<CommandSourceStack> category, Field field, DoubleValue value) {
-		category.then(literal(field.getName())
+	private static void setDouble(LiteralArgumentBuilder<CommandSourceStack> category, String name, DoubleValue value) {
+		category.then(literal(name)
 			.then(argument("value", DoubleArgumentType.doubleArg()).requires(CUCommands::perms)
 				.executes(context -> {
-					auto set = DoubleArgumentType.getDouble(context, "value");
+					var set = DoubleArgumentType.getDouble(context, "value");
 					if(set == value.get()) {
 						error("Value is already set to " + set, context);
 						return 0;
 					}
 					value.set(set);
-					message(field.getName() + " set to: " + set, context);
+					message(name + " set to: " + set, context);
 					return Command.SINGLE_SUCCESS;
 				})
 			)
@@ -192,17 +207,17 @@ public class CUCommands {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, Field field, EnumValue<T> value) {
-		category.then(literal(field.getName())
-			.then(argument("value", EnumArgument.enumArg(value.get().getClass(), true)).requires(CUCommands::perms)
+	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, String name, EnumValue<T> value) {
+		category.then(literal(name)
+			.then(argument("value", EnumArgument.enumArg(value.getDefault().getClass(), true)).requires(CUCommands::perms)
 				.executes(context -> {
-					auto set = (T) context.getArgument("value", value.get().getClass());
+					var set = (T) context.getArgument("value", value.get().getClass());
 					if(set == value.get()) {
 						error("Value is already set to " + set.name().toLowerCase(), context);
 						return 0;
 					}
 					value.set(set);
-					message(field.getName() + " set to: " + set.name().toLowerCase(), context);
+					message(name + " set to: " + set.name().toLowerCase(), context);
 					return Command.SINGLE_SUCCESS;
 				})
 			)
@@ -232,5 +247,9 @@ public class CUCommands {
 	}
 	private static void error(String message, CommandContext<CommandSourceStack> context) {
 		context.getSource().sendFailure(nullToEmpty(message));
+	}
+
+	private static <V> ConfigValue<V> createToForge(CValue<V, ? extends ConfigValue<V>> create) {
+		return create.jailbreak().value;
 	}
 }

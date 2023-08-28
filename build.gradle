@@ -183,7 +183,7 @@ allprojects {
     apply plugin: "maven-publish"
 
     archivesBaseName = rootProject.archives_base_name
-    version = rootProject.mod_version
+    version = rootProject.mod_version + getBuildNumber()
     group = rootProject.maven_group
 
     repositories {
@@ -204,7 +204,7 @@ allprojects {
 
 static def getBuildNumber() {
 	String buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-	return (buildNumber != null ? ".${buildNumber}" : "")
+	return (buildNumber != null ? "-${buildNumber}" : "")
 }
 
 

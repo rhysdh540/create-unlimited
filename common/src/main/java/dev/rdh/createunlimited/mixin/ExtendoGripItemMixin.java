@@ -1,32 +1,39 @@
 package dev.rdh.createunlimited.mixin;
 
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 
-import dev.rdh.createunlimited.CreateUnlimited;
-import dev.rdh.createunlimited.config.CUConfig;
+import dev.rdh.createunlimited.Util;
+import dev.rdh.createunlimited.config.CUConfigs;
+
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.util.UUID;
+import java.util.function.Supplier;
 
 @Mixin(ExtendoGripItem.class)
 public class ExtendoGripItemMixin {
-//    @ModifyArg(method = "<clinit>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;<init>(Ljava/util/UUID;Ljava/lang/String;DLnet/minecraft/world/entity/ai/attributes/AttributeModifier$Operation;)V", ordinal = 0, remap = false), index = 2, remap = false)
-//    private static double modifySingleExtendoGripRange(double original) {
-//        try {
-//            return CUConfig.singleExtendoGripRange.get();
-//        } catch (Exception e) {
-//            CreateUnlimited.LOGGER.warn("Failed to get singleExtendoGripRange!");
-//            return original;
-//        }
-//    }
-//    @ModifyArg(method = "<clinit>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;<init>(Ljava/util/UUID;Ljava/lang/String;DLnet/minecraft/world/entity/ai/attributes/AttributeModifier$Operation;)V", ordinal = 1, remap = false), index = 2, remap = false)
-//    private static double modifyDoubleExtendoGripRange(double original) {
-//        try {
-//            return CUConfig.doubleExtendoGripRange.get();
-//        } catch (Exception e) {
-//            CreateUnlimited.LOGGER.warn("Failed to get doubleExtendoGripRange!");
-//            return original;
-//        }
-//    }
+
+	@Redirect(method = "holdingExtendoGripIncreasesRange", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;rangeModifier:Ljava/util/function/Supplier;"))
+	private static Supplier<Multimap<Attribute, AttributeModifier>> g() {
+		AttributeModifier am = new AttributeModifier(UUID.fromString("7f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
+			CUConfigs.server().singleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
+		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.getReachAttribute(), am));
+	}
+
+	@Redirect(method = "holdingExtendoGripIncreasesRange", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;doubleRangeModifier:Ljava/util/function/Supplier;"))
+	private static Supplier<Multimap<Attribute, AttributeModifier>> a() {
+		AttributeModifier am = new AttributeModifier(UUID.fromString("8f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
+			CUConfigs.server().doubleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
+		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.getReachAttribute(), am));
+	}
 }

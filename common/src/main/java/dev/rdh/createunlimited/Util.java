@@ -11,6 +11,7 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Direction.Axis;
 
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -20,6 +21,16 @@ import net.minecraftforge.fml.config.ModConfig;
 import java.nio.file.Path;
 
 public class Util {
+
+	@ExpectPlatform
+	public static String getVersion() {
+		throw new AssertionError();
+	}
+
+	@ExpectPlatform
+	public static boolean isDevEnv() {
+		throw new AssertionError();
+	}
 
 	@ExpectPlatform
 	public static String platformName() {
@@ -37,13 +48,18 @@ public class Util {
 	}
 
 	@ExpectPlatform
-	public static void registerConfig(String id, ModConfig.Type type, IConfigSpec<?> spec, String fileName) {
+	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		throw new AssertionError();
 	}
 
 	@ExpectPlatform
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
 	void registerArgument(String name, Class<A> clazz, I info, ResourceLocation id) {
+		throw new AssertionError();
+	}
+
+	@ExpectPlatform
+	public static Attribute getReachAttribute() {
 		throw new AssertionError();
 	}
 

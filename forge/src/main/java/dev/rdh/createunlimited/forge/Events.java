@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
-import dev.rdh.createunlimited.config.CUConfig;
+import dev.rdh.createunlimited.config.CUConfigs;
 
 import net.minecraft.commands.CommandSourceStack;
 
@@ -26,13 +26,13 @@ public abstract class Events {
 				.getModContainerById(CreateUnlimited.ID)
 				.orElseThrow(() -> new IllegalStateException("Create Unlimited mod container missing on LoadComplete"));
 			container.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
-				() -> new ConfigScreenHandler.ConfigScreenFactory(CUConfig::createConfigScreen));
+				() -> new ConfigScreenHandler.ConfigScreenFactory(CUConfigs::createConfigScreen));
 		}
 	}
 
 	@SubscribeEvent
 	static void registerCommands(RegisterCommandsEvent event) {
-		for(LiteralArgumentBuilder<CommandSourceStack> command : UtilImpl.commands)
+		for(var command : UtilImpl.commands)
 			event.getDispatcher().register(command);
 	}
 }

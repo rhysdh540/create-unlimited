@@ -3,7 +3,7 @@ package dev.rdh.createunlimited.mixin;
 
 import com.simibubi.create.content.contraptions.glue.SuperGlueSelectionHandler;
 
-import dev.rdh.createunlimited.config.CUConfig;
+import dev.rdh.createunlimited.config.CUConfigs;
 
 import net.minecraft.core.BlockPos;
 
@@ -22,14 +22,14 @@ import java.util.Set;
 public class SuperGlueSectionHandlerMixin {
 	@ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24), remap = false)
 	private double modifyMaxSuperGlueDistance(double original) {
-		return CUConfig.maxGlueConnectionRange.get();
+		return CUConfigs.server().maxGlueConnectionRange.get();
 	}
-//	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
-//	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
-//		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
-//	}
-//	@Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
-//	private boolean modifyNeedsConnectedClick(Set<BlockPos> instance, Object o) {
-//		return instance.contains((BlockPos) o) || !CUConfig.physicalBlockConnection.get();
-//	}
+	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
+	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
+		return instance.contains((BlockPos) o) || !CUConfigs.server().physicalBlockConnection.get();
+	}
+	@Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
+	private boolean modifyNeedsConnectedClick(Set<BlockPos> instance, Object o) {
+		return instance.contains((BlockPos) o) || !CUConfigs.server().physicalBlockConnection.get();
+	}
 }

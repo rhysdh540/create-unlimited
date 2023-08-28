@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "client": [],
   "mixins": [
+    "BlockMovementChecksMixin",
     "CopycatBlockMixin",
     "CTrainsMixin",
     "ExtendoGripItemMixin",
@@ -13,8 +14,7 @@
     "TrackEdgeMixin",
     "TrackPlacementMixin",
     "TrainMixin",
-    "TrainRelocatorMixin",
-    "accessor.PlacementInfoAccessor"
+    "TrainRelocatorMixin"
   ],
   "injectors": {
     "defaultRequire": 1
