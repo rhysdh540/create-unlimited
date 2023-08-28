@@ -30,9 +30,9 @@ subprojects {
     apply plugin: "dev.architectury.loom"
 	apply plugin: "io.github.juuxel.loom-vineflower"
 
-	def froge = it == project(":forge")
-	def fabric = it == project(":fabric")
-	def common = it == project(":common")
+	def isForge = it == project(":forge")
+	def isFabric = it == project(":fabric")
+	def isCommon = it == project(":common")
 
 	def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
 
@@ -42,7 +42,7 @@ subprojects {
 		if(awFile.exists()) {
 			accessWidenerPath = awFile
 
-			if(froge) {
+			if(isForge) {
 				forge {
 					convertAccessWideners = true
 					extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
@@ -63,10 +63,10 @@ subprojects {
 		addJarRuntime
 		addJarEverywhere
 
-		if (!common) {
+		if (!isCommon) {
 			include.extendsFrom addJar
 		}
-		if(froge)
+		if(isForge)
 			forgeRuntimeLibrary.extendsFrom addJar
 
         compileOnly.extendsFrom addJarCompile
@@ -122,7 +122,7 @@ subprojects {
         //// https://www.cursemaven.com/
         //// https://docs.modrinth.com/docs/tutorials/maven/
 
-        if (fabric) {
+        if (isFabric) {
             if (rootProject.hasProperty("lazydfu")) {
 				modRuntimeOnly "maven.modrinth:lazydfu:${rootProject.lazydfu}"
             }
@@ -131,7 +131,7 @@ subprojects {
             }
         }
 
-        if (froge) {
+        if (isForge) {
             if (rootProject.hasProperty("bmb")) {
 				modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
             }
