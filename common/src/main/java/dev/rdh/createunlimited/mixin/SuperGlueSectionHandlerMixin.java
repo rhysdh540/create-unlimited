@@ -24,12 +24,14 @@ public class SuperGlueSectionHandlerMixin {
 	private double modifyMaxSuperGlueDistance(double original) {
 		return CUConfigs.server().maxGlueConnectionRange.get();
 	}
-	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
-	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
-		return instance.contains((BlockPos) o) || !CUConfigs.server().physicalBlockConnection.get();
-	}
-	@Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
-	private boolean modifyNeedsConnectedClick(Set<BlockPos> instance, Object o) {
-		return instance.contains((BlockPos) o) || !CUConfigs.server().physicalBlockConnection.get();
-	}
+
+//	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
+//	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
+//		return instance.contains((BlockPos) o) || !CUConfigs.server().physicalBlockConnection.get();
+//	}
+//
+//	@Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
+//	private boolean modifyNeedsConnectedClick(Set<BlockPos> instance, Object o) {
+//		return instance.contains((BlockPos) o) || !CUConfigs.server().physicalBlockConnection.get();
+//	}
 }

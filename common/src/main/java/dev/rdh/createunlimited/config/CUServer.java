@@ -23,7 +23,7 @@ public class CUServer extends ConfigBase {
 
 	public final ConfigGroup glue = group(1, "glue", Comments.glue);
 	public final ConfigFloat maxGlueConnectionRange = f(24F, 0F, "maxGlueConnectionRange", Comments.maxGlueConnectionRange);
-	public final ConfigBool physicalBlockConnection = b(true, "physicalBlockConnection", Comments.physicalBlockConnection);
+//	public final ConfigBool physicalBlockConnection = b(true, "physicalBlockConnection", Comments.physicalBlockConnection);
 
 	public final ConfigGroup extendo = group(1, "extendo", Comments.extendo);
 	public final ConfigInt singleExtendoGripRange = i(3, 0, "singleExtendoGripRange", Comments.singleExtendoGripRange);
@@ -44,7 +44,7 @@ public class CUServer extends ConfigBase {
 					  maxGlueConnectionRange = "Maximum distance between two blocks for them to be considered for glue connections.",
 					  physicalBlockConnection = "Require blocks to be connected for glue connections.";
 
-		static String extendo = "Extend even more!", // unused because it's not implemented yet
+		static String extendo = "Extend even more!",
 					  singleExtendoGripRange = "How much to extend your reach when holding an Extendo-Grip. Adds to your base reach.",
 					  doubleExtendoGripRange = "How much to extend your reach when holding two Extendo-Grips. Adds to your base reach.";
 
