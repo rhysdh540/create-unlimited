@@ -110,19 +110,20 @@ public class CUCommands {
 
 		}
 
-		base.then(literal("disableEverything")).requires(CUCommands::perms)
+		base.then(literal("disableEverything").requires(CUCommands::perms)
 			.executes(context -> {
 				CUConfigs.server().placementChecks.set(CUServer.PlacementCheck.OFF);
 				CUConfigs.server().extendedDriving.set(0.01);
 				CUConfigs.server().maxTrainRelocationDistance.set(128d);
 				CUConfigs.server().maxAllowedStress.set(-1d);
+				CUConfigs.server().trainAssemblyChecks.set(false);
 				CUConfigs.server().maxGlueConnectionRange.set(128d);
-				CUConfigs.server().physicalBlockConnection.set(false);
+				//CUConfigs.server().physicalBlockConnection.set(false);
 				CUConfigs.server().singleExtendoGripRange.set(128);
 				CUConfigs.server().doubleExtendoGripRange.set(128);
 				CUConfigs.server().allowAllCopycatBlocks.set(true);
 				return Command.SINGLE_SUCCESS;
-			});
+			}));
 
 		if (category != null)
 			base.then(category);

@@ -20,6 +20,7 @@ public class CUServer extends ConfigBase {
 	public final ConfigFloat extendedDriving = f(0.875F, 0F, 0.875F, "extendedDriving", Comments.extendedDriving);
 	public final ConfigFloat maxTrainRelocationDistance = f(24F, 0F, "maxTrainRelocationDistance", Comments.maxTrainRelocationDistance);
 	public final ConfigFloat maxAllowedStress = f(0.5F, -1F, "maxAllowedStress", Comments.maxAllowedStress);
+	public final ConfigBool trainAssemblyChecks = b(true, "trainAssemblyChecks", Comments.trainAssemblyChecks);
 
 	public final ConfigGroup glue = group(1, "glue", Comments.glue);
 	public final ConfigFloat maxGlueConnectionRange = f(24F, 0F, "maxGlueConnectionRange", Comments.maxGlueConnectionRange);
@@ -38,7 +39,8 @@ public class CUServer extends ConfigBase {
 					  placementChecks = "Whether to check for valid placement when placing train tracks",
 					  extendedDriving = "The minimum turn that trains can drive on. Set to 0.01 if buggy.",
 					  maxTrainRelocationDistance = "Maximum distance a train can be relocated using the wrench.",
-					  maxAllowedStress = "Maximum stress from couplings before train derails. Set to -1 to disable stress completely.";
+					  maxAllowedStress = "Maximum stress from couplings before train derails. Set to -1 to disable stress completely.",
+					  trainAssemblyChecks = "Whether to check for valid assembly when placing train tracks";
 
 		static String glue = "Stick anything together!",
 					  maxGlueConnectionRange = "Maximum distance between two blocks for them to be considered for glue connections.",
@@ -57,7 +59,7 @@ public class CUServer extends ConfigBase {
 			return (String) Comments.class.getDeclaredField(name).get(null);
 		} catch (IllegalAccessException | NoSuchFieldException e) {
 			CreateUnlimited.LOGGER.error("Failed to get comment for " + name, e);
-			return "";
+			return "No comment.";
 		}
 	}
 

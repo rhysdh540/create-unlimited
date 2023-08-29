@@ -6,9 +6,11 @@
   "client": [],
   "mixins": [
     "BlockMovementChecksMixin",
+    "CarriageContraptionMixin",
     "CopycatBlockMixin",
     "CTrainsMixin",
     "ExtendoGripItemMixin",
+    "StationBlockEntityMixin",
     "SuperGlueSectionHandlerMixin",
     "SuperGlueSelectionPacketMixin",
     "TrackEdgeMixin",

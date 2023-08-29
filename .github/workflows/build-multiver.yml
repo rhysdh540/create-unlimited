@@ -58,19 +58,19 @@ jobs:
             - name: upload forge build artifacts
               uses: actions/upload-artifact@v3
               with:
-                  name: cu-artifacts-forge
+                  name: cu-artifacts-forge-1.19.2
                   path: forge/build/libs/*.jar
 
             - name: upload fabric build artifacts
               uses: actions/upload-artifact@v3
               with:
-                  name: cu-artifacts-fabric
+                  name: cu-artifacts-fabric-1.19.2
                   path: fabric/build/libs/*.jar
 
             - name: upload merged build artifact to github
               uses: actions/upload-artifact@v3
               with:
-                  name: cu-artifacts-merged
+                  name: cu-artifacts-merged-1.19.2
                   path: |
                       build/libs/merged/*.jar
 
@@ -126,19 +126,19 @@ jobs:
             -   name: upload forge build artifacts
                 uses: actions/upload-artifact@v3
                 with:
-                    name: cu-artifacts-forge
+                    name: cu-artifacts-forge-1.20.1
                     path: forge/build/libs/*.jar
 
             -   name: upload fabric build artifacts
                 uses: actions/upload-artifact@v3
                 with:
-                    name: cu-artifacts-fabric
+                    name: cu-artifacts-fabric-1.20.1
                     path: fabric/build/libs/*.jar
 
             -   name: upload merged build artifact to github
                 uses: actions/upload-artifact@v3
                 with:
-                    name: cu-artifacts-merged
+                    name: cu-artifacts-merged-1.20.1
                     path: |
                         build/libs/merged/*.jar
 
