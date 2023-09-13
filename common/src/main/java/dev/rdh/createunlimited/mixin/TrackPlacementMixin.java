@@ -423,15 +423,10 @@ public class TrackPlacementMixin {
 		}
 		return placeTracks(level, info, state1, state2, targetPos1, targetPos2, false);
 	}
-	/*
-	 * Lets us call the protected method paveTracks
-	 */
+
 	@Invoker("paveTracks")
 	private static void paveTracks(Level level, PlacementInfo info, BlockItem blockItem, boolean simulate) { throw new AssertionError(); }
 
-	/*
-	 * Lets us call the protected method placeTracks
-	 */
 	@Invoker("placeTracks")
 	private static PlacementInfo placeTracks(Level level, PlacementInfo info, BlockState state1, BlockState state2, BlockPos targetPos1, BlockPos targetPos2, boolean simulate) { throw new AssertionError(); }
 }

@@ -32,10 +32,6 @@ import java.nio.file.Path;
 
 public class UtilImpl {
 
-	public static String platformName() {
-		return FabricLoader.getInstance().isModLoaded("quilt_loader") ? "Quilt" : "Fabric";
-	}
-
 	public static Path getConfigDirectory() {
 		return FabricLoader.getInstance().getConfigDir();
 	}
@@ -72,5 +68,9 @@ public class UtilImpl {
 
 	public static Attribute getReachAttribute() {
 		return ReachEntityAttributes.REACH;
+	}
+
+	public static String platformName() {
+		return FabricLoader.getInstance().isModLoaded("quilt_loader") ? "Quilt" : "Fabric";
 	}
 }

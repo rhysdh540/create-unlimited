@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "dev.rdh.createunlimited.mixin",
+  "plugin": "dev.rdh.createunlimited.CUMixinConfig",
   "compatibilityLevel": "JAVA_17",
   "client": [],
   "mixins": [
@@ -9,7 +10,6 @@
     "CarriageContraptionMixin",
     "CopycatBlockMixin",
     "CTrainsMixin",
-    "ExtendoGripItemMixin",
     "StationBlockEntityMixin",
     "SuperGlueSectionHandlerMixin",
     "SuperGlueSelectionPacketMixin",

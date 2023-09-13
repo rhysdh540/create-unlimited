@@ -4,7 +4,9 @@
   "package": "dev.rdh.createunlimited.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [],
-  "mixins": [],
+  "mixins": [
+    "ExtendoGripItemMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

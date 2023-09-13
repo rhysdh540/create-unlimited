@@ -1,10 +1,15 @@
 package dev.rdh.createunlimited;
 
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.mojang.brigadier.arguments.ArgumentType;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+
+import dev.rdh.createunlimited.config.CUConfigs;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -12,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Direction.Axis;
 
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -19,6 +25,8 @@ import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 
 import java.nio.file.Path;
+import java.util.UUID;
+import java.util.function.Supplier;
 
 public class Util {
 
@@ -61,6 +69,30 @@ public class Util {
 	@ExpectPlatform
 	public static Attribute getReachAttribute() {
 		throw new AssertionError();
+	}
+
+	public static boolean isFabric() {
+		return platformName().equals("Fabric") || isQuilt();
+	}
+
+	public static boolean isForge() {
+		return platformName().equals("Forge");
+	}
+
+	public static boolean isQuilt() {
+		return platformName().equals("Quilt");
+	}
+
+	public static Supplier<Multimap<Attribute, AttributeModifier>> singleRange() {
+		AttributeModifier am = new AttributeModifier(UUID.fromString("7f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
+				CUConfigs.server().singleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
+		return Suppliers.memoize(() -> ImmutableMultimap.of(getReachAttribute(), am));
+	}
+
+	public static Supplier<Multimap<Attribute, AttributeModifier>> doubleRange() {
+		AttributeModifier am = new AttributeModifier(UUID.fromString("8f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
+				CUConfigs.server().doubleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
+		return Suppliers.memoize(() -> ImmutableMultimap.of(getReachAttribute(), am));
 	}
 
 	@SuppressWarnings("SuspiciousNameCombination") // javac doesn't like when we pass a value called "y" to a method that expects a value called "x"

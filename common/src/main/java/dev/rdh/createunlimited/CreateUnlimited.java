@@ -19,10 +19,11 @@ public class CreateUnlimited {
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
     public static void init() {
-		LOGGER.info("{} v{} initializing! Create version: {} on platform: {}", NAME, VERSION, Create.VERSION, Util.platformName());
+		LOGGER.info("{} v{} initializing! Create version: {} on platform: {}",
+				NAME, VERSION, Create.VERSION, Util.platformName());
+
 		EnumArgument.init();
 		CUConfigs.register();
-
 		CUCommands.registerConfigCommand();
     }
 

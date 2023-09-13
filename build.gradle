@@ -26,13 +26,23 @@ architectury {
     minecraft = minecraft_version
 }
 
-subprojects {
+subprojects { p ->
     apply plugin: "dev.architectury.loom"
 	apply plugin: "io.github.juuxel.loom-vineflower"
 
-	def isForge = it == project(":forge")
-	def isFabric = it == project(":fabric")
-	def isCommon = it == project(":common")
+	ext.manifold = { path ->
+		String coords = "systems.manifold:manifold-${path}:${manifold_version}"
+		if(path == 'util')
+			dependencies { addJarEverywhere(coords) }
+		else if(path.endsWith('rt'))
+			dependencies { addJarRuntime(coords) }
+		else
+			dependencies { addJarCompile(coords) }
+	}
+
+	def isForge = p == project(":forge")
+	def isFabric = p == project(":fabric")
+	def isCommon = p == project(":common")
 
 	def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
 
@@ -63,6 +73,8 @@ subprojects {
 		addJarRuntime
 		addJarEverywhere
 
+		mixin
+
 		if (!isCommon) {
 			include.extendsFrom addJar
 		}
@@ -74,11 +86,13 @@ subprojects {
         implementation.extendsFrom addJarRuntime
 		api.extendsFrom addJarEverywhere
 
-		addJar.extendsFrom addJarCompile
 		addJar.extendsFrom addJarRuntime
 		addJar.extendsFrom addJarEverywhere
 
 		implementation.extendsFrom shade
+
+		annotationProcessor.extendsFrom mixin
+		addJarRuntime.extendsFrom mixin
     }
 
 	repositories {
@@ -105,6 +119,8 @@ subprojects {
 	}
 
     dependencies {
+//		mixin "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
+//		mixin "com.github.bawnorton.mixinsquared:mixinsquared-${p.name}:${rootProject.mixin_squared}"
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 		mappings(loom.layered {
 			it.mappings("org.quiltmc:quilt-mappings:${rootProject.minecraft_version}+build.${rootProject.quilt}:intermediary-v2")
@@ -112,11 +128,11 @@ subprojects {
 			it.officialMojangMappings { nameSyntheticMembers = false }
 		})
 
-        addJarCompile "systems.manifold:manifold-preprocessor:${rootProject.manifold_version}"
-		addJarCompile "systems.manifold:manifold-ext:${rootProject.manifold_version}"
-		addJarRuntime "systems.manifold:manifold-ext-rt:${rootProject.manifold_version}"
-        addJarRuntime "systems.manifold:manifold-rt:${rootProject.manifold_version}"
-        addJarEverywhere "systems.manifold:manifold-util:${rootProject.manifold_version}"
+		manifold 'util'
+        manifold 'preprocessor'
+		manifold 'ext'
+		manifold 'ext-rt'
+        manifold 'rt'
 
         // Dev Env Optimizations
         //// https://www.cursemaven.com/
@@ -187,8 +203,7 @@ allprojects {
     group = rootProject.maven_group
 
     repositories {
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' } // manifold
-        maven { url 'https://jitpack.io' } // idk a lot of stuff
+        maven { url 'https://jitpack.io' }
     }
 
 	tasks.withType(JavaCompile).configureEach {

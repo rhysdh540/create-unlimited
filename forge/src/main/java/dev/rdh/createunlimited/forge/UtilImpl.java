@@ -39,10 +39,6 @@ public class UtilImpl {
 	@ApiStatus.Internal
 	public static Set<LiteralArgumentBuilder<CommandSourceStack>> commands = new HashSet<>();
 
-	public static String platformName() {
-		return "Forge";
-	}
-
 	public static Path getConfigDirectory() {
 		return FMLPaths.CONFIGDIR.get();
 	}
@@ -86,5 +82,9 @@ public class UtilImpl {
 		#elif PRE_CURRENT_MC_1_19_2
 		return ForgeMod.REACH_DISTANCE.get();
 		#endif
+	}
+
+	public static String platformName() {
+		return "Forge";
 	}
 }
