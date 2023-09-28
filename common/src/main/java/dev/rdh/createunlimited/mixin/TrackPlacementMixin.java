@@ -39,11 +39,9 @@ public abstract class TrackPlacementMixin {
 	@Shadow static boolean hoveringMaxed;
 	@Shadow static int hoveringAngle;
 	@Shadow static ItemStack lastItem;
-	/**
-	 * @author idk whoever wrote the original method
-	 * @reason Remove checks for placing track blocks
-	 */
+
 	@Overwrite
+	@SuppressWarnings("OverwriteAuthorRequired")
 	public static PlacementInfo tryConnect(Level level, Player player, BlockPos pos2, BlockState state2,
 										   ItemStack stack, boolean girder, boolean maximiseTurn) {
 		boolean enabled = CUConfigs.server().placementChecks.get().isEnabledFor(player);

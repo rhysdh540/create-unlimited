@@ -10,6 +10,7 @@
     "CarriageContraptionMixin",
     "CopycatBlockMixin",
     "CTrainsMixin",
+    "ExtendoGripItemMixin",
     "StationBlockEntityMixin",
     "SuperGlueSectionHandlerMixin",
     "SuperGlueSelectionPacketMixin",
