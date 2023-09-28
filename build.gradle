@@ -53,15 +53,36 @@ subprojects { p ->
 			accessWidenerPath = awFile
 
 			if(isForge) {
+				//noinspection GroovyAssignabilityCheck
 				forge {
 					convertAccessWideners = true
 					extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
 				}
 			}
 		}
+		if(isForge) {
+			//noinspection GroovyAssignabilityCheck
+			forge {
+				mixinConfig(
+					"createunlimited.mixins.json",
+					"createunlimited-common.mixins.json",
+				)
+			}
+		}
+		if(!isCommon) {
+			runs {
+				remove server
 
-		runs {
-			remove server
+				client {
+					client()
+					name = 'Minecraft Client'
+					ideConfigGenerated = true
+					vmArgs '-Xmx6G', '-Xms2G', '-XX:+UnlockExperimentalVMOptions',
+						'-XX:+UseZGC', '-XX:+ZGenerational',
+						'-Dsun.rmi.dgc.server.gcInterval=2147483646', '-XX:MaxGCPauseMillis=50',
+						'-XX:SoftMaxHeapSize=4G', '-XX:-ZUncommit'
+				}
+			}
 		}
 	}
 
@@ -196,7 +217,6 @@ subprojects { p ->
 allprojects {
     apply plugin: "java"
     apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
 
     archivesBaseName = rootProject.archives_base_name
     version = rootProject.mod_version + getBuildNumber()
