@@ -75,11 +75,18 @@ public class CUConfigs {
 	}
 
 	public static BaseConfigScreen createConfigScreen(Screen parent) {
+		if(!done) initBCS();
+		return new BaseConfigScreen(parent, CreateUnlimited.ID);
+	}
+
+	private static boolean done = false;
+
+	private static void initBCS() {
 		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, (base) ->
 			base.withSpecs(getSpecByType(CLIENT), getSpecByType(COMMON), getSpecByType(SERVER))
 				.withTitles("", "", "Settings")
 		);
-		return new BaseConfigScreen(parent, CreateUnlimited.ID);
+		done = true;
 	}
 	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
 		return createConfigScreen(parent);
