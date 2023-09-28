@@ -94,8 +94,6 @@ subprojects { p ->
 		addJarRuntime
 		addJarEverywhere
 
-		mixin
-
 		if (!isCommon) {
 			include.extendsFrom addJar
 		}
@@ -111,9 +109,6 @@ subprojects { p ->
 		addJar.extendsFrom addJarEverywhere
 
 		implementation.extendsFrom shade
-
-		annotationProcessor.extendsFrom mixin
-		addJarRuntime.extendsFrom mixin
     }
 
 	repositories {
@@ -140,8 +135,12 @@ subprojects { p ->
 	}
 
     dependencies {
-//		mixin "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
-//		mixin "com.github.bawnorton.mixinsquared:mixinsquared-${p.name}:${rootProject.mixin_squared}"
+		annotationProcessor compileOnly("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
+		if(isForge) { // dont include on fabric
+			include "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
+		}
+
+		//include annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-${p.name}:${rootProject.mixin_squared}")
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 		mappings(loom.layered {
 			it.mappings("org.quiltmc:quilt-mappings:${rootProject.minecraft_version}+build.${rootProject.quilt}:intermediary-v2")

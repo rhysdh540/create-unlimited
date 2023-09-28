@@ -4,8 +4,6 @@ import com.google.common.collect.Multimap;
 
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 
-import dev.rdh.createunlimited.CreateUnlimited;
-
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
@@ -19,6 +17,7 @@ import static dev.rdh.createunlimited.Util.doubleRange;
 import static dev.rdh.createunlimited.Util.singleRange;
 
 @Mixin(ExtendoGripItem.class)
+@SuppressWarnings("UnresolvedMixinReference")
 public abstract class ExtendoGripItemMixin {
 
 	@Redirect(method = {

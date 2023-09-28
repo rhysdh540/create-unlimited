@@ -1,6 +1,7 @@
 package dev.rdh.createunlimited.mixin;
 
-import com.simibubi.create.content.trains.bogey.AbstractBogeyBlock;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+
 import com.simibubi.create.content.trains.station.StationBlockEntity;
 import dev.rdh.createunlimited.config.CUConfigs;
 import org.spongepowered.asm.mixin.Mixin;
@@ -8,21 +9,16 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = StationBlockEntity.class, remap = false)
+@SuppressWarnings("unused")
 public abstract class StationBlockEntityMixin {
-	@Redirect(method = "assemble", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/bogey/AbstractBogeyBlock;allowsSingleBogeyCarriage()Z", ordinal = 0))
-	private boolean allowsSingleBogeyCarriage(AbstractBogeyBlock<?> instance) {
-		if(CUConfigs.server().trainAssemblyChecks.get())
-			return instance.allowsSingleBogeyCarriage();
-		else
-			return true;
+	@ModifyExpressionValue(method = "assemble", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/bogey/AbstractBogeyBlock;allowsSingleBogeyCarriage()Z", ordinal = 0))
+	private boolean allowsSingleBogeyCarriage(boolean original) {
+		return !CUConfigs.server().trainAssemblyChecks.get() || original;
 	}
 
-	@ModifyConstant(method = "assemble", constant = @Constant(intValue = 3, ordinal = 0))
+	@ModifyExpressionValue(method = "assemble", at = @At(value = "CONSTANT", args = "intValue=3", ordinal = 0))
 	private int setMinBogeySpacing(int original) {
-		if(CUConfigs.server().trainAssemblyChecks.get())
-			return original;
-		else
-			return 0;
+		return CUConfigs.server().trainAssemblyChecks.get() ? original : 0;
 	}
 
 	@Inject(method = "isValidBogeyOffset", at = @At("HEAD"), cancellable = true)

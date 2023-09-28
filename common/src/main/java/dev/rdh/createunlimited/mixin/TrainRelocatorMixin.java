@@ -15,6 +15,7 @@ public abstract class TrainRelocatorMixin {
 	private static double modifyMaxTrainRelocatingDistance(double original) {
 		return CUConfigs.server().maxTrainRelocationDistance.get();
 	}
+
 	@ModifyConstant(method = "clientTick", constant = @Constant(doubleValue = 24), remap = false)
 	private static double modifyMaxTrainRelocatingDistanceClient(double original) {
 		return CUConfigs.server().maxTrainRelocationDistance.get();
