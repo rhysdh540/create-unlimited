@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(value = CTrains.class, remap = false)
-public class CTrainsMixin {
+public abstract class CTrainsMixin {
 	@ModifyConstant(method = "<init>", constant = @Constant(intValue = 128, ordinal = 0))
 	private int modifyMaxTrackPlacementLength(int par1) {
 		CreateUnlimited.LOGGER.info("CTrains config override loaded (probably)");

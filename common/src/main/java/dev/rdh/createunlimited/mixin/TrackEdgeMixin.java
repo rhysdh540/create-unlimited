@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 
 @Mixin(TrackEdge.class)
-public class TrackEdgeMixin {
+public abstract class TrackEdgeMixin {
 	@ModifyConstant(method = "canTravelTo", constant = @Constant(doubleValue = 0.875), remap = false)
 	private double canTravelTo(double original) {
 		return CUConfigs.server().extendedDriving.get();

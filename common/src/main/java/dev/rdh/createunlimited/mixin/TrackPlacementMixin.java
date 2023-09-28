@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(value = TrackPlacement.class, remap = false, priority = 0) // inject before snr does
 @SuppressWarnings("unused")
-public class TrackPlacementMixin {
+public abstract class TrackPlacementMixin {
 	@Shadow public static PlacementInfo cached;
 	@Shadow static BlockPos hoveringPos;
 	@Shadow static boolean hoveringMaxed;

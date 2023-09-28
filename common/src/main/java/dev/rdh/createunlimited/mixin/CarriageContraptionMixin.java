@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.Map;
 
 @Mixin(CarriageContraption.class)
-public class CarriageContraptionMixin {
+public abstract class CarriageContraptionMixin {
 	@Redirect(method = "assemble", at = @At(value = "INVOKE", target = "Ljava/util/Map;size()I", ordinal = 0))
 	private int size(Map<?, ?> instance) {
 		if(CUConfigs.server().trainAssemblyChecks.get())

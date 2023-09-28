@@ -19,7 +19,7 @@ import java.util.Set;
  * code for server-side modification
  */
 @Mixin(SuperGlueSelectionPacket.class)
-public class SuperGlueSelectionPacketMixin {
+public abstract class SuperGlueSelectionPacketMixin {
 	@ModifyConstant(method = "lambda$handle$0", constant = @Constant(doubleValue = 25), remap = false)
 	private double modifyMaxSuperGlueDistance(double original) {
 		return CUConfigs.server().maxGlueConnectionRange.get();

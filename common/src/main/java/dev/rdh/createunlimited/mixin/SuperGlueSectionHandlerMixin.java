@@ -19,7 +19,7 @@ import java.util.Set;
  * code for client-side modification
  */
 @Mixin(SuperGlueSelectionHandler.class)
-public class SuperGlueSectionHandlerMixin {
+public abstract class SuperGlueSectionHandlerMixin {
 	@ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24), remap = false)
 	private double modifyMaxSuperGlueDistance(double original) {
 		return CUConfigs.server().maxGlueConnectionRange.get();

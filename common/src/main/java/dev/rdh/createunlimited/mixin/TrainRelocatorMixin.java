@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(TrainRelocator.class)
-public class TrainRelocatorMixin {
+public abstract class TrainRelocatorMixin {
 	@ModifyConstant(method = "onClicked", constant = @Constant(doubleValue = 24), remap = false)
 	private static double modifyMaxTrainRelocatingDistance(double original) {
 		return CUConfigs.server().maxTrainRelocationDistance.get();

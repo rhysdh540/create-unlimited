@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = StationBlockEntity.class, remap = false)
-public class StationBlockEntityMixin {
+public abstract class StationBlockEntityMixin {
 	@Redirect(method = "assemble", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/bogey/AbstractBogeyBlock;allowsSingleBogeyCarriage()Z", ordinal = 0))
 	private boolean allowsSingleBogeyCarriage(AbstractBogeyBlock<?> instance) {
 		if(CUConfigs.server().trainAssemblyChecks.get())

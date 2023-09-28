@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = BlockMovementChecks.class, remap = false)
-public class BlockMovementChecksMixin {
+public abstract class BlockMovementChecksMixin {
 //	@Inject(method = "isNotSupportive", at = @At("HEAD"), cancellable = true)
 //	private static void everythingIsSupportive(BlockState state, Direction facing, CallbackInfoReturnable<Boolean> cir) {
 //		if(!CUConfigs.server().physicalBlockConnection.get())

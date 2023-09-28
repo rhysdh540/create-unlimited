@@ -19,7 +19,7 @@ import static dev.rdh.createunlimited.Util.doubleRange;
 import static dev.rdh.createunlimited.Util.singleRange;
 
 @Mixin(ExtendoGripItem.class)
-public class ExtendoGripItemMixin {
+public abstract class ExtendoGripItemMixin {
 
 	@Redirect(method = "holdingExtendoGripIncreasesRange", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;rangeModifier:Ljava/util/function/Supplier;"))
 	private static Supplier<Multimap<Attribute, AttributeModifier>> mainSingle() {
