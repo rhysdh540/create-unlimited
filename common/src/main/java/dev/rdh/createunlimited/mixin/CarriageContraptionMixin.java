@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 
-@Mixin(CarriageContraption.class)
+@Mixin(value = CarriageContraption.class)
 @SuppressWarnings("unused")
 public abstract class CarriageContraptionMixin {
 	@ModifyExpressionValue(method = "assemble", at = @At(value = "INVOKE", target = "Ljava/util/Map;size()I", ordinal = 0))

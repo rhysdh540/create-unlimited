@@ -135,7 +135,7 @@ subprojects { p ->
 	}
 
     dependencies {
-		annotationProcessor compileOnly("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
+		annotationProcessor implementation("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
 		if(isForge) { // dont include on fabric
 			include "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
 		}
@@ -185,7 +185,6 @@ subprojects { p ->
 
     processResources {
 		def properties = [
-			aw	 			 : access_widener,
 			version          : mod_version,
 			minecraft_version: minecraft_version,
 			forge            : forge.split("\\.")[0],
@@ -195,11 +194,9 @@ subprojects { p ->
 			create_fabric    : create_fabric,
 		]
 
-		inputs.properties properties
+		exclude '**/*.aw'
 
-		filesMatching("architectury.common.json") {
-			expand properties
-		}
+		inputs.properties properties
 
 		filesMatching("fabric.mod.json") {
 			expand properties
@@ -337,7 +334,6 @@ def makeAccessWidener() {
         versionAccessWidenerFile.createNewFile()
         versionAccessWidenerFile.text = "accessWidener   v2  named"
     }
-    rootProject.ext.set("access_widener", "${rootProject.access_widener_version}.createunlimited.aw")
 }
 
 // Defines the mixins

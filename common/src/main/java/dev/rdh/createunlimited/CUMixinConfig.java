@@ -1,6 +1,6 @@
 package dev.rdh.createunlimited;
 
-//import com.llamalad7.mixinextras.MixinExtrasBootstrap;
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -12,7 +12,7 @@ import java.util.Set;
 public class CUMixinConfig implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {
-//		MixinExtrasBootstrap.init();
+		MixinExtrasBootstrap.init();
 	}
 
 	@Override

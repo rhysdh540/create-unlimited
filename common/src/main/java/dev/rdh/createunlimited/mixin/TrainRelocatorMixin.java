@@ -9,14 +9,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(TrainRelocator.class)
+@Mixin(value = TrainRelocator.class, remap = false)
 public abstract class TrainRelocatorMixin {
-	@ModifyConstant(method = "onClicked", constant = @Constant(doubleValue = 24), remap = false)
+	@ModifyConstant(method = "onClicked", constant = @Constant(doubleValue = 24))
 	private static double modifyMaxTrainRelocatingDistance(double original) {
 		return CUConfigs.server().maxTrainRelocationDistance.get();
 	}
 
-	@ModifyConstant(method = "clientTick", constant = @Constant(doubleValue = 24), remap = false)
+	@ModifyConstant(method = "clientTick", constant = @Constant(doubleValue = 24))
 	private static double modifyMaxTrainRelocatingDistanceClient(double original) {
 		return CUConfigs.server().maxTrainRelocationDistance.get();
 	}

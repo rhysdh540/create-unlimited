@@ -18,15 +18,15 @@ import java.util.Set;
 /**
  * code for server-side modification
  */
-@Mixin(SuperGlueSelectionPacket.class)
+@Mixin(value = SuperGlueSelectionPacket.class, remap = false)
 public abstract class SuperGlueSelectionPacketMixin {
-	@ModifyConstant(method = "lambda$handle$0", constant = @Constant(doubleValue = 25), remap = false)
+	@ModifyConstant(method = "lambda$handle$0", constant = @Constant(doubleValue = 25))
 	private double modifyMaxSuperGlueDistance(double original) {
 		return CUConfigs.server().maxGlueConnectionRange.get();
 	}
 
 	//todo make this work
-//	@Redirect(method = "lambda$handle$0", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z", remap = false), remap = false)
+//	@Redirect(method = "lambda$handle$0", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"))
 //	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
 //		return instance.contains((BlockPos) o) || !CUConfigs.server().physicalBlockConnection.get();
 //	}

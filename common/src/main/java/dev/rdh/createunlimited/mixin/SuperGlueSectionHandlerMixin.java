@@ -18,19 +18,19 @@ import java.util.Set;
 /**
  * code for client-side modification
  */
-@Mixin(SuperGlueSelectionHandler.class)
+@Mixin(value = SuperGlueSelectionHandler.class, remap = false)
 public abstract class SuperGlueSectionHandlerMixin {
-	@ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24), remap = false)
+	@ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24))
 	private double modifyMaxSuperGlueDistance(double original) {
 		return CUConfigs.server().maxGlueConnectionRange.get();
 	}
 
-//	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
+//	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"))
 //	private boolean modifyNeedsConnected(Set<BlockPos> instance, Object o) {
 //		return instance.contains((BlockPos) o) || !CUConfigs.server().physicalBlockConnection.get();
 //	}
 //
-//	@Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"), remap = false)
+//	@Redirect(method = "onMouseInput", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"))
 //	private boolean modifyNeedsConnectedClick(Set<BlockPos> instance, Object o) {
 //		return instance.contains((BlockPos) o) || !CUConfigs.server().physicalBlockConnection.get();
 //	}

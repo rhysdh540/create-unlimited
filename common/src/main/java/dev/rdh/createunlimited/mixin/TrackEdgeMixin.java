@@ -7,9 +7,9 @@ import dev.rdh.createunlimited.config.CUConfigs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 
-@Mixin(TrackEdge.class)
+@Mixin(value = TrackEdge.class, remap = false)
 public abstract class TrackEdgeMixin {
-	@ModifyConstant(method = "canTravelTo", constant = @Constant(doubleValue = 0.875), remap = false)
+	@ModifyConstant(method = "canTravelTo", constant = @Constant(doubleValue = 0.875))
 	private double canTravelTo(double original) {
 		return CUConfigs.server().extendedDriving.get();
 	}
