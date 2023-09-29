@@ -20,3 +20,4 @@ classes/
 
 build.properties
 common/src/main/resources/*.accesswidener
+.DS_Store
