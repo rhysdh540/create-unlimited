@@ -86,6 +86,10 @@ subprojects { p ->
 		}
 	}
 
+	java {
+		withSourcesJar()
+	}
+
     configurations {
 		addJar
 		shade
@@ -135,7 +139,8 @@ subprojects { p ->
 	}
 
     dependencies {
-		annotationProcessor implementation("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
+		annotationProcessor "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
+		implementation "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
 		if(isForge) { // dont include on fabric
 			include "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
 		}
@@ -153,6 +158,7 @@ subprojects { p ->
 		manifold 'ext'
 		manifold 'ext-rt'
         manifold 'rt'
+		manifold 'props'
 
         // Dev Env Optimizations
         //// https://www.cursemaven.com/
@@ -227,10 +233,10 @@ allprojects {
 		options.release = 17
 		options.compilerArgs += ['-Xplugin:Manifold']
 	}
+}
 
-	java {
-        withSourcesJar()
-    }
+jar {
+	enabled = false
 }
 
 static def getBuildNumber() {

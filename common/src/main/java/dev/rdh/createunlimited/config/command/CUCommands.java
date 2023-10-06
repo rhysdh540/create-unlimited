@@ -31,6 +31,8 @@ import net.minecraftforge.common.ForgeConfigSpec.*;
 
 import java.util.List;
 
+import manifold.ext.rt.extensions.java.lang.Object.ManObjectExt;
+
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 import static net.minecraft.network.chat.Component.nullToEmpty;
@@ -45,12 +47,12 @@ public class CUCommands {
 		);
 
 		LiteralArgumentBuilder<CommandSourceStack> base = literal(CreateUnlimited.ID).executes(context -> {
-			message(CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:", context);
+			context.message(CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:");
 
 			var link = MutableComponent.create(CommonComponents.EMPTY.getContents());
 			links.forEach(a -> link.append(a).append(Component.literal(" ")));
 
-			message(link, context);
+			context.message(link);
 			return Command.SINGLE_SUCCESS;
 		});
 
@@ -70,7 +72,7 @@ public class CUCommands {
 				//add description for category
 				assert base != null;
 				base.then(literal(field.getName()).executes(context -> {
-					message(CUServer.getComment(name), context);
+					context.message(CUServer.getComment(name));
 					return Command.SINGLE_SUCCESS;
 				}));
 
@@ -87,7 +89,7 @@ public class CUCommands {
 				continue;
 			}
 
-			ConfigValue<?> value = createToForge(cValue);
+			ConfigValue<?> value = cValue.jailbreak().value;
 
 			//get, description, reset
 			gdr(category, name, value);
@@ -110,8 +112,8 @@ public class CUCommands {
 
 		}
 
-		base.then(literal("disableEverything").requires(CUCommands::perms)
-			.executes(context -> {
+		if(Util.isDevEnv()) {
+			base.then(literal("disableEverything").requires(CUCommands::perms).executes(context -> {
 				CUConfigs.server().placementChecks.set(CUServer.PlacementCheck.OFF);
 				CUConfigs.server().extendedDriving.set(0.01);
 				CUConfigs.server().maxTrainRelocationDistance.set(128d);
@@ -122,8 +124,11 @@ public class CUCommands {
 				CUConfigs.server().singleExtendoGripRange.set(128);
 				CUConfigs.server().doubleExtendoGripRange.set(128);
 				CUConfigs.server().allowAllCopycatBlocks.set(true);
+				CUConfigs.server().singleExtendoGripRange.set(128);
+				CUConfigs.server().doubleExtendoGripRange.set(128);
 				return Command.SINGLE_SUCCESS;
 			}));
+		}
 
 		if (category != null)
 			base.then(category);
@@ -137,19 +142,19 @@ public class CUCommands {
 	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, String name, ConfigValue<T> value) {
 		category.then(literal(name)
 			.executes(context -> {
-				message(name + ": " + CUServer.getComment(name), context);
-				message("Current value: " + value.get(), context);
-				message("Default value: " + value.getDefault(), context);
+				context.message(name + ": " + CUServer.getComment(name));
+				context.message("Current value: " + value.get());
+				context.message("Default value: " + value.getDefault());
 				return Command.SINGLE_SUCCESS;
 			})
 			.then(literal("reset").requires(CUCommands::perms)
 				.executes(context -> {
 					if(value.get().equals(value.getDefault())) {
-						error("Value is already default!", context);
+						context.error("Value is already default!");
 						return 0;
 					}
 					value.set(value.getDefault());
-					message(name + " reset to: " + value.get(), context);
+					context.message(name + " reset to: " + value.get());
 					return Command.SINGLE_SUCCESS;
 				})
 			)
@@ -162,11 +167,11 @@ public class CUCommands {
 				.executes(context -> {
 					var set = BoolArgumentType.getBool(context, "value");
 					if(set == value.get()) {
-						error("Value is already set to " + set, context);
+						context.error("Value is already set to " + set);
 						return 0;
 					}
 					value.set(set);
-					message(name + " set to: " + set, context);
+					context.message(name + " set to: " + set);
 					return Command.SINGLE_SUCCESS;
 				})
 			)
@@ -179,11 +184,11 @@ public class CUCommands {
 				.executes(context -> {
 					var set = IntegerArgumentType.getInteger(context, "value");
 					if(set == value.get()) {
-						error("Value is already set to " + set, context);
+						context.error("Value is already set to " + set);
 						return 0;
 					}
 					value.set(set);
-					message(name + " set to: " + set, context);
+					context.message(name + " set to: " + set);
 					return Command.SINGLE_SUCCESS;
 				})
 			)
@@ -196,11 +201,11 @@ public class CUCommands {
 				.executes(context -> {
 					var set = DoubleArgumentType.getDouble(context, "value");
 					if(set == value.get()) {
-						error("Value is already set to " + set, context);
+						context.error("Value is already set to " + set);
 						return 0;
 					}
 					value.set(set);
-					message(name + " set to: " + set, context);
+					context.message(name + " set to: " + set);
 					return Command.SINGLE_SUCCESS;
 				})
 			)
@@ -214,11 +219,11 @@ public class CUCommands {
 				.executes(context -> {
 					var set = (T) context.getArgument("value", value.get().getClass());
 					if(set == value.get()) {
-						error("Value is already set to " + set.name().toLowerCase(), context);
+						context.error("Value is already set to " + set.name().toLowerCase());
 						return 0;
 					}
 					value.set(set);
-					message(name + " set to: " + set.name().toLowerCase(), context);
+					context.message(name + " set to: " + set.name().toLowerCase());
 					return Command.SINGLE_SUCCESS;
 				})
 			)
@@ -232,25 +237,5 @@ public class CUCommands {
 				.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link))
 				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Components.literal("Click to open " + display + " page")))
 				.withUnderlined(false));
-	}
-
-	private static void message(String message, CommandContext<CommandSourceStack> context) {
-		message(nullToEmpty(message), context);
-	}
-	private static void message(Component message, CommandContext<CommandSourceStack> context) {
-		#if PRE_CURRENT_MC_1_19_2
-			context.getSource().sendSuccess(message, false);
-		#elif POST_CURRENT_MC_1_20_1
-			context.getSource().sendSuccess(() -> message, false);
-		#else
-			#error "Unsupported Minecraft version"
-		#endif
-	}
-	private static void error(String message, CommandContext<CommandSourceStack> context) {
-		context.getSource().sendFailure(nullToEmpty(message));
-	}
-
-	private static <V> ConfigValue<V> createToForge(CValue<V, ? extends ConfigValue<V>> create) {
-		return create.jailbreak().value;
 	}
 }

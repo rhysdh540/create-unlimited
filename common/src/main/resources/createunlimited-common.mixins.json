@@ -17,7 +17,8 @@
     "TrackEdgeMixin",
     "TrackPlacementMixin",
     "TrainMixin",
-    "TrainRelocatorMixin"
+    "TrainRelocatorMixin",
+    "accessor.PlacementInfoAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

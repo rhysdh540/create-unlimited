@@ -11,6 +11,8 @@ import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfigs;
 
 import manifold.ext.rt.api.Jailbreak;
+import manifold.rt.api.NoBootstrap;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -54,6 +56,7 @@ public abstract class TrackPlacementMixin {
 			&& hoveringMaxed == maximiseTurn && lookAngle == hoveringAngle)
 			return cached;
 
+		//TODO: find out a way to remove the jailbreak (see PlacementInfoAccessor and PlacementInfoExt)
 		@Jailbreak PlacementInfo info = new PlacementInfo(TrackMaterial.fromItem(stack.getItem()));
 		hoveringMaxed = maximiseTurn;
 		hoveringAngle = lookAngle;
@@ -399,16 +402,14 @@ public abstract class TrackPlacementMixin {
 
 				if (simulate && foundTracks < tracks) {
 					info.valid = false;
-					info.tooJumbly();
 					info.hasRequiredTracks = false;
-					return info.withMessage("not_enough_tracks");
+					return info.withMessage("not_enough_tracks").tooJumbly();
 				}
 
 				if (simulate && foundPavement < pavement) {
 					info.valid = false;
-					info.tooJumbly();
 					info.hasRequiredPavement = false;
-					return info.withMessage("not_enough_pavement");
+					return info.withMessage("not_enough_pavement").tooJumbly();
 				}
 			}
 		}
