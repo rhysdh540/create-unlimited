@@ -21,12 +21,3 @@ if (versionAccessWidenerFile.exists()) {
 	versionAccessWidenerFile.createNewFile()
 	versionAccessWidenerFile.text = "accessWidener   v2  named"
 }
-
-rootProject.subprojects.processResources {
-	exclude { file ->
-		if (file.name.contains(".createunlimited.accesswidener") && file.name != "${access_widener_version}.createunlimited.accesswidener") {
-			return true
-		}
-		return false
-	}
-}

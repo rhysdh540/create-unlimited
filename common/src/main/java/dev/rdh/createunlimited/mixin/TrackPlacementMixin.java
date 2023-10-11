@@ -10,8 +10,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.ext.rt.api.Jailbreak;
-import manifold.rt.api.NoBootstrap;
+import dev.rdh.createunlimited.duck.PlacementInfoDuck;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -56,13 +55,12 @@ public abstract class TrackPlacementMixin {
 			&& hoveringMaxed == maximiseTurn && lookAngle == hoveringAngle)
 			return cached;
 
-		//TODO: find out a way to remove the jailbreak (see PlacementInfoAccessor and PlacementInfoExt)
-		@Jailbreak PlacementInfo info = new PlacementInfo(TrackMaterial.fromItem(stack.getItem()));
+		PlacementInfoDuck info = (PlacementInfoDuck) new PlacementInfo(TrackMaterial.fromItem(stack.getItem()));
 		hoveringMaxed = maximiseTurn;
 		hoveringAngle = lookAngle;
 		hoveringPos = pos2;
 		lastItem = stack;
-		cached = info;
+		cached = info.self();
 
 		ITrackBlock track = (ITrackBlock) state2.getBlock();
 		Pair<Vec3, Direction.AxisDirection> nearestTrackAxis = track.getNearestTrackAxis(level, pos2, state2, lookVec);
@@ -331,21 +329,21 @@ public abstract class TrackPlacementMixin {
 			Couple.create(end1.add(offset1), end2.add(offset2)), Couple.create(normedAxis1, normedAxis2),
 			Couple.create(normal1, normal2), true, girder, TrackMaterial.fromItem(stack.getItem()));
 
-		info.valid = true;
+		info.setValid(true);
 
 		info.pos1 = pos1;
 		info.pos2 = pos2;
 		info.axis1 = axis1;
 		info.axis2 = axis2;
 
-		placeTracks(level, info, state1, state2, targetPos1, targetPos2, true);
+		placeTracks(level, info.self(), state1, state2, targetPos1, targetPos2, true);
 
 		ItemStack offhandItem = player.getOffhandItem()
 			.copy();
 		boolean shouldPave = offhandItem.getItem() instanceof BlockItem;
 		if (shouldPave) {
 			BlockItem paveItem = (BlockItem) offhandItem.getItem();
-			paveTracks(level, info, paveItem, true);
+			paveTracks(level, info.self(), paveItem, true);
 			info.hasRequiredPavement = true;
 		}
 
@@ -401,13 +399,13 @@ public abstract class TrackPlacementMixin {
 				}
 
 				if (simulate && foundTracks < tracks) {
-					info.valid = false;
+					info.setValid(false);
 					info.hasRequiredTracks = false;
 					return info.withMessage("not_enough_tracks").tooJumbly();
 				}
 
 				if (simulate && foundPavement < pavement) {
-					info.valid = false;
+					info.setValid(false);
 					info.hasRequiredPavement = false;
 					return info.withMessage("not_enough_pavement").tooJumbly();
 				}
@@ -415,12 +413,12 @@ public abstract class TrackPlacementMixin {
 		}
 
 		if (level.isClientSide())
-			return info;
+			return info.self();
 		if (shouldPave) {
 			BlockItem paveItem = (BlockItem) offhandItem.getItem();
-			paveTracks(level, info, paveItem, false);
+			paveTracks(level, info.self(), paveItem, false);
 		}
-		return placeTracks(level, info, state1, state2, targetPos1, targetPos2, false);
+		return placeTracks(level, info.self(), state1, state2, targetPos1, targetPos2, false);
 	}
 
 	@Invoker("paveTracks")

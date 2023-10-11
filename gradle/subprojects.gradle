@@ -88,11 +88,7 @@ dependencies {
 		it.officialMojangMappings { nameSyntheticMembers = false }
 	})
 
-	manifold 'util'
 	manifold 'preprocessor'
-	manifold 'ext'
-	manifold 'ext-rt'
-	manifold 'rt'
 	manifold 'props'
 
 	annotationProcessor implementation("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
@@ -148,6 +144,13 @@ processResources {
 
 	filesMatching("META-INF/mods.toml") {
 		expand properties
+	}
+
+	exclude { file ->
+		if (file.name.contains(".createunlimited.accesswidener") && file.name != "${access_widener_version}.createunlimited.accesswidener") {
+			return true
+		}
+		return false
 	}
 }
 

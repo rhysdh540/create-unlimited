@@ -8,7 +8,6 @@ import com.simibubi.create.content.trains.track.TrackPlacement.PlacementInfo;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(value = PlacementInfo.class, remap = false)
 @SuppressWarnings("unused")
