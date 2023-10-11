@@ -1,0 +1,177 @@
+apply plugin: "dev.architectury.loom"
+apply plugin: "io.github.juuxel.loom-vineflower"
+apply plugin: "architectury-plugin"
+
+def isForge = project == project(":forge")
+def isFabric = project == project(":fabric")
+def isCommon = project == project(":common")
+
+def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
+
+loom {
+	silentMojangMappingsLicense()
+
+	if(awFile.exists()) {
+		accessWidenerPath = awFile
+	}
+
+	runs {
+		remove server
+
+		if(!isCommon) {
+			client {
+				client()
+				name = 'Minecraft Client'
+				ideConfigGenerated = true
+				vmArgs '-Xmx6G', '-Xms2G', '-XX:+UnlockExperimentalVMOptions',
+					'-XX:+UseZGC', '-XX:+ZGenerational',
+					'-Dsun.rmi.dgc.server.gcInterval=2147483646', '-XX:MaxGCPauseMillis=50',
+					'-XX:SoftMaxHeapSize=4G', '-XX:-ZUncommit'
+			}
+		}
+	}
+}
+
+java.withSourcesJar()
+
+configurations {
+	addJar
+	shade
+
+	addJarCompile
+	addJarRuntime
+	addJarEverywhere
+
+	if (!isCommon) {
+		include.extendsFrom addJar
+	}
+
+	compileOnly.extendsFrom addJarCompile
+	annotationProcessor.extendsFrom addJarCompile
+	implementation.extendsFrom addJarRuntime
+	api.extendsFrom addJarEverywhere
+
+	addJar.extendsFrom addJarRuntime
+	addJar.extendsFrom addJarEverywhere
+
+	implementation.extendsFrom shade
+
+	remapJar.finalizedBy(mergeJars)
+}
+
+repositories {
+	mavenCentral()
+	maven 'https://maven.parchmentmc.org'
+	maven 'https://maven.quiltmc.org/repository/release'
+	maven 'https://maven.ithundxr.dev/releases'
+	maven 'https://mvn.devos.one/snapshots'
+	maven 'https://maven.cafeteria.dev/releases'
+	maven 'https://maven.jamieswhiteshirt.com/libs-release'
+	maven 'https://maven.theillusivec4.top'
+	maven 'https://maven.terraformersmc.com/releases'
+
+	maven 'https://maven.tterrag.com', [
+	    'com.simibubi.create',
+		'com.jozufozu.flywheel',
+		'com.tterrag.registrate'
+	]
+
+	maven 'https://api.modrinth.com/maven', ['maven.modrinth']
+	maven 'https://cursemaven.com', ['curse.maven']
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+	mappings(loom.layered {
+		it.mappings("org.quiltmc:quilt-mappings:${rootProject.minecraft_version}+build.${rootProject.quilt}:intermediary-v2")
+		it.parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment}@zip")
+		it.officialMojangMappings { nameSyntheticMembers = false }
+	})
+
+	manifold 'util'
+	manifold 'preprocessor'
+	manifold 'ext'
+	manifold 'ext-rt'
+	manifold 'rt'
+	manifold 'props'
+
+	annotationProcessor implementation("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
+	//annotationProcessor include("com.github.bawnorton.mixinsquared:mixinsquared-${p.name}:${rootProject.mixin_squared}")
+
+	// Dev Env Optimizations
+	//// https://www.cursemaven.com/
+	//// https://docs.modrinth.com/docs/tutorials/maven/
+
+	if (isFabric) {
+		if (rootProject.hasProperty("lazydfu")) {
+			modRuntimeOnly "maven.modrinth:lazydfu:${rootProject.lazydfu}"
+		}
+		if (rootProject.hasProperty("smoothboot_fabric")) {
+			modRuntimeOnly "curse.maven:smoothboot-fabric-415758:${rootProject.smoothboot_fabric}"
+		}
+	}
+
+	if (isForge) {
+		if (rootProject.hasProperty("bmb")) {
+			modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
+		}
+		if (rootProject.hasProperty("smoothboot_forge")) {
+			modRuntimeOnly "curse.maven:smoothboot-forge-633412:${rootProject.smoothboot_forge}"
+		}
+		if (rootProject.hasProperty("catalogue")) {
+			modRuntimeOnly "curse.maven:catalogue-459701:${rootProject.catalogue}"
+		}
+		if (rootProject.hasProperty("ferritecore")) {
+			modRuntimeOnly "curse.maven:ferritecore-429235:${rootProject.ferritecore}"
+		}
+	}
+}
+
+processResources {
+	def properties = [
+		version          : mod_version,
+		minecraft_version: minecraft_version,
+		forge            : forge.split("\\.")[0],
+		fabric           : fabric,
+		fabric_api       : fabric_api,
+		create_forge     : create_forge.split("-")[0],
+		create_fabric    : create_fabric,
+	]
+
+	exclude '**/*.aw'
+
+	inputs.properties properties
+
+	filesMatching("fabric.mod.json") {
+		expand properties
+	}
+
+	filesMatching("META-INF/mods.toml") {
+		expand properties
+	}
+}
+
+def manifold(String path) {
+	def coords = "systems.manifold:manifold-${path}:${manifold_version}"
+	if(path == 'util')
+		dependencies { addJarEverywhere(coords) }
+	else if(path.endsWith('rt'))
+		dependencies { addJarRuntime(coords) }
+	else
+		dependencies { addJarCompile(coords) }
+}
+
+def maven(String path) {
+	maven(path, [])
+}
+
+def maven(String path, List<String> includes) {
+	repositories.maven {
+		url = path
+		content {
+			includes.each {
+				includeGroup(it)
+			}
+		}
+	}
+}

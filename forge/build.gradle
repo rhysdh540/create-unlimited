@@ -13,10 +13,8 @@ configurations {
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
-}
 
-repositories {
-	maven { url "https://maven.theillusivec4.top/" } // Curios
+	forgeRuntimeLibrary.extendsFrom addJar
 }
 
 dependencies {
@@ -29,8 +27,26 @@ dependencies {
 	modImplementation "com.tterrag.registrate:Registrate:${registrate}"
 	modImplementation "com.jozufozu.flywheel:flywheel-forge-${flywheel_mc}:${flywheel}"
 
+	include "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
+
 	if(rootProject.hasProperty("snr")) {
 		modImplementation("com.railwayteam.railways:Steam_Rails-forge-${minecraft_version}:${snr}+forge-mc${minecraft_version}-build.${snr_build}")
+	}
+}
+
+loom {
+	def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
+
+	forge {
+		mixinConfig(
+			"createunlimited.mixins.json",
+			"createunlimited-common.mixins.json",
+		)
+
+		if(awFile.exists()) {
+			convertAccessWideners = true
+			extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+		}
 	}
 }
 
@@ -49,9 +65,7 @@ remapJar {
     archiveClassifier.set null
 }
 
-jar {
-    archiveClassifier.set "dev"
-}
+jar.archiveClassifier.set "dev"
 
 sourcesJar {
     def commonSources = project(":common").sourcesJar

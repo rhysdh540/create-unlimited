@@ -1,227 +1,32 @@
 plugins {
-    id "architectury-plugin" version "${arch_plugin_version}"
-    id "dev.architectury.loom" version "${loom_version}" apply false
-	id "io.github.juuxel.loom-vineflower" version "${vineflower_version}" apply false
-    id "io.github.pacifistmc.forgix" version "${forgix_version}"
+    id 'architectury-plugin' version "${arch_plugin_version}" apply false
+    id 'dev.architectury.loom' version "${loom_version}" apply false
+	id 'io.github.juuxel.loom-vineflower' version "${vineflower_version}" apply false
+    id 'io.github.pacifistmc.forgix' version "${forgix_version}"
 }
+setup()
 
-// These are the access wideners depending on the minecraft version
-def mcVersionToAccessWidenerVersion = [
-        "1.19.2": "1_19_2",
-        "1.20.1": "1_20_1",
-]
-ext.set("access_wideners", mcVersionToAccessWidenerVersion)
-
-loadProperties()
-makeAccessWidener()
-defineMixins()
+def modVersion = mod_version + (build_number != null ? "-build.${build_number}" : "")
 
 forgix {
     group = maven_group
-    mergedJarName = "createunlimited-${mod_version}${getBuildNumber()}+mc${minecraft_version}.jar"
-	outputDir = "build/libs/merged"
+    mergedJarName = "createunlimited-${modVersion}+mc${minecraft_version}.jar"
+	outputDir = 'build/libs/merged'
 }
 
 architectury {
     minecraft = minecraft_version
 }
 
-subprojects { p ->
-    apply plugin: "dev.architectury.loom"
-	apply plugin: "io.github.juuxel.loom-vineflower"
-
-	ext.manifold = { path ->
-		String coords = "systems.manifold:manifold-${path}:${manifold_version}"
-		if(path == 'util')
-			dependencies { addJarEverywhere(coords) }
-		else if(path.endsWith('rt'))
-			dependencies { addJarRuntime(coords) }
-		else
-			dependencies { addJarCompile(coords) }
-	}
-
-	def isForge = p == project(":forge")
-	def isFabric = p == project(":fabric")
-	def isCommon = p == project(":common")
-
-	def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
-
-    loom {
-		silentMojangMappingsLicense()
-
-		if(awFile.exists()) {
-			accessWidenerPath = awFile
-
-			if(isForge) {
-				//noinspection GroovyAssignabilityCheck
-				forge {
-					convertAccessWideners = true
-					extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-				}
-			}
-		}
-		if(isForge) {
-			//noinspection GroovyAssignabilityCheck
-			forge {
-				mixinConfig(
-					"createunlimited.mixins.json",
-					"createunlimited-common.mixins.json",
-				)
-			}
-		}
-		if(!isCommon) {
-			runs {
-				remove server
-
-				client {
-					client()
-					name = 'Minecraft Client'
-					ideConfigGenerated = true
-					vmArgs '-Xmx6G', '-Xms2G', '-XX:+UnlockExperimentalVMOptions',
-						'-XX:+UseZGC', '-XX:+ZGenerational',
-						'-Dsun.rmi.dgc.server.gcInterval=2147483646', '-XX:MaxGCPauseMillis=50',
-						'-XX:SoftMaxHeapSize=4G', '-XX:-ZUncommit'
-				}
-			}
-		}
-	}
-
-	java {
-		withSourcesJar()
-	}
-
-    configurations {
-		addJar
-		shade
-
-        addJarCompile
-		addJarRuntime
-		addJarEverywhere
-
-		if (!isCommon) {
-			include.extendsFrom addJar
-		}
-		if(isForge)
-			forgeRuntimeLibrary.extendsFrom addJar
-
-        compileOnly.extendsFrom addJarCompile
-		annotationProcessor.extendsFrom addJarCompile
-        implementation.extendsFrom addJarRuntime
-		api.extendsFrom addJarEverywhere
-
-		addJar.extendsFrom addJarRuntime
-		addJar.extendsFrom addJarEverywhere
-
-		implementation.extendsFrom shade
-    }
-
-	repositories {
-		mavenCentral()
-		maven { url "https://maven.parchmentmc.org" }
-		maven { url "https://maven.quiltmc.org/repository/release" }
-		maven { url 'https://maven.ithundxr.dev/releases' }
-		maven {
-			url "https://maven.tterrag.com/"
-			content {
-				includeGroup("com.jozufozu.flywheel")
-				includeGroup("com.tterrag.registrate")
-				includeGroup("com.simibubi.create")
-			}
-		}
-		maven { // modrinth
-			url "https://api.modrinth.com/maven"
-			content { includeGroup "maven.modrinth" }
-		}
-		maven { // curseforge
-			url "https://www.cursemaven.com"
-			content { includeGroup "curse.maven" }
-		}
-	}
-
-    dependencies {
-		annotationProcessor "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
-		implementation "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
-		if(isForge) { // dont include on fabric
-			include "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
-		}
-
-		//include annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-${p.name}:${rootProject.mixin_squared}")
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-		mappings(loom.layered {
-			it.mappings("org.quiltmc:quilt-mappings:${rootProject.minecraft_version}+build.${rootProject.quilt}:intermediary-v2")
-			it.parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment}@zip")
-			it.officialMojangMappings { nameSyntheticMembers = false }
-		})
-
-		manifold 'util'
-        manifold 'preprocessor'
-		manifold 'ext'
-		manifold 'ext-rt'
-        manifold 'rt'
-		manifold 'props'
-
-        // Dev Env Optimizations
-        //// https://www.cursemaven.com/
-        //// https://docs.modrinth.com/docs/tutorials/maven/
-
-        if (isFabric) {
-            if (rootProject.hasProperty("lazydfu")) {
-				modRuntimeOnly "maven.modrinth:lazydfu:${rootProject.lazydfu}"
-            }
-            if (rootProject.hasProperty("smoothboot_fabric")) {
-				modRuntimeOnly "curse.maven:smoothboot-fabric-415758:${rootProject.smoothboot_fabric}"
-            }
-        }
-
-        if (isForge) {
-            if (rootProject.hasProperty("bmb")) {
-				modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
-            }
-            if (rootProject.hasProperty("smoothboot_forge")) {
-				modRuntimeOnly "curse.maven:smoothboot-forge-633412:${rootProject.smoothboot_forge}"
-            }
-            if (rootProject.hasProperty("catalogue")) {
-				modRuntimeOnly "curse.maven:catalogue-459701:${rootProject.catalogue}"
-			}
-			if (rootProject.hasProperty("ferritecore")) {
-				modRuntimeOnly "curse.maven:ferritecore-429235:${rootProject.ferritecore}"
-			}
-        }
-    }
-
-    processResources {
-		def properties = [
-			version          : mod_version,
-			minecraft_version: minecraft_version,
-			forge            : forge.split("\\.")[0],
-			fabric           : fabric,
-			fabric_api       : fabric_api,
-			create_forge     : create_forge.split("-")[0],
-			create_fabric    : create_fabric,
-		]
-
-		exclude '**/*.aw'
-
-		inputs.properties properties
-
-		filesMatching("fabric.mod.json") {
-			expand properties
-		}
-
-		filesMatching("META-INF/mods.toml") {
-			expand properties
-		}
-	}
-
-    remapJar.finalizedBy(mergeJars)
+subprojects {
+    apply from: rootProject.file('gradle/subprojects.gradle')
 }
 
 allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
+    apply plugin: 'java'
 
     archivesBaseName = rootProject.archives_base_name
-    version = rootProject.mod_version + getBuildNumber()
+    version = modVersion
     group = rootProject.maven_group
 
     repositories {
@@ -229,9 +34,8 @@ allprojects {
     }
 
 	tasks.withType(JavaCompile).configureEach {
-		options.encoding = "UTF-8"
+		options.encoding = 'UTF-8'
 		options.release = 17
-		options.compilerArgs += ['-Xplugin:Manifold']
 	}
 }
 
@@ -239,125 +43,33 @@ jar {
 	enabled = false
 }
 
-static def getBuildNumber() {
-	String buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-	return (buildNumber != null ? "-${buildNumber}" : "")
-}
-
-
-/* Cursed stuff is defined below! Beware of dog */
-
-
-
-// Defines the preprocessors
-def setupManifoldProcessors(List<String> mcVers, int mcIndex) {
-    def redefineList = new ArrayList<String>()
-    for (int i = 0; i < mcVers.size(); i++) {
-        String mcStr = "MC_" + mcVers.get(i).replace(".", "_")
-
-        if (mcIndex < i)
-            redefineList.add("PRE_$mcStr")
-
-        if (mcIndex <= i)
-            redefineList.add("PRE_CURRENT_$mcStr")
-
-        if (mcIndex == i)
-            redefineList.add(mcStr)
-
-        if (mcIndex > i)
-            redefineList.add("POST_$mcStr")
-
-        if (mcIndex >= i)
-            redefineList.add("POST_CURRENT_$mcStr")
-    }
-
-    StringBuilder sb = new StringBuilder()
-		.append("# DO NOT EDIT\n")
-		.append("# Generated by the build script. Change mcVer property to change minecraft version.\n\n")
-
-    for (String redefinedVersion : redefineList) {
-        sb.append(redefinedVersion).append("=\n")
-    }
-
-    new File(projectDir, "build.properties").text = sb.toString()
-}
-
-// Loads the properties for each version & sets up the preprocessors
-def loadProperties() {
-    def mcVersion = ""
-    def mcVers = mc_versions.split(", ")
-    int mcIndex = -1
-
-    println "Avalible Minecraft Versions: ${mc_versions}"
-
-    if (project.hasProperty("mcVer")) {
-        mcVersion = mcVer
-        mcIndex = Arrays.asList(mcVers).indexOf(mcVer)
-    }
-
-    if (mcIndex == -1) {
-        println "Defaulting to ${rootProject.default_mc_version} since the set mcVer is invalid."
-        println "Use -PmcVer='${rootProject.default_mc_version}' or edit gradle.properties to set the minecraft version."
-
-        mcVersion = default_mc_version
-        mcIndex = Arrays.asList(mcVers).indexOf(default_mc_version)
-    }
-
-    println "Using " + mcVersion + ".properties."
-    def properties = new Properties()
-
-    properties.load(new FileInputStream("$rootProject.rootDir/"+"$mcVersion"+".properties"))
-
-    properties.each { property ->
-        rootProject.ext.set(property.key, property.value)
-    }
-
-    setupManifoldProcessors(Arrays.asList(mcVers), mcIndex)
-
-    rootProject.ext.set("access_widener_version", rootProject.access_wideners.get(mcVersion))
-}
-
-// Sets up the accesswideners
-def makeAccessWidener() {
-    def accessWidenerFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
-    def versionAccessWidenerFile = project(":common").file("src/main/resources/${rootProject.access_widener_version}.createunlimited.aw")
-
-    if (accessWidenerFile.exists()) {
-        delete accessWidenerFile
-    }
-
-    if (versionAccessWidenerFile.exists()) {
-        copy {
-            from versionAccessWidenerFile
-            into project(":common").file("src/main/resources/")
-            rename "${rootProject.access_widener_version}.createunlimited.aw", "createunlimited.accesswidener"
-        }
-        def text = accessWidenerFile.text
-        text += "\n# DO NOT EDIT\n# Generated by the build script. Edit ${versionAccessWidenerFile.name} instead!"
-
-        accessWidenerFile.text = text
-    } else {
-        versionAccessWidenerFile.createNewFile()
-        versionAccessWidenerFile.text = "accessWidener   v2  named"
-    }
-}
-
-// Defines the mixins
 def defineMixins() {
     def mixins = new ArrayList<String>()
-    def projects = new ArrayList<String>()
 
-    for (Project proj : rootProject.subprojects) {
-        projects.add(proj.name)
-    }
+	rootProject.subprojects.each {
+		it.file('src/main/resources/').listFiles().each { file ->
+			if (file.name.endsWith('mixins.json')) {
+				mixins.add(file.name)
+			}
+		}
+	}
 
-    for (String proj : projects) {
-        for (File file : project(proj).file("src/main/resources/").listFiles()) {
-            if (file.getName().endsWith("mixin.json") || file.getName().endsWith("mixins.json")) {
-                mixins.add(file.getName())
-            }
-        }
-    }
+    ext.mixins = mixins
+}
 
-    rootProject.ext.set("mixins", mixins)
+def setup() {
+	println 'Create Unlimited v' + mod_version
+	String buildNumber = System.getenv('GITHUB_RUN_NUMBER')
+	if(buildNumber != null) {
+		println 'Build #' + buildNumber
+		ext.build_number = buildNumber
+	} else ext.build_number = null
+	println()
+
+	apply from: 'gradle/preprocessor.gradle'
+
+	println '\nPlugin versions:'
+	apply plugin: 'architectury-plugin'
+
+	defineMixins()
 }
