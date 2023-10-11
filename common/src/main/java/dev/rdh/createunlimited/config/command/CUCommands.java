@@ -6,8 +6,6 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
-import com.mojang.brigadier.context.CommandContext;
-
 import com.simibubi.create.foundation.config.ConfigBase.*;
 import com.simibubi.create.foundation.utility.Components;
 
@@ -31,12 +29,12 @@ import net.minecraftforge.common.ForgeConfigSpec.*;
 
 import java.util.List;
 
-import manifold.ext.rt.extensions.java.lang.Object.ManObjectExt;
+import manifold.rt.api.NoBootstrap;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
-import static net.minecraft.network.chat.Component.nullToEmpty;
 
+@NoBootstrap
 public class CUCommands {
 	public static void registerConfigCommand() {
 		List<MutableComponent> links = List.of(

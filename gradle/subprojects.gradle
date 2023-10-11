@@ -55,8 +55,6 @@ configurations {
 	addJar.extendsFrom addJarEverywhere
 
 	implementation.extendsFrom shade
-
-	remapJar.finalizedBy(mergeJars)
 }
 
 repositories {
@@ -89,6 +87,7 @@ dependencies {
 	})
 
 	manifold 'preprocessor'
+	manifold 'ext'
 	manifold 'props'
 
 	annotationProcessor implementation("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
