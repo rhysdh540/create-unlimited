@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
+import manifold.rt.api.NoBootstrap;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.config.ModConfig;
 
 import java.nio.file.Path;
 
+@NoBootstrap
 public class UtilImpl {
 
 	public static Path getConfigDirectory() {

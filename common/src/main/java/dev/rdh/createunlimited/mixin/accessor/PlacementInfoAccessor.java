@@ -1,5 +1,7 @@
 package dev.rdh.createunlimited.mixin.accessor;
 
+import manifold.rt.api.NoBootstrap;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -9,8 +11,9 @@ import com.simibubi.create.content.trains.track.TrackPlacement.PlacementInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(value = PlacementInfo.class, remap = false)
+@NoBootstrap
 @SuppressWarnings("unused")
+@Mixin(value = PlacementInfo.class, remap = false)
 public interface PlacementInfoAccessor {
 	@Accessor("curve")
 	BezierConnection getCurve();

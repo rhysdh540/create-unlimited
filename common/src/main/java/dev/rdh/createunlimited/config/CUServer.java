@@ -8,7 +8,10 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.function.Predicate;
 
-@SuppressWarnings({"unused"}) // groups are used as markers for the screen and command
+import manifold.rt.api.NoBootstrap;
+
+@NoBootstrap
+@SuppressWarnings("unused") // groups are used as markers for the screen and command
 public class CUServer extends ConfigBase {
 	@Override
 	public String getName() {
@@ -34,6 +37,7 @@ public class CUServer extends ConfigBase {
 	public final ConfigGroup misc = group(1, "misc", Comments.misc);
 	public final ConfigBool allowAllCopycatBlocks = b(false, "allowAllCopycatBlocks", Comments.allowAllCopycatBlocks);
 
+	@NoBootstrap
 	private static class Comments {
 		static String trains = "Realism, what's that?",
 					  placementChecks = "Whether to check for valid placement when placing train tracks",
@@ -63,6 +67,7 @@ public class CUServer extends ConfigBase {
 		}
 	}
 
+	@NoBootstrap
 	public enum PlacementCheck {
 		ON(p -> true),
 		SURVIVAL_ONLY(p -> !p.isCreative()),

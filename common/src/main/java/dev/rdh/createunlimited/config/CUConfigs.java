@@ -23,8 +23,11 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import manifold.rt.api.NoBootstrap;
+
 import static net.minecraftforge.fml.config.ModConfig.Type.*;
 
+@NoBootstrap
 public class CUConfigs {
 
 	@ApiStatus.Internal

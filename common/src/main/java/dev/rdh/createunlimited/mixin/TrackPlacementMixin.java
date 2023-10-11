@@ -12,6 +12,8 @@ import dev.rdh.createunlimited.config.CUConfigs;
 
 import dev.rdh.createunlimited.duck.PlacementInfoDuck;
 
+import manifold.rt.api.NoBootstrap;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -32,8 +34,9 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(value = TrackPlacement.class, remap = false, priority = 0) // inject before snr does
+@NoBootstrap
 @SuppressWarnings("unused")
+@Mixin(value = TrackPlacement.class, remap = false, priority = 0) // inject before snr does
 public abstract class TrackPlacementMixin {
 	@Shadow public static PlacementInfo cached;
 	@Shadow static BlockPos hoveringPos;

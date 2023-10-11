@@ -31,11 +31,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import manifold.rt.api.NoBootstrap;
+
 /**
  * copied from froge
  * <p>
  * oh yeah i also added configurable lowercase because yes
  */
+@NoBootstrap
 public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	private static final Dynamic2CommandExceptionType INVALID_ENUM = new Dynamic2CommandExceptionType(
 		(found, constants) -> Component.literal(String.format("Invalid enum value '%s', expected one of: %s", found, constants)));
@@ -75,6 +78,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 		return Stream.of(enumClass.getEnumConstants()).map(Enum::name).map(this::lowercase).collect(Collectors.toList());
 	}
 
+	@NoBootstrap
 	public static class Info<T extends Enum<T>> implements ArgumentTypeInfo<EnumArgument<T>, Info<T>.Template> {
 		@Override
 		public void serializeToNetwork(Template template, FriendlyByteBuf buffer) {
@@ -104,6 +108,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 			return new Template(argument.enumClass, argument.lowercase);
 		}
 
+		@NoBootstrap
 		public class Template implements ArgumentTypeInfo.Template<EnumArgument<T>> {
 			final Class<T> enumClass;
 			final boolean lowercase;

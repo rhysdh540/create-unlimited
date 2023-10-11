@@ -28,6 +28,9 @@ import java.nio.file.Path;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import manifold.rt.api.NoBootstrap;
+
+@NoBootstrap
 public class Util {
 
 	@ExpectPlatform

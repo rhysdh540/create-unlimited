@@ -8,9 +8,10 @@ import dev.rdh.createunlimited.config.CUConfigs;
 import net.minecraftforge.api.fml.event.config.ModConfigEvents;
 #elif POST_CURRENT_MC_1_20_1
 import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
-#endif
+#endif import manifold.rt.api.NoBootstrap;
 import net.fabricmc.api.ModInitializer;
 
+@NoBootstrap
 public class CreateUnlimitedFabric implements ModInitializer {
     @Override
     public void onInitialize() {

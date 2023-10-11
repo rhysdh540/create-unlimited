@@ -27,6 +27,8 @@ import net.minecraft.network.chat.MutableComponent;
 
 import net.minecraftforge.common.ForgeConfigSpec.*;
 
+import dev.rdh.createunlimited.mixin.accessor.CValueAccessor;
+
 import java.util.List;
 
 import manifold.rt.api.NoBootstrap;
@@ -87,7 +89,7 @@ public class CUCommands {
 				continue;
 			}
 
-			ConfigValue<?> value = cValue.jailbreak().value;
+			ConfigValue<?> value = ((CValueAccessor<?, ?>) cValue).value;
 
 			//get, description, reset
 			gdr(category, name, value);

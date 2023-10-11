@@ -31,9 +31,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import manifold.rt.api.NoBootstrap;
+
 #if MC_1_19_2
 @SuppressWarnings("UnstableApiUsage")
 #endif
+@NoBootstrap
 public class UtilImpl {
 
 	@ApiStatus.Internal

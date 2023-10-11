@@ -5,10 +5,13 @@ import com.simibubi.create.content.trains.entity.TrainRelocator;
 
 import dev.rdh.createunlimited.config.CUConfigs;
 
+import manifold.rt.api.NoBootstrap;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
+@NoBootstrap
 @Mixin(value = TrainRelocator.class, remap = false)
 public abstract class TrainRelocatorMixin {
 	@ModifyConstant(method = "onClicked", constant = @Constant(doubleValue = 24))

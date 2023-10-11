@@ -2,6 +2,7 @@ package dev.rdh.createunlimited.extensions.com.mojang.brigadier.context.CommandC
 
 import manifold.ext.rt.api.Extension;
 import manifold.ext.rt.api.This;
+import manifold.rt.api.NoBootstrap;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -9,6 +10,8 @@ import net.minecraft.network.chat.Component;
 import com.mojang.brigadier.context.CommandContext;
 
 @Extension
+@NoBootstrap
+@SuppressWarnings("unused")
 public class CommandContextExt {
 	public static void message(@This CommandContext<CommandSourceStack> context, Component message) {
 		#if PRE_CURRENT_MC_1_19_2
