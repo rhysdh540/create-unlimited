@@ -46,7 +46,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	private final boolean lowercase;
 
 	public static void init() {
-		Util.registerArgument("enumargument", EnumArgument.class, new EnumArgument.Info(), CreateUnlimited.asResource("enumargument"));
+		Util.registerArgument(EnumArgument.class, new EnumArgument.Info(), CreateUnlimited.asResource("enumargument"));
 	}
 
 	public static <R extends Enum<R>> EnumArgument<R> enumArg(Class<R> enumClass, boolean lowercase) {
