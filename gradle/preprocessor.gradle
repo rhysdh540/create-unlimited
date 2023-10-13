@@ -1,8 +1,14 @@
 def mcVersion = ""
-def mcVers = mc_versions.split(", ").toList()
+
+def mcVers = rootProject.fileTree('versionProperties').files.name
+for(int i = 0; i < mcVers.size(); i++) {
+	mcVers[i] = mcVers[i].replaceAll('\\.properties', '')
+}
+mcVers.sort()
+
 int mcIndex = -1
 
-println "Setting up preprocessor...\nAvalible Minecraft Versions: ${mc_versions}"
+println "Setting up preprocessor...\nAvalible Minecraft Versions: ${mcVers.join(', ')}"
 
 if (project.hasProperty("mcVer")) {
 	mcVersion = mcVer
@@ -10,7 +16,7 @@ if (project.hasProperty("mcVer")) {
 }
 
 if (mcIndex == -1) {
-	println "Defaulting to ${default_mc_version} since the set mcVer is invalid."
+	println "No mcVer set or the set mcVer is invalid! Defaulting to ${default_mc_version}."
 	println "Use -PmcVer='${default_mc_version}' or edit gradle.properties to set the minecraft version."
 
 	mcVersion = default_mc_version
@@ -21,7 +27,7 @@ if (mcIndex == -1) {
 
 def properties = new Properties()
 
-properties.load(new FileInputStream("$rootProject.rootDir/"+"$mcVersion"+".properties"))
+properties.load(new FileInputStream("$rootProject.rootDir/versionProperties/"+"$mcVersion"+".properties"))
 
 properties.each {
 	ext.set(it.key, it.value)
