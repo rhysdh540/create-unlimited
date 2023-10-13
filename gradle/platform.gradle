@@ -1,7 +1,5 @@
 apply plugin: 'com.github.johnrengelman.shadow'
 
-String platform = project.name.substring(1).capitalize()
-
 architectury {
 	platformSetupLoomIde()
 }
@@ -15,7 +13,7 @@ configurations {
 
 dependencies {
 	common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-	shadowCommon(project(path: ':common', configuration: "transformProduction${platform}")) { transitive = false }
+	shadowCommon(project(path: ':common', configuration: "transformProduction${project.name.capitalize()}")) { transitive = false }
 }
 
 shadowJar {
