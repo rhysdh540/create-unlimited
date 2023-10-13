@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory;
 public class CreateUnlimited {
 	public static final String ID = "createunlimited";
 	public static final String NAME = "Create Unlimited";
-	public static final String VERSION = Utils.getVersion().split("-")[0];
+	public static final String VERSION = Util.getVersion().split("-")[0];
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
     public static void init() {
 		LOGGER.info("{} v{} initializing! Create version: {} on platform: {}",
-				NAME, VERSION, Create.VERSION, Utils.platformName());
+				NAME, VERSION, Create.VERSION, Util.platformName());
 
 		EnumArgument.init();
 		CUConfigs.register();

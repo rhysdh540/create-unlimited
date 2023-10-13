@@ -7,7 +7,7 @@ import com.simibubi.create.foundation.utility.*;
 import com.simibubi.create.content.trains.track.TrackPlacement.PlacementInfo;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import dev.rdh.createunlimited.Utils;
+import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfigs;
 
 import dev.rdh.createunlimited.duck.PlacementInfoDuck;
@@ -216,7 +216,7 @@ public abstract class TrackPlacementMixin {
 			info.end2Extent = 0;
 
 			Direction.Axis plane = Mth.equal(axis1.x, 0) ? Direction.Axis.X : Direction.Axis.Z;
-			intersect = Utils.intersect(end1, end2, normedAxis1, normedAxis2, plane);
+			intersect = Util.intersect(end1, end2, normedAxis1, normedAxis2, plane);
 			double dist1 = Math.abs(intersect[0] / axis1.length());
 			double dist2 = Math.abs(intersect[1] / axis2.length());
 
@@ -276,7 +276,7 @@ public abstract class TrackPlacementMixin {
 					return info.withMessage("turn_90")
 						.tooJumbly();
 
-			intersect = Utils.intersect(end1, end2, normedAxis1, normedAxis2, Direction.Axis.Y);
+			intersect = Util.intersect(end1, end2, normedAxis1, normedAxis2, Direction.Axis.Y);
 			double dist1 = Math.abs(intersect[0]);
 			double dist2 = Math.abs(intersect[1]);
 			float ex1 = 0;
@@ -388,7 +388,7 @@ public abstract class TrackPlacementMixin {
 							count - Math.min(isTrack ? tracks - foundTracks : pavement - foundPavement, count);
 						if (i == inv.selected)
 							stackInSlot.setTag(null);
-						ItemStack newItem = Utils.copyStackWithSize(stackInSlot, remainingItems);
+						ItemStack newItem = Util.copyStackWithSize(stackInSlot, remainingItems);
 						if (offhand)
 							player.setItemInHand(InteractionHand.OFF_HAND, newItem);
 						else

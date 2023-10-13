@@ -1,4 +1,4 @@
-package dev.rdh.createunlimited.fabric.mixin;
+package dev.rdh.createunlimited.fabric;
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 
@@ -7,8 +7,6 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
-
-import dev.rdh.createunlimited.*;
 
 import manifold.rt.api.NoBootstrap;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
@@ -33,25 +31,17 @@ import net.minecraftforge.fml.config.ModConfig;
 
 import java.nio.file.Path;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-
-@SuppressWarnings("OverwriteAuthorRequired")
 @NoBootstrap
-@Mixin(Utils.class)
-public class UtilsFabricImpl {
+public class UtilImpl {
 
-	@Overwrite
 	public static Path getConfigDirectory() {
 		return FabricLoader.getInstance().getConfigDir();
 	}
 
-	@Overwrite
 	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, selection) -> dispatcher.register(command));
 	}
 
-	@Overwrite
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		#if PRE_CURRENT_MC_1_19_2
 		ModLoadingContext.registerConfig(CreateUnlimited.ID, type, spec);
@@ -60,33 +50,28 @@ public class UtilsFabricImpl {
 		#endif
 	}
 
-	@Overwrite
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
-	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
+	void registerArgument(String name, Class<A> clazz, I info, ResourceLocation id) {
 		ArgumentTypeRegistry.registerArgumentType(id, clazz, info);
 	}
 
-	@Overwrite
 	public static String getVersion() {
 		return FabricLoader.getInstance()
-						   .getModContainer(CreateUnlimited.ID)
-						   .orElseThrow()
-						   .getMetadata()
-						   .getVersion()
-						   .getFriendlyString();
+			.getModContainer(CreateUnlimited.ID)
+			.orElseThrow()
+			.getMetadata()
+			.getVersion()
+			.getFriendlyString();
 	}
 
-	@Overwrite
 	public static boolean isDevEnv() {
 		return FabricLoader.getInstance().isDevelopmentEnvironment();
 	}
 
-	@Overwrite
 	public static Attribute getReachAttribute() {
 		return ReachEntityAttributes.REACH;
 	}
 
-	@Overwrite
 	public static String platformName() {
 		return FabricLoader.getInstance().isModLoaded("quilt_loader") ? "Quilt" : "Fabric";
 	}

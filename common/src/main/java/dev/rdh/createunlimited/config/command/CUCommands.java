@@ -9,7 +9,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.simibubi.create.foundation.config.ConfigBase.*;
 import com.simibubi.create.foundation.utility.Components;
 
-import dev.rdh.createunlimited.Utils;
+import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfigs;
 
@@ -112,7 +112,7 @@ public class CUCommands {
 
 		}
 
-		if(Utils.isDevEnv()) {
+		if(Util.isDevEnv()) {
 			base.then(literal("disableEverything").requires(CUCommands::perms).executes(context -> {
 				CUConfigs.server().placementChecks.set(CUServer.PlacementCheck.OFF);
 				CUConfigs.server().extendedDriving.set(0.01);
@@ -120,6 +120,7 @@ public class CUCommands {
 				CUConfigs.server().maxAllowedStress.set(-1d);
 				CUConfigs.server().trainAssemblyChecks.set(false);
 				CUConfigs.server().maxGlueConnectionRange.set(128d);
+				//CUConfigs.server().physicalBlockConnection.set(false);
 				CUConfigs.server().singleExtendoGripRange.set(128);
 				CUConfigs.server().doubleExtendoGripRange.set(128);
 				CUConfigs.server().allowAllCopycatBlocks.set(true);
@@ -131,7 +132,7 @@ public class CUCommands {
 
 		if (category != null)
 			base.then(category);
-		Utils.registerCommand(base);
+		Util.registerCommand(base);
 	}
 
 	private static boolean perms(Object o) {

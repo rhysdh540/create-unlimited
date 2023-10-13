@@ -7,6 +7,8 @@ import com.mojang.brigadier.arguments.ArgumentType;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
+
 import dev.rdh.createunlimited.config.CUConfigs;
 
 import net.minecraft.commands.CommandSourceStack;
@@ -28,45 +30,60 @@ import java.util.function.Supplier;
 
 import manifold.rt.api.NoBootstrap;
 
-/**
- * A word about {@code @ExpectPlatform}:<p>
- * When using Forgix's {@code removeDuplicate} configuration, any ExpectPlatform-ed methods will <i>always</i> call theyr fabric implementation. To solve this, we have to overwrite these methods at runtime depending on the loader we are on.
- */
 @NoBootstrap
-@SuppressWarnings("unused")
-public class Utils {
+public class Util {
 
+	@ExpectPlatform
 	public static String getVersion() {
 		throw new AssertionError();
 	}
 
+	@ExpectPlatform
 	public static boolean isDevEnv() {
 		throw new AssertionError();
 	}
 
+	@ExpectPlatform
 	public static String platformName() {
 		throw new AssertionError();
 	}
 
+	@ExpectPlatform
 	public static Path getConfigDirectory() {
 		throw new AssertionError();
 	}
 
+	@ExpectPlatform
 	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
 		throw new AssertionError();
 	}
 
+	@ExpectPlatform
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		throw new AssertionError();
 	}
 
+	@ExpectPlatform
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
-	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
+	void registerArgument(String name, Class<A> clazz, I info, ResourceLocation id) {
 		throw new AssertionError();
 	}
 
+	@ExpectPlatform
 	public static Attribute getReachAttribute() {
 		throw new AssertionError();
+	}
+
+	public static boolean isFabric() {
+		return platformName().equals("Fabric") || isQuilt();
+	}
+
+	public static boolean isForge() {
+		return platformName().equals("Forge");
+	}
+
+	public static boolean isQuilt() {
+		return platformName().equals("Quilt");
 	}
 
 	public static Supplier<Multimap<Attribute, AttributeModifier>> singleRange() {

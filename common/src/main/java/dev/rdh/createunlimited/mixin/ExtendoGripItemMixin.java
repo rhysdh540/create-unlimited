@@ -17,8 +17,8 @@ import java.util.function.Supplier;
 
 import manifold.rt.api.NoBootstrap;
 
-import static dev.rdh.createunlimited.Utils.doubleRange;
-import static dev.rdh.createunlimited.Utils.singleRange;
+import static dev.rdh.createunlimited.Util.doubleRange;
+import static dev.rdh.createunlimited.Util.singleRange;
 
 @NoBootstrap
 @SuppressWarnings("unused")
