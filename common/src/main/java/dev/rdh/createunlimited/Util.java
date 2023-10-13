@@ -24,7 +24,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 
-import java.nio.file.Path;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -49,11 +48,6 @@ public class Util {
 	}
 
 	@ExpectPlatform
-	public static Path getConfigDirectory() {
-		throw new AssertionError();
-	}
-
-	@ExpectPlatform
 	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
 		throw new AssertionError();
 	}
@@ -65,25 +59,13 @@ public class Util {
 
 	@ExpectPlatform
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
-	void registerArgument(String name, Class<A> clazz, I info, ResourceLocation id) {
+	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
 		throw new AssertionError();
 	}
 
 	@ExpectPlatform
 	public static Attribute getReachAttribute() {
 		throw new AssertionError();
-	}
-
-	public static boolean isFabric() {
-		return platformName().equals("Fabric") || isQuilt();
-	}
-
-	public static boolean isForge() {
-		return platformName().equals("Forge");
-	}
-
-	public static boolean isQuilt() {
-		return platformName().equals("Quilt");
 	}
 
 	public static Supplier<Multimap<Attribute, AttributeModifier>> singleRange() {

@@ -1,5 +1,6 @@
 architectury {
-    common rootProject.enabled_platforms.split(", ")
+	//noinspection GroovyAssignabilityCheck
+    common rootProject.enabled_platforms.split(', ')
 }
 
 dependencies {

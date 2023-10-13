@@ -2,11 +2,13 @@ plugins {
     id 'architectury-plugin' version "${arch_plugin_version}" apply false
     id 'dev.architectury.loom' version "${loom_version}" apply false
 	id 'io.github.juuxel.loom-vineflower' version "${vineflower_version}" apply false
+	id 'com.github.johnrengelman.shadow' version "${shadow_version}" apply false
+
     id 'io.github.pacifistmc.forgix' version "${forgix_version}"
 }
 setup()
 
-def modVersion = mod_version + (build_number != null ? "-build.${build_number}" : "")
+def modVersion = mod_version + (build_number != null ? "-build.${build_number}" : '')
 
 forgix {
     group = maven_group

@@ -1,0 +1,46 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+
+String platform = project.name.substring(1).capitalize()
+
+architectury {
+	platformSetupLoomIde()
+}
+
+configurations {
+	common
+	shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+	compileClasspath.extendsFrom common
+	runtimeClasspath.extendsFrom common
+}
+
+dependencies {
+	common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+	shadowCommon(project(path: ':common', configuration: "transformProduction${platform}")) { transitive = false }
+}
+
+shadowJar {
+	exclude 'architectury.common.json'
+
+	configurations = [project.configurations.shadowCommon, project.configurations.shade]
+	archiveClassifier = 'shadow'
+}
+
+remapJar {
+	input.set shadowJar.archiveFile
+	dependsOn shadowJar
+	archiveClassifier = null
+}
+
+jar.archiveClassifier = 'dev'
+
+sourcesJar {
+	def commonSources = project(':common').sourcesJar
+	dependsOn commonSources
+	from commonSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+	withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+		skip()
+	}
+}

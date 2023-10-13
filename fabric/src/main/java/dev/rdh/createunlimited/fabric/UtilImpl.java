@@ -29,14 +29,8 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 
-import java.nio.file.Path;
-
 @NoBootstrap
 public class UtilImpl {
-
-	public static Path getConfigDirectory() {
-		return FabricLoader.getInstance().getConfigDir();
-	}
 
 	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, selection) -> dispatcher.register(command));
@@ -51,7 +45,7 @@ public class UtilImpl {
 	}
 
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
-	void registerArgument(String name, Class<A> clazz, I info, ResourceLocation id) {
+	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
 		ArgumentTypeRegistry.registerArgumentType(id, clazz, info);
 	}
 

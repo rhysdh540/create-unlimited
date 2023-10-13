@@ -21,12 +21,10 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.forgespi.language.IModInfo;
 
 import org.jetbrains.annotations.ApiStatus;
 
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,10 +40,6 @@ public class UtilImpl {
 	@ApiStatus.Internal
 	public static Set<LiteralArgumentBuilder<CommandSourceStack>> commands = new HashSet<>();
 
-	public static Path getConfigDirectory() {
-		return FMLPaths.CONFIGDIR.get();
-	}
-
 	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
 		commands.add(command);
 	}
@@ -55,7 +49,7 @@ public class UtilImpl {
 	}
 
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
-	void registerArgument(String name, Class<A> clazz, I info, ResourceLocation id) {
+	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
 		ArgumentTypeInfos.registerByClass(clazz, info);
 	}
 
