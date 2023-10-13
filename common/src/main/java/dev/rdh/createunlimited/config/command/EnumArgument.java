@@ -15,7 +15,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
-import dev.rdh.createunlimited.Util;
+import dev.rdh.createunlimited.Utils;
 
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -46,7 +46,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	private final boolean lowercase;
 
 	public static void init() {
-		Util.registerArgument("enumargument", EnumArgument.class, new EnumArgument.Info(), CreateUnlimited.asResource("enumargument"));
+		Utils.registerArgument(EnumArgument.class, new EnumArgument.Info(), CreateUnlimited.asResource("enumargument"));
 	}
 
 	public static <R extends Enum<R>> EnumArgument<R> enumArg(Class<R> enumClass, boolean lowercase) {

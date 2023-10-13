@@ -1,4 +1,4 @@
-package dev.rdh.createunlimited.forge;
+package dev.rdh.createunlimited.forge.mixin;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -24,41 +24,48 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.forgespi.language.IModInfo;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
+import dev.rdh.createunlimited.*;
+
+import dev.rdh.createunlimited.forge.Events;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import manifold.rt.api.NoBootstrap;
 
 #if MC_1_19_2
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings({ "UnstableApiUsage", "OverwriteAuthorRequired" })
+#else
+@SuppressWarnings({ "OverwriteAuthorRequired" })
 #endif
 @NoBootstrap
-public class UtilImpl {
+@Mixin(Utils.class)
+public class UtilsForgeImpl {
 
-	@ApiStatus.Internal
-	public static Set<LiteralArgumentBuilder<CommandSourceStack>> commands = new HashSet<>();
-
+	@Overwrite
 	public static Path getConfigDirectory() {
 		return FMLPaths.CONFIGDIR.get();
 	}
 
+	@Overwrite
 	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
-		commands.add(command);
+		Events.commands.add(command);
 	}
 
+	@Overwrite
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		ModLoadingContext.get().registerConfig(type, spec);
 	}
 
+	@Overwrite
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
-	void registerArgument(String name, Class<A> clazz, I info, ResourceLocation id) {
+	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
 		ArgumentTypeInfos.registerByClass(clazz, info);
 	}
 
+	@Overwrite
 	public static String getVersion() {
 		String versionString = "UNKNOWN";
 
@@ -75,10 +82,12 @@ public class UtilImpl {
 		return versionString;
 	}
 
+	@Overwrite
 	public static boolean isDevEnv() {
 		return !FMLLoader.isProduction();
 	}
 
+	@Overwrite
 	public static Attribute getReachAttribute() {
 		#if POST_CURRENT_MC_1_20_1
 		return ForgeMod.BLOCK_REACH.get();
@@ -87,6 +96,7 @@ public class UtilImpl {
 		#endif
 	}
 
+	@Overwrite
 	public static String platformName() {
 		return "Forge";
 	}

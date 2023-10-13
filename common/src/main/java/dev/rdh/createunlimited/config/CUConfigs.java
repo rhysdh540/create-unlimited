@@ -4,7 +4,7 @@ package dev.rdh.createunlimited.config;
 import com.simibubi.create.foundation.config.ConfigBase;
 import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
 
-import dev.rdh.createunlimited.Util;
+import dev.rdh.createunlimited.Utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -62,7 +62,7 @@ public class CUConfigs {
 		register(CUServer::new, SERVER);
 
 		for(var pair : CONFIGS.entrySet())
-			Util.registerConfig(pair.getKey(), pair.getValue().specification);
+			Utils.registerConfig(pair.getKey(), pair.getValue().specification);
 	}
 
 	public static void onLoad(ModConfig modConfig) {
