@@ -49,9 +49,9 @@ public class UtilImpl {
 		ArgumentTypeRegistry.registerArgumentType(id, clazz, info);
 	}
 
-	public static String getVersion() {
+	public static String getVersion(String modid) {
 		return FabricLoader.getInstance()
-			.getModContainer(CreateUnlimited.ID)
+			.getModContainer(modid)
 			.orElseThrow()
 			.getMetadata()
 			.getVersion()

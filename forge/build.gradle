@@ -19,6 +19,20 @@ dependencies {
 	if(rootProject.hasProperty('snr')) {
 		modImplementation("com.railwayteam.railways:Steam_Rails-forge-${minecraft_version}:${snr}+forge-mc${minecraft_version}-build.${snr_build}")
 	}
+
+	// Dev Env Optimizations
+	if (rootProject.hasProperty("bmb")) {
+		modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
+	}
+	if (rootProject.hasProperty("smoothboot_forge")) {
+		modRuntimeOnly "curse.maven:smoothboot-forge-633412:${rootProject.smoothboot_forge}"
+	}
+	if (rootProject.hasProperty("catalogue")) {
+		modRuntimeOnly "curse.maven:catalogue-459701:${rootProject.catalogue}"
+	}
+	if (rootProject.hasProperty("ferritecore")) {
+		modRuntimeOnly "curse.maven:ferritecore-429235:${rootProject.ferritecore}"
+	}
 }
 
 loom {
@@ -31,7 +45,7 @@ loom {
 		)
 
 		if(awFile.exists()) {
-			convertAccessWideners = true
+			convertAccessWideners.set(true)
 			extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
 		}
 	}

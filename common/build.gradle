@@ -1,6 +1,11 @@
 architectury {
 	//noinspection GroovyAssignabilityCheck
-    common rootProject.enabled_platforms.split(', ')
+    common {
+		rootProject.subprojects.each {
+			if(it == project(':common')) return
+			add it.name
+		}
+	}
 }
 
 dependencies {

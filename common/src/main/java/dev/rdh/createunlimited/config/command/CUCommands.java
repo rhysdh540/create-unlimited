@@ -43,7 +43,7 @@ public class CUCommands {
 			link("https://github.com/rhysdh540/create-unlimited", "GitHub", ChatFormatting.GRAY),
 			link("https://modrinth.com/mod/create-unlimited", "Modrinth", ChatFormatting.GREEN),
 			link("https://curseforge.com/minecraft/mc-mods/create-unlimited", "CurseForge", ChatFormatting.GOLD),
-			link("https://discord.gg/2ubhDbMaZY", "Discord", ChatFormatting.BLUE)
+			link("https://discord.gg/GeGm3DRDWY", "Discord", ChatFormatting.BLUE)
 		);
 
 		LiteralArgumentBuilder<CommandSourceStack> base = literal(CreateUnlimited.ID).executes(context -> {

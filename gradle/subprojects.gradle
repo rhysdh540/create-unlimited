@@ -1,34 +1,14 @@
-apply plugin: "dev.architectury.loom"
-apply plugin: "io.github.juuxel.loom-vineflower"
-apply plugin: "architectury-plugin"
+apply plugin: 'dev.architectury.loom'
+apply plugin: 'io.github.juuxel.loom-vineflower'
+apply plugin: 'architectury-plugin'
 
-def isForge = project == project(":forge")
-def isFabric = project == project(":fabric")
-def isCommon = project == project(":common")
-
-def awFile = project(":common").file("src/main/resources/createunlimited.accesswidener")
+def awFile = project(':common').file("src/main/resources/createunlimited.accesswidener")
 
 loom {
 	silentMojangMappingsLicense()
 
 	if(awFile.exists()) {
 		accessWidenerPath = awFile
-	}
-
-	runs {
-		remove server
-
-		if(!isCommon) {
-			client {
-				client()
-				name = 'Minecraft Client'
-				ideConfigGenerated = true
-				vmArgs '-Xmx6G', '-Xms2G', '-XX:+UnlockExperimentalVMOptions',
-					'-XX:+UseZGC', '-XX:+ZGenerational',
-					'-Dsun.rmi.dgc.server.gcInterval=2147483646', '-XX:MaxGCPauseMillis=50',
-					'-XX:SoftMaxHeapSize=4G', '-XX:-ZUncommit'
-			}
-		}
 	}
 }
 
@@ -41,10 +21,6 @@ configurations {
 	addJarCompile
 	addJarRuntime
 	addJarEverywhere
-
-	if (!isCommon) {
-		include.extendsFrom addJar
-	}
 
 	compileOnly.extendsFrom addJarCompile
 	annotationProcessor.extendsFrom addJarCompile
@@ -92,39 +68,11 @@ dependencies {
 
 	annotationProcessor implementation("com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}")
 	//annotationProcessor include("com.github.bawnorton.mixinsquared:mixinsquared-${p.name}:${rootProject.mixin_squared}")
-
-	// Dev Env Optimizations
-	//// https://www.cursemaven.com/
-	//// https://docs.modrinth.com/docs/tutorials/maven/
-
-	if (isFabric) {
-		if (rootProject.hasProperty("lazydfu")) {
-			modRuntimeOnly "maven.modrinth:lazydfu:${rootProject.lazydfu}"
-		}
-		if (rootProject.hasProperty("smoothboot_fabric")) {
-			modRuntimeOnly "curse.maven:smoothboot-fabric-415758:${rootProject.smoothboot_fabric}"
-		}
-	}
-
-	if (isForge) {
-		if (rootProject.hasProperty("bmb")) {
-			modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
-		}
-		if (rootProject.hasProperty("smoothboot_forge")) {
-			modRuntimeOnly "curse.maven:smoothboot-forge-633412:${rootProject.smoothboot_forge}"
-		}
-		if (rootProject.hasProperty("catalogue")) {
-			modRuntimeOnly "curse.maven:catalogue-459701:${rootProject.catalogue}"
-		}
-		if (rootProject.hasProperty("ferritecore")) {
-			modRuntimeOnly "curse.maven:ferritecore-429235:${rootProject.ferritecore}"
-		}
-	}
 }
 
 processResources {
 	def properties = [
-		version          : mod_version,
+		version          : version,
 		minecraft_version: minecraft_version,
 		forge            : forge.split("\\.")[0],
 		fabric           : fabric,
@@ -137,19 +85,16 @@ processResources {
 
 	inputs.properties properties
 
-	filesMatching("fabric.mod.json") {
+	filesMatching('fabric.mod.json') {
 		expand properties
 	}
 
-	filesMatching("META-INF/mods.toml") {
+	filesMatching('META-INF/mods.toml') {
 		expand properties
 	}
 
 	exclude { file ->
-		if (file.name.contains(".createunlimited.accesswidener") && file.name != "${access_widener_version}.createunlimited.accesswidener") {
-			return true
-		}
-		return false
+		return (file.name.contains('.createunlimited.aw') && file.name != "${access_widener_version}.createunlimited.aw")
 	}
 }
 

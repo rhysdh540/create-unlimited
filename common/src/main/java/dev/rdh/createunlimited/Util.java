@@ -33,7 +33,7 @@ import manifold.rt.api.NoBootstrap;
 public class Util {
 
 	@ExpectPlatform
-	public static String getVersion() {
+	public static String getVersion(String modid) {
 		throw new AssertionError();
 	}
 

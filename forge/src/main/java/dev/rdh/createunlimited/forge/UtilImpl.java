@@ -53,15 +53,15 @@ public class UtilImpl {
 		ArgumentTypeInfos.registerByClass(clazz, info);
 	}
 
-	public static String getVersion() {
+	public static String getVersion(String modid) {
 		String versionString = "UNKNOWN";
 
-		List<IModInfo> infoList = ModList.get().getModFileById(CreateUnlimited.ID).getMods();
+		List<IModInfo> infoList = ModList.get().getModFileById(modid).getMods();
 		if (infoList.size() > 1) {
-			CreateUnlimited.LOGGER.error("Multiple mods for ID: " + CreateUnlimited.ID);
+			CreateUnlimited.LOGGER.error("Multiple mods for ID: " + modid);
 		}
 		for (IModInfo info : infoList) {
-			if (info.getModId().equals(CreateUnlimited.ID)) {
+			if (info.getModId().equals(modid)) {
 				versionString = MavenVersionStringHelper.artifactVersionToString(info.getVersion());
 				break;
 			}

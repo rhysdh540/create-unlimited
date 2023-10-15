@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class CreateUnlimited {
 	public static final String ID = "createunlimited";
 	public static final String NAME = "Create Unlimited";
-	public static final String VERSION = Util.getVersion().split("-")[0];
+	public static final String VERSION = Util.getVersion(ID).split("-build")[0];
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
     public static void init() {

@@ -18,6 +18,14 @@ dependencies {
 	if(rootProject.hasProperty('snr')) {
 		modImplementation("com.railwayteam.railways:Steam_Rails-fabric-${minecraft_version}:${snr}+fabric-mc${minecraft_version}-build.${snr_build}") { transitive = false }
 	}
+
+	// Dev Env Optimizations
+	if (rootProject.hasProperty("lazydfu")) {
+		modRuntimeOnly "maven.modrinth:lazydfu:${rootProject.lazydfu}"
+	}
+	if (rootProject.hasProperty("smoothboot_fabric")) {
+		modRuntimeOnly "curse.maven:smoothboot-fabric-415758:${rootProject.smoothboot_fabric}"
+	}
 }
 
 remapJar {
