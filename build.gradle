@@ -8,7 +8,7 @@ plugins {
 }
 setup()
 
-def modVersion = mod_version + (build_number != null ? "-build.${build_number}" : '')
+ext.modVersion = mod_version + (build_number != null ? "-build.${build_number}" : '')
 
 forgix {
     group = maven_group
