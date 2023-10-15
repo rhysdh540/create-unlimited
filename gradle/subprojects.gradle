@@ -72,7 +72,7 @@ dependencies {
 
 processResources {
 	def properties = [
-		version          : version,
+		version          : rootProject.version,
 		minecraft_version: minecraft_version,
 		forge            : forge.split("\\.")[0],
 		fabric           : fabric,
