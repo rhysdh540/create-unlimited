@@ -25,11 +25,35 @@ subprojects {
 	remapJar.finalizedBy(mergeJars)
 }
 
-tasks.register("moveJars", AbstractCopyTask) {
-	subprojects.each {
-		from it.buildDir.toPath().resolve("libs").toFile().listFiles()
-		into rootProject.file("artifacts/${rootProject.mcVer}")
+tasks.register("moveJars", Copy) {
+	def unmerged = copySpec {
+		def subs = rootProject.subprojects
+		subs.remove(rootProject.project(':common'))
+
+		Map<File, String> files = [:]
+		subs.each {
+			it.buildDir.toPath().resolve('libs').toFile().listFiles().each { file ->
+				println "Found ${file.name} in ${it.name}"
+				files.put(file, it.name)
+			}
+		}
+
+		files.each { file, name ->
+			File newFile = new File(file.parent, file.name.replace('.jar', "-${name}.jar"))
+			file.renameTo(newFile)
+			from newFile
+			into "artifacts/unmerged/${rootProject.mcVer}"
+		}
 	}
+	def merged = copySpec {
+		from rootProject.file('build/libs/merged')
+		into 'artifacts/merged'
+	}
+
+	with unmerged
+	with merged
+	destinationDir = rootProject.rootDir
+	duplicatesStrategy(DuplicatesStrategy.WARN)
 }
 
 allprojects {

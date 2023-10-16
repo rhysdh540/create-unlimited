@@ -46,14 +46,14 @@ jobs:
             -  name: upload non-merged artifacts
                uses: actions/upload-artifact@v3
                with:
-                    name: artifacts
-                    path: ./artifacts/**
+                    name: cu-artifacts
+                    path: artifacts/unmerged/*.jar
 
             -   name: upload merged artifacts
                 uses: actions/upload-artifact@v3
                 with:
-                    name: merged-artifacts
-                    path: ./build/libs/merged/*.jar
+                    name: cu-artifacts-merged
+                    path: artifacts/merged/*.jar
 
             -   name: send artifacts to webhook
                 if: success()
@@ -62,7 +62,7 @@ jobs:
                     webhook_id: ${{ secrets.WEBHOOK_ID }}
                     webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
                     args: '# Build #${{ github.run_number }}'
-                    file: build/libs/merged/*.jar
+                    file: artifacts/merged/*.jar
 
             -   name: send failure message
                 if: failure()
