@@ -25,6 +25,13 @@ subprojects {
 	remapJar.finalizedBy(mergeJars)
 }
 
+tasks.register("moveJars", AbstractCopyTask) {
+	subprojects.each {
+		from it.buildDir.toPath().resolve("libs").toFile().listFiles()
+		into rootProject.file("artifacts/${rootProject.mcVer}")
+	}
+}
+
 allprojects {
     apply plugin: 'java'
 

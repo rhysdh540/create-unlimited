@@ -10,7 +10,6 @@ for d in versionProperties/*; do
   sh gradlew assemble -PmcVer="$version" || true
   echo "=============================================================== Moving jars ==============================================================="
   echo ''
-  mv "./forge/build/libs/*" "./artifacts/$version/" || true
-  mv "./fabric/build/libs/*" "./artifacts/$version/" || true
+  sh gradlew moveJars -PmcVer="$version" || true
   echo ''
 done
