@@ -2,12 +2,9 @@ name: build
 on: [ pull_request, push ]
 
 jobs:
-    build:
+    skip:
         runs-on: ubuntu-latest
-        if: !startsWith(github.event.head_commit.message, '[skip]')
-        strategy:
-            matrix:
-                java: [ 17 ]
+        if: "startsWith(github.event.head_commit.message, '[skip]')"
         steps:
             -   name: send skipped message
                 uses: appleboy/discord-action@v1.0.0
@@ -15,6 +12,14 @@ jobs:
                     webhook_id: ${{ secrets.WEBHOOK_ID }}
                     webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
                     args: '# Build #${{ github.run_number }} skipped'
+
+    build:
+        runs-on: ubuntu-latest
+        if: "!startsWith(github.event.head_commit.message, '[skip]')"
+        strategy:
+            matrix:
+                java: [ 17 ]
+        steps:
             -   name: checkout
                 uses: actions/checkout@v3
 
