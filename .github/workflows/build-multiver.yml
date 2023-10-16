@@ -56,7 +56,7 @@ jobs:
                     path: ./build/libs/merged/*.jar
 
             -   name: send artifacts to webhook
-                if: success()
+                if: success() && ( -d build/libs/merged )
                 uses: appleboy/discord-action@v1.0.0
                 with:
                     webhook_id: ${{ secrets.WEBHOOK_ID }}
