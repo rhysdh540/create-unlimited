@@ -47,13 +47,18 @@ jobs:
                uses: actions/upload-artifact@v3
                with:
                     name: cu-artifacts
-                    path: artifacts/unmerged/*.jar
+                    path: artifacts/unmerged/**/*.jar
 
             -   name: upload merged artifacts
                 uses: actions/upload-artifact@v3
                 with:
                     name: cu-artifacts-merged
                     path: artifacts/merged/*.jar
+
+            -   name: get names of merged artifacts
+                id: get_names
+                run: |
+                    echo "names=$(ls artifacts/merged/*.jar)" >> GITHUB_OUTPUT
 
             -   name: send artifacts to webhook
                 if: success()
@@ -62,7 +67,7 @@ jobs:
                     webhook_id: ${{ secrets.WEBHOOK_ID }}
                     webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
                     args: '# Build #${{ github.run_number }}'
-                    file: artifacts/merged/*.jar
+                    file: ${{ steps.get_names.outputs.names }}
 
             -   name: send failure message
                 if: failure()
