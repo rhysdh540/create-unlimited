@@ -92,10 +92,6 @@ processResources {
 	filesMatching('META-INF/mods.toml') {
 		expand properties
 	}
-
-	exclude { file ->
-		return (file.name.contains('.createunlimited.aw') && file.name != "${access_widener_version}.createunlimited.aw")
-	}
 }
 
 def manifold(String path) {
