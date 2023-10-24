@@ -13,7 +13,7 @@ project.extensions.add('webhook', WebhookExt)
 
 tasks.register('webhook') {
 	def config = project.extensions.findByType(WebhookExt)
-	if(config == null) {
+	if(config == null || config.isEmpty()) {
 		println 'Webhook extension not found!'
 		throw new GradleException()
 	}
@@ -86,7 +86,7 @@ abstract class WebhookExt {
 	abstract Property<String> message
 
 	{
-		url.convention(null)
+		url.convention('')
 		files.convention([])
 		message.convention('')
 	}
