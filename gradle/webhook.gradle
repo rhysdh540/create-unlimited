@@ -13,12 +13,12 @@ project.extensions.add('webhook', WebhookExt)
 
 tasks.register('webhook') {
 	def config = project.extensions.findByType(WebhookExt)
-	if(config == null || config.isEmpty()) {
+	if(config == null) {
 		println 'Webhook extension not found!'
 		throw new GradleException()
 	}
 	doLast {
-		if(config.url.get() == null) {
+		if(config.url.get() == null || config.url.get().isEmpty()) {
 			println 'Webhook URL not set!'
 			throw new GradleException()
 		}
