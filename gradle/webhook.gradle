@@ -1,0 +1,91 @@
+import com.google.gson.*
+
+import java.nio.file.Files
+
+buildscript {
+	repositories.mavenCentral()
+	dependencies {
+		classpath 'com.google.code.gson:gson:2.8.9'
+	}
+}
+
+project.extensions.add('webhook', WebhookExt)
+
+tasks.register('webhook') {
+	def config = project.extensions.findByType(WebhookExt)
+	if(config == null) {
+		println 'Webhook extension not found!'
+		throw new GradleException()
+	}
+	doLast {
+		def payload = new JsonObject()
+		payload.add('content', new JsonPrimitive(config.message.get()))
+		send(config.url.get(), config.files.get(), payload)
+	}
+}
+
+def send(String url, List<File> files, JsonObject payload) {
+	def webhook = new URL(url)
+	def con = webhook.openConnection() as HttpURLConnection
+	con.requestMethod = 'POST'
+	con.doOutput = true
+	OutputStream os = con.outputStream
+
+	if(payload != null) {
+		con.setRequestProperty 'Content-Type', 'application/json; charset=UTF-8'
+		con.setRequestProperty 'User-Agent', 'Mozilla/5.0'
+
+		new PrintWriter(new OutputStreamWriter(os, 'UTF-8'), true).withCloseable {
+			it.println payload.toString()
+		}
+	}
+
+	con.setRequestProperty 'Content-Type', 'multipart/form-data; boundary=boundary'
+	con.setRequestProperty 'User-Agent', 'Mozilla/5.0'
+
+	new PrintWriter(new OutputStreamWriter(os, 'UTF-8'), true).withCloseable {
+		if (files != null) {
+			for (int i = 0; i < files.size(); i++) {
+				File file = files[i]
+				it.println """
+					--boundary
+					Content-Disposition: form-data; name="files[$i]"; filename="${file.name}"
+					"""
+				Files.copy file.toPath(), os
+			}
+		}
+		it.println '--boundary--'
+	}
+
+	def response = con.responseCode
+	def message = con.inputStream.text
+
+	if (response == HttpURLConnection.HTTP_OK || response == HttpURLConnection.HTTP_NO_CONTENT) {
+		println 'Successfully sent webhook!'
+	} else {
+		println 'Failed to send webhook!'
+		println 'Response code: ' + response
+		println 'Message: ' + message
+		throw new GradleException()
+	}
+}
+
+abstract class WebhookExt {
+
+	@Input
+	abstract Property<String> url
+
+	@Input
+	abstract ListProperty<File> files
+
+	@Input
+	abstract Property<String> message
+
+	WebhookExt(Project project) {
+		url = project.objects.property(String)
+		files = project.objects.listProperty(File)
+		files.convention([])
+		message = project.objects.property(String)
+		message.convention('')
+	}
+}

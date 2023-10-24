@@ -28,14 +28,16 @@ jobs:
                 with:
                     java-version: ${{ matrix.java }}
                     distribution: zulu
-                    cache: gradle
 
-            -   name: cache loom
-                uses: actions/cache@v3
-                with:
-                    path: ~/.gradle/loom-cache
-                    key: loom-cache-${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties') }}
-                    restore-keys: loom-cache-${{ runner.os }}-gradle
+            - name: cache gradle
+              uses: actions/cache@v3
+              with:
+                  path: |
+                      ~/.gradle/caches
+                      ~/.gradle/loom-cache
+                      ~/.gradle/wrapper
+                  key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties') }}
+                  restore-keys: ${{ runner.os }}-gradle
 
             -   name: give scripts execution permissions
                 run: chmod +x gradlew buildAll
@@ -55,20 +57,6 @@ jobs:
                     name: cu-artifacts-merged
                     path: artifacts/merged/*.jar
 
-            -   name: get names of merged artifacts
-                id: get_names
-                run: |
-                    echo "names=$(ls artifacts/merged/*.jar)" >> GITHUB_OUTPUT
-
-            -   name: send artifacts to webhook
-                if: success()
-                uses: appleboy/discord-action@v1.0.0
-                with:
-                    webhook_id: ${{ secrets.WEBHOOK_ID }}
-                    webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
-                    args: '# Build #${{ github.run_number }}'
-                    file: ${{ steps.get_names.outputs.names }}
-
             -   name: send failure message
                 if: failure()
                 uses: appleboy/discord-action@v1.0.0
@@ -76,3 +64,7 @@ jobs:
                     webhook_id: ${{ secrets.WEBHOOK_ID }}
                     webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
                     args: '# Build #${{ github.run_number }} failed'
+
+            -   name: send artifacts to webhook
+                if: success()
+                run: ./gradlew webhook -Pwebhook_url=${{ secrets.DISCORD_WEBHOOK }}

@@ -25,37 +25,6 @@ subprojects {
 	remapJar.finalizedBy(mergeJars)
 }
 
-tasks.register("moveJars", Copy) {
-	def unmerged = copySpec {
-		def subs = rootProject.subprojects
-		subs.remove(rootProject.project(':common'))
-
-		Map<File, String> files = [:]
-		subs.each {
-			it.buildDir.toPath().resolve('libs').toFile().listFiles().each { file ->
-				println "Found ${file.name} in ${it.name}"
-				files.put(file, it.name)
-			}
-		}
-
-		files.each { file, name ->
-			File newFile = new File(file.parent, file.name.replace('.jar', "-${name}.jar"))
-			file.renameTo(newFile)
-			from newFile
-			into "artifacts/unmerged/${rootProject.mcVer}"
-		}
-	}
-	def merged = copySpec {
-		from rootProject.file('build/libs/merged')
-		into 'artifacts/merged'
-	}
-
-	with unmerged
-	with merged
-	destinationDir = rootProject.rootDir
-	duplicatesStrategy(DuplicatesStrategy.WARN)
-}
-
 allprojects {
     apply plugin: 'java'
 
@@ -71,6 +40,12 @@ allprojects {
 		options.encoding = 'UTF-8'
 		options.release.set(17)
 	}
+}
+
+webhook {
+	url = webhook_url
+	files = file('artifacts/merged').listFiles().collect()
+	message = "Build #${build_number}"
 }
 
 jar {
@@ -102,9 +77,31 @@ def setup() {
 
 	apply from: 'gradle/preprocessor.gradle'
 	apply from: 'gradle/accesswidener.gradle'
+	apply from: 'gradle/webhook.gradle'
 
 	println '\nPlugin versions:'
 	apply plugin: 'architectury-plugin'
 
 	defineMixins()
+
+	tasks.register("moveJars", Copy) {
+		def subs = rootProject.subprojects
+		subs.remove(rootProject.project(':common'))
+		subs.remove(rootProject.project(':forge'))
+
+		subs.each {
+			it.buildDir.toPath().resolve('libs').toFile().listFiles().each { file ->
+				File newFile = new File(file.parent, file.name.replace('.jar', "-${file.name}.jar"))
+				java.nio.file.Files.copy(file.toPath(), java.nio.file.Path.of("artifacts/unmerged/${rootProject.mcVer}", newFile.name))
+			}
+		}
+
+		with copySpec {
+			from rootProject.file('build/libs/merged')
+			into 'artifacts/merged'
+		}
+
+		destinationDir = rootProject.rootDir
+		duplicatesStrategy(DuplicatesStrategy.WARN)
+	}
 }
