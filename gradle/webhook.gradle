@@ -31,19 +31,22 @@ def send(String url, List<File> files, JsonObject payload) {
 	def con = webhook.openConnection() as HttpURLConnection
 	con.requestMethod = 'POST'
 	con.doOutput = true
-	OutputStream os = con.outputStream
 
 	if(payload != null) {
 		con.setRequestProperty 'Content-Type', 'application/json; charset=UTF-8'
 		con.setRequestProperty 'User-Agent', 'Mozilla/5.0'
 
-		new PrintWriter(new OutputStreamWriter(os, 'UTF-8'), true).withCloseable {
+		new PrintWriter(new OutputStreamWriter(con.outputStream, 'UTF-8'), true).withCloseable {
 			it.println payload.toString()
 		}
 	}
 
+	con.disconnect()
+
 	con.setRequestProperty 'Content-Type', 'multipart/form-data; boundary=boundary'
 	con.setRequestProperty 'User-Agent', 'Mozilla/5.0'
+
+	OutputStream os = con.outputStream
 
 	new PrintWriter(new OutputStreamWriter(os, 'UTF-8'), true).withCloseable {
 		if (files != null) {
