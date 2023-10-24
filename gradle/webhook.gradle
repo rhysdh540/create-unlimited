@@ -43,6 +43,8 @@ def send(String url, List<File> files, JsonObject payload) {
 
 	con.disconnect()
 	con = webhook.openConnection() as HttpURLConnection
+	con.requestMethod = 'POST'
+	con.doOutput = true
 
 	con.setRequestProperty 'Content-Type', 'multipart/form-data; boundary=boundary'
 	con.setRequestProperty 'User-Agent', 'Mozilla/5.0'
