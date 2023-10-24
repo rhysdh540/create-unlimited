@@ -27,46 +27,40 @@ tasks.register('webhook') {
 }
 
 def send(String url, List<File> files, JsonObject payload) {
-	def webhook = new URL(url)
-	def con = webhook.openConnection() as HttpURLConnection
+	def con = new URL(url).openConnection() as HttpURLConnection
 	con.requestMethod = 'POST'
 	con.doOutput = true
-
-	if(payload != null) {
-		con.setRequestProperty 'Content-Type', 'application/json; charset=UTF-8'
-		con.setRequestProperty 'User-Agent', 'Mozilla/5.0'
-
-		new PrintWriter(new OutputStreamWriter(con.outputStream, 'UTF-8'), true).withCloseable {
-			it.println payload.toString()
-		}
-	}
-
-	con.disconnect()
-	con = webhook.openConnection() as HttpURLConnection
-	con.requestMethod = 'POST'
-	con.doOutput = true
-
 	con.setRequestProperty 'Content-Type', 'multipart/form-data; boundary=boundary'
 	con.setRequestProperty 'User-Agent', 'Mozilla/5.0'
 
 	OutputStream os = con.outputStream
+	StringBuilder sb = new StringBuilder()
+
+	if (payload != null) {
+		sb.append '--boundary\n'
+		sb.append 'Content-Disposition: form-data; name="payload_json"\n\n'
+		sb.append payload.toString() + '\n'
+	}
+
+	if (files != null) {
+		for (int i = 0; i < files.size(); i++) {
+			File file = files[i]
+			sb.append '--boundary\n'
+			sb.append "Content-Disposition: form-data; name=\"files[$i]\"; filename=\"${file.name}\"\n"
+			sb.append Files.newInputStream(file.toPath()).text + '\n'
+		}
+	}
+
+	sb.append '\n--boundary--'
+
+	//println sb
 
 	new PrintWriter(new OutputStreamWriter(os, 'UTF-8'), true).withCloseable {
-		if (files != null) {
-			for (int i = 0; i < files.size(); i++) {
-				File file = files[i]
-				it.println """
-					--boundary
-					Content-Disposition: form-data; name="files[$i]"; filename="${file.name}"
-					"""
-				Files.copy file.toPath(), os
-			}
-		}
-		it.println '--boundary--'
+		it.println sb.toString()
 	}
 
 	def response = con.responseCode
-	def message = con.inputStream.text
+	def message = con.responseMessage
 
 	if (response == HttpURLConnection.HTTP_OK || response == HttpURLConnection.HTTP_NO_CONTENT) {
 		println 'Successfully sent webhook!'

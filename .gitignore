@@ -7,3 +7,4 @@ build.properties
 common/src/main/resources/*.accesswidener
 .DS_Store
 artifacts/
+.architectury-transformer/

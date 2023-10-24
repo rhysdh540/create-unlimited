@@ -45,7 +45,7 @@ allprojects {
 webhook {
 	url = webhook_url
 	files = file('artifacts/merged').listFiles().collect()
-	message = "Build #${build_number}"
+	message = "# Build #${build_number}"
 }
 
 jar {
