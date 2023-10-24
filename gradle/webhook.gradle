@@ -18,6 +18,10 @@ tasks.register('webhook') {
 		throw new GradleException()
 	}
 	doLast {
+		if(config.url.get() == null) {
+			println 'Webhook URL not set!'
+			throw new GradleException()
+		}
 		def payload = new JsonObject()
 		payload.add('content', new JsonPrimitive(config.message.get()))
 		send(config.url.get(), config.files.get(), payload)
@@ -81,11 +85,9 @@ abstract class WebhookExt {
 	@Input
 	abstract Property<String> message
 
-	WebhookExt(Project project) {
-		url = project.objects.property(String)
-		files = project.objects.listProperty(File)
+	{
+		url.convention(null)
 		files.convention([])
-		message = project.objects.property(String)
 		message.convention('')
 	}
 }

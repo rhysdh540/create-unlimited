@@ -5,11 +5,11 @@ mkdir -p artifacts || true
 for d in versionProperties/*; do
   version=$(echo "$d" | sed "s/versionProperties\///" | sed "s/.properties//")
   echo "=================================================== Cleaning workspace to build $version ==================================================="
-  sh gradlew clean -PmcVer="$version" || true
+  sh gradlew clean -PmcVer="$version" "$@" || true
   echo "============================================================ Building $version ============================================================"
-  sh gradlew assemble -PmcVer="$version" || true
+  sh gradlew assemble -PmcVer="$version" "$@" || true
   echo "=============================================================== Moving jars ==============================================================="
   echo ''
-  sh gradlew moveJars -PmcVer="$version" || true
+  sh gradlew moveJars -PmcVer="$version" "$@" || true
   echo ''
 done

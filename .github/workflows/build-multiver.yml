@@ -43,7 +43,7 @@ jobs:
                 run: chmod +x gradlew buildAll
 
             -   name: Run build script
-                run: ./buildAll
+                run: ./buildAll -Pwebhook_url=${{ secrets.DISCORD_WEBHOOK }}
 
             -  name: upload non-merged artifacts
                uses: actions/upload-artifact@v3
