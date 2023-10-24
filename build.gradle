@@ -89,10 +89,14 @@ def setup() {
 		subs.remove(rootProject.project(':common'))
 		subs.remove(rootProject.project(':forge'))
 
-		subs.each {
-			it.buildDir.toPath().resolve('libs').toFile().listFiles().each { file ->
-				File newFile = new File(file.parent, file.name.replace('.jar', "-${file.name}.jar"))
-				java.nio.file.Files.copy(file.toPath(), java.nio.file.Path.of("artifacts/unmerged/${rootProject.mcVer}", newFile.name))
+		with copySpec {
+			subs.each { p ->
+				p.buildDir.toPath().resolve('libs').toFile().listFiles().each { file ->
+					File newFile = new File(file.parent, file.name.replace('.jar', "-${p.name}.jar"))
+					file.renameTo newFile
+					from newFile
+					into "artifacts/unmerged/${rootProject.mcVer}"
+				}
 			}
 		}
 
