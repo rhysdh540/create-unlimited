@@ -14,13 +14,11 @@ project.extensions.add('webhook', WebhookExt)
 tasks.register('webhook') {
 	def config = project.extensions.findByType(WebhookExt)
 	if(config == null) {
-		println 'Webhook extension not found!'
-		throw new GradleException()
+		throw new IllegalStateException('Webhook extension not found!')
 	}
 	doLast {
 		if(config.url.get() == null || config.url.get().isEmpty()) {
-			println 'Webhook URL not set!'
-			throw new GradleException()
+			throw new NullPointerException('Webhook URL not set!')
 		}
 		def payload = new JsonObject()
 		payload.add('content', new JsonPrimitive(config.message.get()))
@@ -70,7 +68,7 @@ def send(String url, List<File> files, JsonObject payload) {
 		println 'Failed to send webhook!'
 		println 'Response code: ' + response
 		println 'Message: ' + message
-		throw new GradleException()
+		throw new IOException('Failed to send webhook!')
 	}
 }
 
@@ -85,9 +83,12 @@ abstract class WebhookExt {
 	@Input
 	abstract Property<String> message
 
-	{
+	WebhookExt(Project p) {
+		url = p.objects.property(String)
 		url.convention('')
+		files = p.objects.listProperty(File)
 		files.convention([])
+		message = p.objects.property(String)
 		message.convention('')
 	}
 }
