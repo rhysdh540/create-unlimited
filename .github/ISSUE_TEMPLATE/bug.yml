@@ -1,5 +1,5 @@
-name: Bug Report
-description: Create a bug report to help me improve Create Unlimited
+name: I found a bug!
+description: Report an issue with Create Unlimited.
 title: "[Bug] "
 labels: ["bug"]
 body:
@@ -34,8 +34,8 @@ body:
         required: false
   -   type: input
       attributes:
-        label: Crash Report or Log
-        description: If applicable, please add a **link** to the crash report or log that was created when this issue occurred. You can upload the crash report to a site like MCLogs or GitHub Gist. Please **do not** paste the whole crash report in this issue.
+        label: Log
+        description: Please add a **link** to the crash report or log that was created when this issue occurred. You can upload the crash report to a site like https://mclo.gs/ or https://gist.github.com. Please **do not** paste the whole crash report in this issue.
       validations:
         required: true
   -   type: input
