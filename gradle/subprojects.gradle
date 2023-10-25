@@ -1,5 +1,4 @@
 apply plugin: 'dev.architectury.loom'
-apply plugin: 'io.github.juuxel.loom-vineflower'
 apply plugin: 'architectury-plugin'
 
 def awFile = project(':common').file("src/main/resources/createunlimited.accesswidener")
