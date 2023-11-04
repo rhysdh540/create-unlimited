@@ -15,9 +15,8 @@ dependencies {
 
 	modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric}+mc${rootProject.minecraft_version}")
 
-	if(rootProject.hasProperty('snr')) {
-		modImplementation("com.railwayteam.railways:Steam_Rails-fabric-${minecraft_version}:${snr}+fabric-mc${minecraft_version}-build.${snr_build}") { transitive = false }
-	}
+	// have deprecated modules present at runtime only
+	modLocalRuntime "net.fabricmc.fabric-api:fabric-api-deprecated:${rootProject.fabric_api}+${rootProject.minecraft_version}"
 
 	// Dev Env Optimizations
 	if (rootProject.hasProperty("lazydfu")) {

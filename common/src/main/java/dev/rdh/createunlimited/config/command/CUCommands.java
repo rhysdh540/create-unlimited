@@ -24,11 +24,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.Entity;
 
 import net.minecraftforge.common.ForgeConfigSpec.*;
 
 import dev.rdh.createunlimited.mixin.accessor.CValueAccessor;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import manifold.rt.api.NoBootstrap;
@@ -49,7 +51,7 @@ public class CUCommands {
 		LiteralArgumentBuilder<CommandSourceStack> base = literal(CreateUnlimited.ID).executes(context -> {
 			context.message(CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:");
 
-			var link = MutableComponent.create(CommonComponents.EMPTY.getContents());
+			MutableComponent link = MutableComponent.create(CommonComponents.EMPTY.getContents());
 			links.forEach(a -> link.append(a).append(Component.literal(" ")));
 
 			context.message(link);
@@ -58,7 +60,7 @@ public class CUCommands {
 
 		LiteralArgumentBuilder<CommandSourceStack> category = null;
 
-		for (var field : CUServer.class.getDeclaredFields()) {
+		for (Field field : CUServer.class.getDeclaredFields()) {
 			//skip if not config value or string
 			if (!CValue.class.isAssignableFrom(field.getType())) continue;
 
@@ -136,7 +138,9 @@ public class CUCommands {
 	}
 
 	private static boolean perms(Object o) {
-		return o instanceof CommandSourceStack source && (source.hasPermission(4) || !source.getLevel().getServer().isDedicatedServer());
+		if(!(o instanceof CommandSourceStack source)) return false;
+		Entity e = source.getEntity();
+		return e != null && e.hasPermissions(4);
 	}
 
 	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, String name, ConfigValue<T> value) {
@@ -165,7 +169,7 @@ public class CUCommands {
 		category.then(literal(name)
 			.then(argument("value", BoolArgumentType.bool()).requires(CUCommands::perms)
 				.executes(context -> {
-					var set = BoolArgumentType.getBool(context, "value");
+					boolean set = BoolArgumentType.getBool(context, "value");
 					if(set == value.get()) {
 						context.error("Value is already set to " + set);
 						return 0;
@@ -182,7 +186,7 @@ public class CUCommands {
 		category.then(literal(name)
 			.then(argument("value", IntegerArgumentType.integer()).requires(CUCommands::perms)
 				.executes(context -> {
-					var set = IntegerArgumentType.getInteger(context, "value");
+					int set = IntegerArgumentType.getInteger(context, "value");
 					if(set == value.get()) {
 						context.error("Value is already set to " + set);
 						return 0;
@@ -199,7 +203,7 @@ public class CUCommands {
 		category.then(literal(name)
 			.then(argument("value", DoubleArgumentType.doubleArg()).requires(CUCommands::perms)
 				.executes(context -> {
-					var set = DoubleArgumentType.getDouble(context, "value");
+					double set = DoubleArgumentType.getDouble(context, "value");
 					if(set == value.get()) {
 						context.error("Value is already set to " + set);
 						return 0;
@@ -217,7 +221,7 @@ public class CUCommands {
 		category.then(literal(name)
 			.then(argument("value", EnumArgument.enumArg(value.getDefault().getClass(), true)).requires(CUCommands::perms)
 				.executes(context -> {
-					var set = (T) context.getArgument("value", value.get().getClass());
+					T set = EnumArgument.getEnum(context, "value", (Class<T>) value.getDefault().getClass());
 					if(set == value.get()) {
 						context.error("Value is already set to " + set.name().toLowerCase());
 						return 0;

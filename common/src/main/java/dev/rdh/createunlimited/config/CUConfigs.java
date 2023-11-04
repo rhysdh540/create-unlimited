@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import manifold.rt.api.NoBootstrap;
@@ -61,7 +62,7 @@ public class CUConfigs {
 	public static void register() {
 		register(CUServer::new, SERVER);
 
-		for(var pair : CONFIGS.entrySet())
+		for(Entry<Type, ConfigBase> pair : CONFIGS.entrySet())
 			Util.registerConfig(pair.getKey(), pair.getValue().specification);
 	}
 
@@ -78,13 +79,14 @@ public class CUConfigs {
 	}
 
 	public static BaseConfigScreen createConfigScreen(Screen parent) {
-		if(!done) initBCS();
+		initBCS();
 		return new BaseConfigScreen(parent, CreateUnlimited.ID);
 	}
 
 	private static boolean done = false;
 
 	private static void initBCS() {
+		if(done) return;
 		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, (base) ->
 			base.withSpecs(getSpecByType(CLIENT), getSpecByType(COMMON), getSpecByType(SERVER))
 				.withTitles("", "", "Settings")

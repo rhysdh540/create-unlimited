@@ -45,6 +45,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	private final Class<T> enumClass;
 	private final boolean lowercase;
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static void init() {
 		Util.registerArgument(EnumArgument.class, new EnumArgument.Info(), CreateUnlimited.asResource("enumargument"));
 	}
@@ -66,6 +67,10 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 		} catch (IllegalArgumentException e) {
 			throw INVALID_ENUM.createWithContext(reader, name, Arrays.toString(Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).map(this::lowercase).toArray()));
 		}
+	}
+
+	public static <R extends Enum<R>> R getEnum(CommandContext<?> context, String name, Class<R> enumClass) {
+		return context.getArgument(name, enumClass);
 	}
 
 	@Override

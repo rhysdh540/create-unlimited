@@ -16,10 +16,6 @@ dependencies {
 
 	include "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras}"
 
-	if(rootProject.hasProperty('snr')) {
-		modImplementation("com.railwayteam.railways:Steam_Rails-forge-${minecraft_version}:${snr}+forge-mc${minecraft_version}-build.${snr_build}")
-	}
-
 	// Dev Env Optimizations
 	if (rootProject.hasProperty("bmb")) {
 		modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
