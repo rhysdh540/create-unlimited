@@ -115,21 +115,22 @@ public class CUCommands {
 		}
 
 		if(Util.isDevEnv()) {
-			base.then(literal("disableEverything").requires(CUCommands::perms).executes(context -> {
-				CUConfigs.server().placementChecks.set(CUServer.PlacementCheck.OFF);
-				CUConfigs.server().extendedDriving.set(0.01);
-				CUConfigs.server().maxTrainRelocationDistance.set(128d);
-				CUConfigs.server().maxAllowedStress.set(-1d);
-				CUConfigs.server().trainAssemblyChecks.set(false);
-				CUConfigs.server().maxGlueConnectionRange.set(128d);
-				//CUConfigs.server().physicalBlockConnection.set(false);
-				CUConfigs.server().singleExtendoGripRange.set(128);
-				CUConfigs.server().doubleExtendoGripRange.set(128);
-				CUConfigs.server().allowAllCopycatBlocks.set(true);
-				CUConfigs.server().singleExtendoGripRange.set(128);
-				CUConfigs.server().doubleExtendoGripRange.set(128);
-				return Command.SINGLE_SUCCESS;
-			}));
+			base.then(literal("disableEverything")//.requires(CUCommands::perms)
+				.executes(context -> {
+					CUConfigs.server().placementChecks.set(CUServer.PlacementCheck.OFF);
+					CUConfigs.server().extendedDriving.set(0.01);
+					CUConfigs.server().maxTrainRelocationDistance.set(128d);
+					CUConfigs.server().maxAllowedStress.set(-1d);
+					CUConfigs.server().trainAssemblyChecks.set(false);
+					CUConfigs.server().maxGlueConnectionRange.set(128d);
+					//CUConfigs.server().physicalBlockConnection.set(false);
+					CUConfigs.server().singleExtendoGripRange.set(128);
+					CUConfigs.server().doubleExtendoGripRange.set(128);
+					CUConfigs.server().allowAllCopycatBlocks.set(true);
+					CUConfigs.server().singleExtendoGripRange.set(128);
+					CUConfigs.server().doubleExtendoGripRange.set(128);
+					return Command.SINGLE_SUCCESS;
+				}));
 		}
 
 		if (category != null)
@@ -137,11 +138,11 @@ public class CUCommands {
 		Util.registerCommand(base);
 	}
 
-	private static boolean perms(Object o) {
-		if(!(o instanceof CommandSourceStack source)) return false;
-		Entity e = source.getEntity();
-		return e != null && e.hasPermissions(4);
-	}
+//	private static boolean perms(Object o) {
+//		if(!(o instanceof CommandSourceStack source)) return false;
+//		Entity e = source.getEntity();
+//		return e != null && e.hasPermissions(4);
+//	}
 
 	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, String name, ConfigValue<T> value) {
 		category.then(literal(name)
@@ -151,7 +152,7 @@ public class CUCommands {
 				context.message("Default value: " + value.getDefault());
 				return Command.SINGLE_SUCCESS;
 			})
-			.then(literal("reset").requires(CUCommands::perms)
+			.then(literal("reset")//.requires(CUCommands::perms)
 				.executes(context -> {
 					if(value.get().equals(value.getDefault())) {
 						context.error("Value is already default!");
@@ -167,7 +168,7 @@ public class CUCommands {
 
 	private static void setBoolean(LiteralArgumentBuilder<CommandSourceStack> category, String name, BooleanValue value) {
 		category.then(literal(name)
-			.then(argument("value", BoolArgumentType.bool()).requires(CUCommands::perms)
+			.then(argument("value", BoolArgumentType.bool())//.requires(CUCommands::perms)
 				.executes(context -> {
 					boolean set = BoolArgumentType.getBool(context, "value");
 					if(set == value.get()) {
@@ -184,7 +185,7 @@ public class CUCommands {
 
 	private static void setInt(LiteralArgumentBuilder<CommandSourceStack> category, String name, IntValue value) {
 		category.then(literal(name)
-			.then(argument("value", IntegerArgumentType.integer()).requires(CUCommands::perms)
+			.then(argument("value", IntegerArgumentType.integer())//.requires(CUCommands::perms)
 				.executes(context -> {
 					int set = IntegerArgumentType.getInteger(context, "value");
 					if(set == value.get()) {
@@ -201,7 +202,7 @@ public class CUCommands {
 
 	private static void setDouble(LiteralArgumentBuilder<CommandSourceStack> category, String name, DoubleValue value) {
 		category.then(literal(name)
-			.then(argument("value", DoubleArgumentType.doubleArg()).requires(CUCommands::perms)
+			.then(argument("value", DoubleArgumentType.doubleArg())//.requires(CUCommands::perms)
 				.executes(context -> {
 					double set = DoubleArgumentType.getDouble(context, "value");
 					if(set == value.get()) {
@@ -219,7 +220,8 @@ public class CUCommands {
 	@SuppressWarnings("unchecked")
 	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, String name, EnumValue<T> value) {
 		category.then(literal(name)
-			.then(argument("value", EnumArgument.enumArg(value.getDefault().getClass(), true)).requires(CUCommands::perms)
+			.then(argument("value", EnumArgument.enumArg(value.getDefault().getClass(), true))
+				//.requires(CUCommands::perms)
 				.executes(context -> {
 					T set = EnumArgument.getEnum(context, "value", (Class<T>) value.getDefault().getClass());
 					if(set == value.get()) {
