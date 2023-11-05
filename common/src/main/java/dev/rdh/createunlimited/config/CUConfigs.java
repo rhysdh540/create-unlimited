@@ -1,6 +1,5 @@
 package dev.rdh.createunlimited.config;
 
-
 import com.simibubi.create.foundation.config.ConfigBase;
 import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
 

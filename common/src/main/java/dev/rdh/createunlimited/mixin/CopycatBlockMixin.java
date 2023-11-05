@@ -1,7 +1,5 @@
 package dev.rdh.createunlimited.mixin;
 
-
-
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 
 import dev.rdh.createunlimited.config.CUConfigs;

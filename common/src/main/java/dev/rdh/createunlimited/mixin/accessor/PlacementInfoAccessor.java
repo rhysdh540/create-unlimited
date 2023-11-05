@@ -81,24 +81,4 @@ public interface PlacementInfoAccessor {
 	BlockPos getPos2();
 	@Accessor("pos2")
 	void setPos2(BlockPos pos2);
-
-	@Accessor("requiredTracks")
-	int getRequiredTracks();
-	@Accessor("requiredTracks")
-	void setRequiredTracks(int requiredTracks);
-
-	@Accessor("hasRequiredTracks")
-	boolean hasRequiredTracks();
-	@Accessor("hasRequiredTracks")
-	void setHasRequiredTracks(boolean hasRequiredTracks);
-
-	@Accessor("requiredPavement")
-	int getRequiredPavement();
-	@Accessor("requiredPavement")
-	void setRequiredPavement(int requiredPavement);
-
-	@Accessor("hasRequiredPavement")
-	boolean hasRequiredPavement();
-	@Accessor("hasRequiredPavement")
-	void setHasRequiredPavement(boolean hasRequiredPavement);
 }

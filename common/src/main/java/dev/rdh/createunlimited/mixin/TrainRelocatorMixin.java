@@ -1,6 +1,5 @@
 package dev.rdh.createunlimited.mixin;
 
-
 import com.simibubi.create.content.trains.entity.TrainRelocator;
 
 import dev.rdh.createunlimited.config.CUConfigs;

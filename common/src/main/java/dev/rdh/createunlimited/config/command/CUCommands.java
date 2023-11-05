@@ -24,7 +24,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.entity.Entity;
 
 import net.minecraftforge.common.ForgeConfigSpec.*;
 
@@ -61,17 +60,17 @@ public class CUCommands {
 		LiteralArgumentBuilder<CommandSourceStack> category = null;
 
 		for (Field field : CUServer.class.getDeclaredFields()) {
-			//skip if not config value or string
+			// skip if not config value or string
 			if (!CValue.class.isAssignableFrom(field.getType())) continue;
 
 			String name = field.getName();
 
-			//change category if needed
+			// change category if needed
 			if (field.getType() == ConfigGroup.class) {
 				if (category != null) base.then(category);
 				category = literal(name);
 
-				//add description for category
+				// add description for category
 				assert base != null;
 				base.then(literal(field.getName()).executes(context -> {
 					context.message(CUServer.getComment(name));
@@ -91,12 +90,13 @@ public class CUCommands {
 				continue;
 			}
 
-			ConfigValue<?> value = ((CValueAccessor<?, ?>) cValue).value;
+			// get config as forge config value
+			ConfigValue<?> value = ((CValueAccessor) cValue).value;
 
-			//get, description, reset
+			// get, description, reset
 			gdr(category, name, value);
 
-			//set for boolean
+			// set for boolean
 			if (value instanceof BooleanValue bValue)
 				setBoolean(category, name, bValue);
 

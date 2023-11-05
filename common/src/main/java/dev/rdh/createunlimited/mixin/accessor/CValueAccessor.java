@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @NoBootstrap
 @Mixin(value = CValue.class, remap = false)
-public interface CValueAccessor<V, T extends ConfigValue<V>> {
+public interface CValueAccessor {
 	@Accessor("value")
-	ConfigValue<V> getValue();
+	ConfigValue<?> getValue();
 }

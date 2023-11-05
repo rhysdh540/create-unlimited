@@ -1,6 +1,5 @@
 package dev.rdh.createunlimited.mixin;
 
-
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.trains.track.*;
 import com.simibubi.create.foundation.utility.*;
@@ -10,7 +9,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import dev.rdh.createunlimited.duck.PlacementInfoDuck;
+import dev.rdh.createunlimited.mixin.accessor.PlacementInfoAccessor;
 
 import manifold.rt.api.NoBootstrap;
 
@@ -58,12 +57,12 @@ public abstract class TrackPlacementMixin {
 			&& hoveringMaxed == maximiseTurn && lookAngle == hoveringAngle)
 			return cached;
 
-		PlacementInfoDuck info = (PlacementInfoDuck) new PlacementInfo(TrackMaterial.fromItem(stack.getItem()));
+		var info = (PlacementInfo & PlacementInfoAccessor) new PlacementInfo(TrackMaterial.fromItem(stack.getItem()));
 		hoveringMaxed = maximiseTurn;
 		hoveringAngle = lookAngle;
 		hoveringPos = pos2;
 		lastItem = stack;
-		cached = info.self();
+		cached = info;
 
 		ITrackBlock track = (ITrackBlock) state2.getBlock();
 		Pair<Vec3, Direction.AxisDirection> nearestTrackAxis = track.getNearestTrackAxis(level, pos2, state2, lookVec);
@@ -339,14 +338,14 @@ public abstract class TrackPlacementMixin {
 		info.axis1 = axis1;
 		info.axis2 = axis2;
 
-		placeTracks(level, info.self(), state1, state2, targetPos1, targetPos2, true);
+		placeTracks(level, info, state1, state2, targetPos1, targetPos2, true);
 
 		ItemStack offhandItem = player.getOffhandItem()
 			.copy();
 		boolean shouldPave = offhandItem.getItem() instanceof BlockItem;
 		if (shouldPave) {
 			BlockItem paveItem = (BlockItem) offhandItem.getItem();
-			paveTracks(level, info.self(), paveItem, true);
+			paveTracks(level, info, paveItem, true);
 			info.hasRequiredPavement = true;
 		}
 
@@ -416,12 +415,12 @@ public abstract class TrackPlacementMixin {
 		}
 
 		if (level.isClientSide())
-			return info.self();
+			return info;
 		if (shouldPave) {
 			BlockItem paveItem = (BlockItem) offhandItem.getItem();
-			paveTracks(level, info.self(), paveItem, false);
+			paveTracks(level, info, paveItem, false);
 		}
-		return placeTracks(level, info.self(), state1, state2, targetPos1, targetPos2, false);
+		return placeTracks(level, info, state1, state2, targetPos1, targetPos2, false);
 	}
 
 	@Invoker("paveTracks")

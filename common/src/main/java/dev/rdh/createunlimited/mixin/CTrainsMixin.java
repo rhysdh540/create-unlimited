@@ -1,6 +1,5 @@
 package dev.rdh.createunlimited.mixin;
 
-
 import com.simibubi.create.infrastructure.config.CTrains;
 
 import dev.rdh.createunlimited.CreateUnlimited;
