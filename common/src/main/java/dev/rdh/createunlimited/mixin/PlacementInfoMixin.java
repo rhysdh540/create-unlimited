@@ -16,7 +16,7 @@ public abstract class PlacementInfoMixin implements PlacementInfoDuck {
 	@Override
 	@Unique(silent = true) // at runtime just use the original method
 	public PlacementInfo withMessage(String message) {
-		return ((PlacementInfo) (Object) this).withMessage(message);
+		return self().withMessage(message);
 	}
 
 	@Unique

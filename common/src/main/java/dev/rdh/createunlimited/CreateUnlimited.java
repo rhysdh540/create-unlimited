@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @NoBootstrap
-public class CreateUnlimited {
+public abstract class CreateUnlimited {
 	public static final String ID = "createunlimited";
 	public static final String NAME = "Create Unlimited";
 	public static final String VERSION = Util.getVersion(ID).split("-build")[0];

@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 import manifold.rt.api.NoBootstrap;
 
 @NoBootstrap
-public class Util {
+public abstract class Util {
 
 	@ExpectPlatform
 	public static String getVersion(String modid) {
