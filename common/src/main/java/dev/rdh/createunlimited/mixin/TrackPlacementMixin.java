@@ -43,8 +43,11 @@ public abstract class TrackPlacementMixin {
 	@Shadow static int hoveringAngle;
 	@Shadow static ItemStack lastItem;
 
+	/**
+	 * @author me
+	 * @reason yeah
+	 */
 	@Overwrite
-	@SuppressWarnings("OverwriteAuthorRequired")
 	public static PlacementInfo tryConnect(Level level, Player player, BlockPos pos2, BlockState state2,
 										   ItemStack stack, boolean girder, boolean maximiseTurn) {
 		boolean enabled = CUConfigs.server().placementChecks.get().isEnabledFor(player);

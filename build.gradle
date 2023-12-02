@@ -41,12 +41,6 @@ allprojects {
 	}
 }
 
-webhook {
-	url = webhook_url
-	files = file('artifacts/merged').listFiles().collect()
-	message = "# Build #${build_number}"
-}
-
 jar {
 	enabled = false
 }
@@ -76,7 +70,6 @@ def setup() {
 
 	apply from: 'gradle/preprocessor.gradle'
 	apply from: 'gradle/accesswidener.gradle'
-	apply from: 'gradle/webhook.gradle'
 
 	println '\nPlugin versions:'
 	apply plugin: 'architectury-plugin'

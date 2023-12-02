@@ -4,10 +4,10 @@ on: [ pull_request, push ]
 jobs:
     skip:
         runs-on: ubuntu-latest
-        if: "startsWith(github.event.head_commit.message, '[skip]')"
         steps:
             -   name: send skipped message
                 uses: appleboy/discord-action@v1.0.0
+                if: "startsWith(github.event.head_commit.message, '[skip]')"
                 with:
                     webhook_id: ${{ secrets.WEBHOOK_ID }}
                     webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
@@ -43,7 +43,7 @@ jobs:
                 run: chmod +x gradlew buildAll
 
             -   name: Run build script
-                run: ./buildAll -Pwebhook_url=${{ secrets.DISCORD_WEBHOOK }}
+                run: ./buildAll
 
             -  name: upload non-merged artifacts
                uses: actions/upload-artifact@v3
@@ -67,4 +67,11 @@ jobs:
 
             -   name: send artifacts to webhook
                 if: success()
-                run: ./gradlew webhook -Pwebhook_url=${{ secrets.DISCORD_WEBHOOK }}
+                uses: appleboy/discord-action@v1.0.0
+                with:
+                    webhook_id: ${{ secrets.WEBHOOK_ID }}
+                    webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+                    message: '# Build #${{ github.run_number }}'
+                    file: |
+                        artifacts/unmerged/**/*.jar
+                        artifacts/merged/*.jar
