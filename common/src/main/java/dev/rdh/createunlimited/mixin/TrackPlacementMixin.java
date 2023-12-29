@@ -28,10 +28,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
+import org.joml.Math;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.gen.Invoker;
 
 @NoBootstrap
 @SuppressWarnings("unused")
@@ -404,13 +404,13 @@ public abstract class TrackPlacementMixin {
 				}
 
 				if (simulate && foundTracks < tracks) {
-					info.setValid(false);
+					info.isValid = false;
 					info.hasRequiredTracks = false;
 					return info.withMessage("not_enough_tracks").tooJumbly();
 				}
 
 				if (simulate && foundPavement < pavement) {
-					info.setValid(false);
+					info.isValid = false;
 					info.hasRequiredPavement = false;
 					return info.withMessage("not_enough_pavement").tooJumbly();
 				}
@@ -426,9 +426,13 @@ public abstract class TrackPlacementMixin {
 		return placeTracks(level, info, state1, state2, targetPos1, targetPos2, false);
 	}
 
-	@Invoker("paveTracks")
-	private static void paveTracks(Level level, PlacementInfo info, BlockItem blockItem, boolean simulate) { throw new AssertionError(); }
+	@Shadow
+	private static void paveTracks(Level level, PlacementInfo info, BlockItem blockItem, boolean simulate) {
+		throw new AssertionError();
+	}
 
-	@Invoker("placeTracks")
-	private static PlacementInfo placeTracks(Level level, PlacementInfo info, BlockState state1, BlockState state2, BlockPos targetPos1, BlockPos targetPos2, boolean simulate) { throw new AssertionError(); }
+	@Shadow
+	private static PlacementInfo placeTracks(Level level, PlacementInfo info, BlockState state1, BlockState state2, BlockPos targetPos1, BlockPos targetPos2, boolean simulate) {
+		throw new AssertionError();
+	}
 }

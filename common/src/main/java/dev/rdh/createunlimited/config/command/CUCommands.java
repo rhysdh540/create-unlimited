@@ -60,7 +60,7 @@ public class CUCommands {
 		LiteralArgumentBuilder<CommandSourceStack> category = null;
 
 		for (Field field : CUServer.class.getDeclaredFields()) {
-			// skip if not config value or string
+			// skip if not config value
 			if (!CValue.class.isAssignableFrom(field.getType())) continue;
 
 			String name = field.getName();
@@ -91,31 +91,27 @@ public class CUCommands {
 			}
 
 			// get config as forge config value
-			ConfigValue<?> value = ((CValueAccessor) cValue).value;
+			ConfigValue<?> value = ((CValueAccessor) cValue).getValue();
 
 			// get, description, reset
 			gdr(category, name, value);
 
-			// set for boolean
 			if (value instanceof BooleanValue bValue)
 				setBoolean(category, name, bValue);
 
-			// set for enums
 			else if (value instanceof EnumValue<? extends Enum<?>> eValue)
 				setEnum(category, name, eValue);
 
-			// set for int
 			else if (value instanceof IntValue iValue)
 				setInt(category, name, iValue);
 
-			// set for double
 			else if (value instanceof DoubleValue dValue)
 				setDouble(category, name, dValue);
 
 		}
 
 		if(Util.isDevEnv()) {
-			base.then(literal("disableEverything")//.requires(CUCommands::perms)
+			base.then(literal("disableEverything").requires(CUCommands::perms)
 				.executes(context -> {
 					CUConfigs.server().placementChecks.set(CUServer.PlacementCheck.OFF);
 					CUConfigs.server().extendedDriving.set(0.01);
@@ -138,11 +134,12 @@ public class CUCommands {
 		Util.registerCommand(base);
 	}
 
-//	private static boolean perms(Object o) {
+	private static boolean perms(Object o) {
 //		if(!(o instanceof CommandSourceStack source)) return false;
 //		Entity e = source.getEntity();
 //		return e != null && e.hasPermissions(4);
-//	}
+		return true;
+	}
 
 	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, String name, ConfigValue<T> value) {
 		category.then(literal(name)
@@ -152,7 +149,7 @@ public class CUCommands {
 				context.message("Default value: " + value.getDefault());
 				return Command.SINGLE_SUCCESS;
 			})
-			.then(literal("reset")//.requires(CUCommands::perms)
+			.then(literal("reset").requires(CUCommands::perms)
 				.executes(context -> {
 					if(value.get().equals(value.getDefault())) {
 						context.error("Value is already default!");
@@ -168,7 +165,7 @@ public class CUCommands {
 
 	private static void setBoolean(LiteralArgumentBuilder<CommandSourceStack> category, String name, BooleanValue value) {
 		category.then(literal(name)
-			.then(argument("value", BoolArgumentType.bool())//.requires(CUCommands::perms)
+			.then(argument("value", BoolArgumentType.bool()).requires(CUCommands::perms)
 				.executes(context -> {
 					boolean set = BoolArgumentType.getBool(context, "value");
 					if(set == value.get()) {
@@ -185,7 +182,7 @@ public class CUCommands {
 
 	private static void setInt(LiteralArgumentBuilder<CommandSourceStack> category, String name, IntValue value) {
 		category.then(literal(name)
-			.then(argument("value", IntegerArgumentType.integer())//.requires(CUCommands::perms)
+			.then(argument("value", IntegerArgumentType.integer()).requires(CUCommands::perms)
 				.executes(context -> {
 					int set = IntegerArgumentType.getInteger(context, "value");
 					if(set == value.get()) {
@@ -202,7 +199,7 @@ public class CUCommands {
 
 	private static void setDouble(LiteralArgumentBuilder<CommandSourceStack> category, String name, DoubleValue value) {
 		category.then(literal(name)
-			.then(argument("value", DoubleArgumentType.doubleArg())//.requires(CUCommands::perms)
+			.then(argument("value", DoubleArgumentType.doubleArg()).requires(CUCommands::perms)
 				.executes(context -> {
 					double set = DoubleArgumentType.getDouble(context, "value");
 					if(set == value.get()) {
@@ -221,7 +218,7 @@ public class CUCommands {
 	private static <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, String name, EnumValue<T> value) {
 		category.then(literal(name)
 			.then(argument("value", EnumArgument.enumArg(value.getDefault().getClass(), true))
-				//.requires(CUCommands::perms)
+				.requires(CUCommands::perms)
 				.executes(context -> {
 					T set = EnumArgument.getEnum(context, "value", (Class<T>) value.getDefault().getClass());
 					if(set == value.get()) {
