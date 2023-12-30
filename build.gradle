@@ -76,28 +76,28 @@ def setup() {
 
 	defineMixins()
 
-	tasks.register("moveJars", Copy) {
+	tasks.register('moveJars') {
+		dependsOn mergeJars
 		def subs = rootProject.subprojects
 		subs.remove(rootProject.project(':common'))
-		subs.remove(rootProject.project(':forge'))
 
-		with copySpec {
-			subs.each { p ->
-				p.buildDir.toPath().resolve('libs').toFile().listFiles().each { file ->
-					File newFile = new File(file.parent, file.name.replace('.jar', "-${p.name}.jar"))
-					file.renameTo newFile
-					from newFile
-					into "artifacts/unmerged/${rootProject.mcVer}"
-				}
+		def unmerged = rootProject.file('artifacts/unmerged')
+		unmerged.mkdirs()
+		def merged = rootProject.file('artifacts/merged')
+		merged.mkdirs()
+
+		subs.each { p ->
+			p.buildDir.toPath().resolve('libs').toFile().listFiles().each { file ->
+				File newFile = new File(unmerged, file.name.replace('.jar', "-${p.name}+mc${rootProject.mcVer}.jar"))
+				file.renameTo newFile
+				file.delete()
 			}
 		}
 
-		with copySpec {
-			from rootProject.file('build/libs/merged')
-			into 'artifacts/merged'
+		rootProject.buildDir.toPath().resolve('libs/merged').toFile().listFiles().each { file ->
+			File newFile = new File(merged, file.name)
+			file.renameTo newFile
+			file.delete()
 		}
-
-		destinationDir = rootProject.rootDir
-		duplicatesStrategy(DuplicatesStrategy.WARN)
 	}
 }
