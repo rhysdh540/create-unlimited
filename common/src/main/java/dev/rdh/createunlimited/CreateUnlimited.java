@@ -4,7 +4,6 @@ import com.simibubi.create.Create;
 
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import dev.rdh.createunlimited.config.command.CUCommands;
 import dev.rdh.createunlimited.config.command.EnumArgument;
 
 import manifold.rt.api.NoBootstrap;
