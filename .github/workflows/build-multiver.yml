@@ -25,7 +25,7 @@ jobs:
                 uses: actions/checkout@v3
 
             -   name: install java ${{ matrix.java }}
-                uses: actions/setup-java@v3
+                uses: actions/setup-java@v1
                 with:
                     java-version: ${{ matrix.java }}
 #                    distribution: zulu
