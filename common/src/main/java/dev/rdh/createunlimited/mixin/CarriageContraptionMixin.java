@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(value = CarriageContraption.class)
 public abstract class CarriageContraptionMixin {
 	@ModifyExpressionValue(method = "assemble", at = @At(value = "INVOKE", target = "Ljava/util/Map;size()I", ordinal = 0))
-	private int size(int original) {
+	private int modifyMinBlocksOnTrain(int original) {
 		return !CUConfigs.server().trainAssemblyChecks.get() ? 2 : original;
 	}
 }

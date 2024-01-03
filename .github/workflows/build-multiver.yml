@@ -28,7 +28,7 @@ jobs:
                 uses: actions/setup-java@v3
                 with:
                     java-version: ${{ matrix.java }}
-                    distribution: zulu
+#                    distribution: zulu
 
             - name: cache gradle
               uses: actions/cache@v3

@@ -17,6 +17,6 @@ public abstract class TrainMixin {
 	@ModifyConstant(method = "tick", constant = @Constant(doubleValue = 4))
 	private double modifyMaxStress(double original) {
 		double a = CUConfigs.server().maxAllowedStress.get();
-		return (a == -1) ? Double.MAX_VALUE : a;
+		return (a < 0) ? Double.MAX_VALUE : a;
 	}
 }

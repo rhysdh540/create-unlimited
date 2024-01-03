@@ -27,7 +27,6 @@ public abstract class CreateUnlimited {
 
 		EnumArgument.init();
 		CUConfigs.register();
-		CUCommands.registerConfigCommand();
     }
 
 	public static ResourceLocation asResource(String path) {

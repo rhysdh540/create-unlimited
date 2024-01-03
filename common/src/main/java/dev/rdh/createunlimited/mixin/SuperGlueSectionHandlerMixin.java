@@ -11,12 +11,10 @@ import dev.rdh.createunlimited.config.CUConfigs;
 
 import manifold.rt.api.NoBootstrap;
 
-/**
- * code for client-side modification
- */
 @NoBootstrap
 @Mixin(value = SuperGlueSelectionHandler.class, remap = false)
 public abstract class SuperGlueSectionHandlerMixin {
+	// client-side modification
 	@ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24))
 	private double modifyMaxSuperGlueDistance(double original) {
 		return CUConfigs.server().maxGlueConnectionRange.get();

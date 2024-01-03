@@ -24,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.Entity;
 
 import net.minecraftforge.common.ForgeConfigSpec.*;
 
@@ -135,10 +136,9 @@ public class CUCommands {
 	}
 
 	private static boolean perms(Object o) {
-//		if(!(o instanceof CommandSourceStack source)) return false;
-//		Entity e = source.getEntity();
-//		return e != null && e.hasPermissions(4);
-		return true;
+		if(!(o instanceof CommandSourceStack source)) return false;
+		Entity e = source.getEntity();
+		return e != null && e.hasPermissions(4);
 	}
 
 	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, String name, ConfigValue<T> value) {
