@@ -65,7 +65,6 @@ def setup() {
 	println()
 
 	apply from: 'gradle/preprocessor.gradle'
-	apply from: 'gradle/accesswidener.gradle'
 
 	println '\nPlugin versions:'
 	apply plugin: 'architectury-plugin'

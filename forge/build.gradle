@@ -30,18 +30,11 @@ dependencies {
 }
 
 loom {
-	def awFile = project(':common').file('src/main/resources/createunlimited.accesswidener')
-
 	forge {
 		mixinConfig(
 			'createunlimited.mixins.json',
 			'createunlimited-common.mixins.json',
 		)
-
-		if(awFile.exists()) {
-			convertAccessWideners.set(true)
-			extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-		}
 	}
 }
 
