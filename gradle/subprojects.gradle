@@ -42,7 +42,7 @@ repositories {
 	maven 'https://maven.jamieswhiteshirt.com/libs-release'
 	maven 'https://maven.theillusivec4.top'
 	maven 'https://maven.terraformersmc.com/releases'
-	maven 'https://jitpack.io', ['com.github.Chocohead']
+	maven 'https://jitpack.io'//, ['com.github.Chocohead']
 
 	maven 'https://maven.tterrag.com', [
 	    'com.simibubi.create',
