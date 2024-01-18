@@ -13,7 +13,7 @@ dependencies {
 
     modImplementation "com.terraformersmc:modmenu:${rootProject.modmenu}"
 
-	modCompileOnly("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric}+mc${rootProject.minecraft_version}") {
+	modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric}+mc${rootProject.minecraft_version}") {
 		exclude group: 'com.github.llamalad7.mixinextras', module: 'mixinextras-fabric'
 	}
 
@@ -23,9 +23,6 @@ dependencies {
 	// Dev Env Optimizations
 	if (rootProject.hasProperty("lazydfu")) {
 		modRuntimeOnly "maven.modrinth:lazydfu:${rootProject.lazydfu}"
-	}
-	if (rootProject.hasProperty("smoothboot_fabric")) {
-		modRuntimeOnly "curse.maven:smoothboot-fabric-415758:${rootProject.smoothboot_fabric}"
 	}
 }
 
