@@ -13,7 +13,9 @@ dependencies {
 
     modImplementation "com.terraformersmc:modmenu:${rootProject.modmenu}"
 
-	modImplementation("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric}+mc${rootProject.minecraft_version}")
+	modCompileOnly("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric}+mc${rootProject.minecraft_version}") {
+		exclude group: 'com.github.llamalad7.mixinextras', module: 'mixinextras-fabric'
+	}
 
 	// have deprecated modules present at runtime only
 	modLocalRuntime "net.fabricmc.fabric-api:fabric-api-deprecated:${rootProject.fabric_api}+${rootProject.minecraft_version}"
