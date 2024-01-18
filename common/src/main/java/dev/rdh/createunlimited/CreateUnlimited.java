@@ -5,6 +5,7 @@ import com.simibubi.create.Create;
 import dev.rdh.createunlimited.config.CUConfigs;
 
 import dev.rdh.createunlimited.config.command.EnumArgument;
+import dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion;
 
 import manifold.rt.api.NoBootstrap;
 
@@ -23,6 +24,8 @@ public abstract class CreateUnlimited {
     public static void init() {
 		LOGGER.info("{} v{} initializing! Create version: {} on platform: {}",
 				NAME, VERSION, Create.VERSION, Util.platformName());
+
+		LOGGER.info("Minecraft version: {}", SupportedMinecraftVersion.CURRENT);
 
 		EnumArgument.init();
 		CUConfigs.register();

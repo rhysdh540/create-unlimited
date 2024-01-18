@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
+import dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion;
 
 import net.minecraft.commands.CommandSourceStack;
 
@@ -22,8 +23,7 @@ import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.forgespi.language.IModInfo;
-
-import org.jetbrains.annotations.ApiStatus;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.HashSet;
 import java.util.List;
@@ -31,14 +31,11 @@ import java.util.Set;
 
 import manifold.rt.api.NoBootstrap;
 
-#if MC_1_19_2
-@SuppressWarnings("UnstableApiUsage")
-#endif
 @NoBootstrap
+@SuppressWarnings({"UnstableApiUsage", "RedundantSuppression"})
 public class UtilImpl {
 
-	@ApiStatus.Internal
-	public static Set<LiteralArgumentBuilder<CommandSourceStack>> commands = new HashSet<>();
+	static Set<LiteralArgumentBuilder<CommandSourceStack>> commands = new HashSet<>();
 
 	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
 		commands.add(command);
@@ -73,15 +70,28 @@ public class UtilImpl {
 		return !FMLLoader.isProduction();
 	}
 
+	private static final RegistryObject<Attribute> reachAttribute = makeReachAttribute();
+
+	@SuppressWarnings({"unchecked", "JavaReflectionMemberAccess"})
+	private static RegistryObject<Attribute> makeReachAttribute() {
+		try {
+			if(SupportedMinecraftVersion.v1_20_1.isCurrentOrNewer()) {
+				return (RegistryObject<Attribute>) ForgeMod.class.getField("BLOCK_REACH").get(null);
+			} else if(SupportedMinecraftVersion.v1_19_2.isCurrentOrOlder()) {
+				return (RegistryObject<Attribute>) ForgeMod.class.getField("REACH_DISTANCE").get(null);
+			}
+			throw new IllegalStateException("Unsupported minecraft version: " + SupportedMinecraftVersion.CURRENT);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			throw new RuntimeException("Failed to get reach attribute for minecraft version " + SupportedMinecraftVersion.CURRENT, e);
+		}
+	}
+
 	public static Attribute getReachAttribute() {
-		#if POST_CURRENT_MC_1_20_1
-		return ForgeMod.BLOCK_REACH.get();
-		#elif PRE_CURRENT_MC_1_19_2
-		return ForgeMod.REACH_DISTANCE.get();
-		#endif
+		return reachAttribute.get();
 	}
 
 	public static String platformName() {
 		return "Forge";
 	}
 }
+

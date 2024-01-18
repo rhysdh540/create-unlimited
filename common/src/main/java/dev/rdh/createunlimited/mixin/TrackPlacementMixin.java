@@ -141,15 +141,8 @@ public abstract class TrackPlacementMixin {
 		if (level.isClientSide) {
 			Vec3 offset1 = axis1.scale(info.end1Extent);
 			Vec3 offset2 = axis2.scale(info.end2Extent);
-			#if PRE_CURRENT_MC_1_19_2
-				BlockPos targetPos1 = pos1.offset(offset1.x, offset1.y, offset1.z);
-				BlockPos targetPos2 = pos2.offset(offset2.x, offset2.y, offset2.z);
-			#elif POST_CURRENT_MC_1_20_1
-				BlockPos targetPos1 = pos1.offset((int) offset1.x, (int) offset1.y, (int) offset1.z);
-				BlockPos targetPos2 = pos2.offset((int) offset2.x, (int) offset2.y, (int) offset2.z);
-			#else
-				#error "Unsupported Minecraft Version"
-			#endif
+			BlockPos targetPos1 = pos1.offset((int) offset1.x, (int) offset1.y, (int) offset1.z);
+			BlockPos targetPos2 = pos2.offset((int) offset2.x, (int) offset2.y, (int) offset2.z);
 			info.curve = new BezierConnection(Couple.create(targetPos1, targetPos2),
 				Couple.create(end1.add(offset1), end2.add(offset2)), Couple.create(normedAxis1, normedAxis2),
 				Couple.create(normal1, normal2), true, girder, TrackMaterial.fromItem(stack.getItem()));
@@ -318,15 +311,8 @@ public abstract class TrackPlacementMixin {
 
 		Vec3 offset1 = axis1.scale(info.end1Extent);
 		Vec3 offset2 = axis2.scale(info.end2Extent);
-		#if PRE_CURRENT_MC_1_19_2
-			BlockPos targetPos1 = pos1.offset(offset1.x, offset1.y, offset1.z);
-			BlockPos targetPos2 = pos2.offset(offset2.x, offset2.y, offset2.z);
-		#elif POST_CURRENT_MC_1_20_1
-			BlockPos targetPos1 = pos1.offset((int) offset1.x, (int) offset1.y, (int) offset1.z);
-			BlockPos targetPos2 = pos2.offset((int) offset2.x, (int) offset2.y, (int) offset2.z);
-		#else
-			#error "Unsupported Minecraft Version"
-		#endif
+		BlockPos targetPos1 = pos1.offset((int) offset1.x, (int) offset1.y, (int) offset1.z);
+		BlockPos targetPos2 = pos2.offset((int) offset2.x, (int) offset2.y, (int) offset2.z);
 
 		info.curve = skipCurve ? null
 			: new BezierConnection(Couple.create(targetPos1, targetPos2),

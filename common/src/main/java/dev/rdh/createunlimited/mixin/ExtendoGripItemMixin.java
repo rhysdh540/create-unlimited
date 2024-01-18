@@ -24,9 +24,7 @@ import static dev.rdh.createunlimited.Util.singleRange;
 @Mixin(value = ExtendoGripItem.class, remap = false)
 public abstract class ExtendoGripItemMixin {
 
-	/*
-	 * the annotation processor is a little broken so we have to specify `remap = false` and use the obfuscated names
-	 */
+	// the annotation processor is a little broken so we have to specify `remap = false` and use the obfuscated names
 
 	@ModifyExpressionValue(method = {
 		"holdingExtendoGripIncreasesRange(Lnet/minecraft/world/entity/LivingEntity;)V", // fabric

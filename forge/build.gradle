@@ -18,14 +18,8 @@ dependencies {
 	if (rootProject.hasProperty("bmb")) {
 		modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"
 	}
-	if (rootProject.hasProperty("smoothboot_forge")) {
-		modRuntimeOnly "curse.maven:smoothboot-forge-633412:${rootProject.smoothboot_forge}"
-	}
 	if (rootProject.hasProperty("catalogue")) {
 		modRuntimeOnly "curse.maven:catalogue-459701:${rootProject.catalogue}"
-	}
-	if (rootProject.hasProperty("ferritecore")) {
-		modRuntimeOnly "curse.maven:ferritecore-429235:${rootProject.ferritecore}"
 	}
 }
 

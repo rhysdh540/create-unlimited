@@ -7,6 +7,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
+import dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion;
 
 import manifold.rt.api.NoBootstrap;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
@@ -20,14 +21,14 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 
 import net.minecraft.resources.ResourceLocation;
 
-#if PRE_CURRENT_MC_1_19_2
-import net.minecraftforge.api.ModLoadingContext;
-#elif POST_CURRENT_MC_1_20_1
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
-#endif
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Type;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 @NoBootstrap
 public class UtilImpl {
@@ -36,12 +37,43 @@ public class UtilImpl {
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, selection) -> dispatcher.register(command));
 	}
 
+	private static MethodHandle modLoadingContextRegisterConfig;
+	private static MethodHandle forgeConfigRegistryRegister;
+	private static Object forgeConfigRegistryInstance;
+
+	static {
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		try {
+			if(SupportedMinecraftVersion.v1_19_2.isCurrent()) {
+				Class<?> modLoadingContextClass = Class.forName("net.minecraftforge.api.ModLoadingContext");
+				modLoadingContextRegisterConfig = lookup.findStatic(modLoadingContextClass, "registerConfig",
+					MethodType.methodType(ModConfig.class, String.class, Type.class, IConfigSpec.class));
+			}
+
+			if(SupportedMinecraftVersion.v1_20_1.isCurrent()) {
+				Class<?> forgeConfigRegistryClass = Class.forName("fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry");
+				forgeConfigRegistryRegister = lookup.findVirtual(forgeConfigRegistryClass, "register",
+					MethodType.methodType(ModConfig.class, String.class, Type.class, IConfigSpec.class));
+				forgeConfigRegistryInstance = forgeConfigRegistryClass.getField("INSTANCE").get(null);
+			}
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
-		#if PRE_CURRENT_MC_1_19_2
-		ModLoadingContext.registerConfig(CreateUnlimited.ID, type, spec);
-		#elif POST_CURRENT_MC_1_20_1
-		ForgeConfigRegistry.INSTANCE.register(CreateUnlimited.ID, type, spec);
-		#endif
+		try {
+			if(SupportedMinecraftVersion.v1_19_2.isCurrent()) {
+				ModConfig ignore = (ModConfig) modLoadingContextRegisterConfig.invokeExact(CreateUnlimited.ID, type, spec);
+			}
+
+			if(SupportedMinecraftVersion.v1_20_1.isCurrent()){
+				//cannot use invokeExact because the instance class only exists in 1.20.1
+				forgeConfigRegistryRegister.invoke(forgeConfigRegistryInstance, CreateUnlimited.ID, type, spec);
+			}
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
@@ -52,7 +84,7 @@ public class UtilImpl {
 	public static String getVersion(String modid) {
 		return FabricLoader.getInstance()
 			.getModContainer(modid)
-			.orElseThrow()
+			.orElseThrow(() -> new IllegalArgumentException("Mod container for \"" + modid + "\" not found"))
 			.getMetadata()
 			.getVersion()
 			.getFriendlyString();
