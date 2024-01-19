@@ -10,7 +10,7 @@
     "sources": "https://github.com/rhysdh540/createunlimited",
     "issues": "https://github.com/rhysdh540/createunlimited/issues"
   },
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-or-later",
   "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
@@ -21,10 +21,10 @@
     "createunlimited.mixins.json"
   ],
   "depends": {
-    "minecraft": "${minecraft_version}",
+    "minecraft": ["1.19.2", "1.20.1"],
     "fabricloader": ">=${fabric}",
-    "fabric-api": ">=${fabric_api}",
-    "create": ">=${create_fabric}"
+    "fabric-api": "*",
+    "create": ">=${create}-a"
   },
   "custom": {
     "modmenu": {

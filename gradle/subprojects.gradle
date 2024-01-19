@@ -48,22 +48,21 @@ dependencies {
 		it.officialMojangMappings { nameSyntheticMembers = false }
 	})
 
-	annotationProcessor("systems.manifold:manifold-preprocessor:${manifold_version}")
 	annotationProcessor(compileOnly("systems.manifold:manifold-props:${manifold_version}"))
 
-	annotationProcessor compileOnly("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras}")
-	//annotationProcessor include("com.github.bawnorton.mixinsquared:mixinsquared-${p.name}:${rootProject.mixin_squared}")
+	def me = "io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras}"
+	annotationProcessor(implementation(me))
+	if(project.name != 'common') {
+		shade(me)
+	}
 }
 
 processResources {
 	def properties = [
-		version          : rootProject.modVersion,
-		minecraft_version: minecraft_version,
-		forge            : forge.split("\\.")[0],
-		fabric           : fabric,
-		fabric_api       : fabric_api,
-		create_forge     : create_forge.split("-")[0],
-		create_fabric    : create_fabric,
+		version  : rootProject.modVersion,
+		minecraft: rootProject.mcVersionRange,
+		fabric   : rootProject.fabric,
+		create   : rootProject.minimum_create_version,
 	]
 
 	exclude '**/*.aw'

@@ -18,10 +18,12 @@ allprojects {
 	tasks.withType(JavaCompile).configureEach {
 		options.encoding = 'UTF-8'
 		options.release.set(17)
+		options.compilerArgs += ['-Xplugin:Manifold']
 	}
 }
 
 forgix {
+	group = project.group
 	mergedJarName = "createunlimited-${modVersion}.jar"
 	outputDir = 'build/libs/merged'
 }
@@ -77,7 +79,7 @@ def setup() {
 
 	ext.modVersion = mod_version + (build_number != null ? "-build.${build_number}" : '')
 
-	apply from: 'gradle/preprocessor.gradle'
+	apply from: 'gradle/properties.gradle'
 
 	println '\nPlugin versions:'
 	apply plugin: 'architectury-plugin'

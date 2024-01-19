@@ -1,0 +1,39 @@
+def mcVersion = ""
+
+def mcVers = rootProject.fileTree('versionProperties').files.name
+for(int i = 0; i < mcVers.size(); i++) {
+	mcVers[i] = mcVers[i].replaceAll('\\.properties', '')
+}
+mcVers.sort()
+
+int mcIndex = -1
+
+println "Setting up properties...\nAvalible Minecraft Versions: ${mcVers.join(', ')}"
+
+if (project.hasProperty("mcVer")) {
+	mcVersion = mcVer
+	mcIndex = mcVers.indexOf(mcVer)
+}
+
+if (mcIndex == -1) {
+	println "No mcVer set or the set mcVer is invalid!"
+	println "Use -PmcVer='mc_version' or edit gradle.properties to set the minecraft version."
+	throw new Exception("Invalid Minecraft Version")
+}
+
+println "Using Minecraft ${mcVersion}"
+
+def properties = new Properties()
+
+properties.load(new FileInputStream("$rootProject.rootDir/versionProperties/${mcVersion}.properties"))
+
+import java.util.stream.Collectors
+
+// extra properties
+def mcVersionRange = mcVers.stream().map {"[$it]"}.collect(Collectors.joining(","))
+
+properties.setProperty("mcVersionRange", mcVersionRange)
+
+properties.each {
+	ext.set(it.key, it.value)
+}
