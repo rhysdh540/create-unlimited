@@ -9,7 +9,7 @@ architectury {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric}"
+    modCompileOnly "net.fabricmc:fabric-loader:${rootProject.fabric}"
 
 	modCompileOnly("com.simibubi.create:create-fabric-${rootProject.minecraft_version}:${rootProject.create_fabric}+mc${rootProject.minecraft_version}") {
 		exclude group: 'com.github.llamalad7.mixinextras', module: 'mixinextras-fabric'
