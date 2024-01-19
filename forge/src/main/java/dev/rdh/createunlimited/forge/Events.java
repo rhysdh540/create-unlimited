@@ -14,6 +14,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 
 @NoBootstrap
@@ -35,5 +36,15 @@ public abstract class Events {
 	static void registerCommands(RegisterCommandsEvent event) {
 		for(var command : UtilImpl.commands)
 			event.getDispatcher().register(command);
+	}
+
+	@SubscribeEvent
+	static void onConfigLoad(ModConfigEvent.Loading event) {
+		CUConfigs.onLoad(event.getConfig());
+	}
+
+	@SubscribeEvent
+	static void onConfigReload(ModConfigEvent.Reloading event) {
+		CUConfigs.onReload(event.getConfig());
 	}
 }

@@ -11,7 +11,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @NoBootstrap
 @Mod(CreateUnlimited.ID)
-public class CreateUnlimitedForge {
+public final class CreateUnlimitedForge {
 
     public CreateUnlimitedForge() {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get()
@@ -19,7 +19,7 @@ public class CreateUnlimitedForge {
 		IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
 
 		forgeEventBus.register(Events.ClientModBusEvents.class);
-		forgeEventBus.addListener(Events::registerCommands);
+		forgeEventBus.register(Events.class);
 		modEventBus.addListener(Events.ClientModBusEvents::onLoadComplete);
 		CreateUnlimited.init();
     }

@@ -6,7 +6,6 @@ import dev.rdh.createunlimited.Util;
 
 @NoBootstrap
 public enum SupportedMinecraftVersion {
-	v1_18_2,
 	v1_19_2,
 	v1_20_1,
 
@@ -34,7 +33,6 @@ public enum SupportedMinecraftVersion {
 		return this == CURRENT;
 	}
 
-	// i feel like these should be the other way around but that breaks it for some reason
 	public boolean isCurrentOrNewer() {
 		return this.ordinal() <= CURRENT.ordinal();
 	}

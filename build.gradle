@@ -1,17 +1,28 @@
 plugins {
     id 'architectury-plugin' version "${arch_plugin_version}" apply false
     id 'dev.architectury.loom' version "${loom_version}" apply false
-	id 'com.github.johnrengelman.shadow' version "${shadow_version}" apply false
+	id 'com.github.johnrengelman.shadow' version "${shadow_version}"
 
     id 'io.github.pacifistmc.forgix' version "${forgix_version}"
 }
+
 setup()
 
-ext.modVersion = mod_version + (build_number != null ? "-build.${build_number}" : '')
+allprojects {
+	apply plugin: 'java'
+
+	archivesBaseName = rootProject.archives_base_name
+	version = modVersion
+	group = rootProject.maven_group
+
+	tasks.withType(JavaCompile).configureEach {
+		options.encoding = 'UTF-8'
+		options.release.set(17)
+	}
+}
 
 forgix {
-    group = maven_group
-    mergedJarName = "createunlimited-${modVersion}+mc${minecraft_version}.jar"
+	mergedJarName = "createunlimited-${modVersion}.jar"
 	outputDir = 'build/libs/merged'
 }
 
@@ -24,16 +35,16 @@ subprojects {
 	remapJar.finalizedBy(mergeJars)
 }
 
-allprojects {
-    apply plugin: 'java'
+clean {
+	delete '.architectury-transformer'
+}
 
-    archivesBaseName = rootProject.archives_base_name
-    version = modVersion
-    group = rootProject.maven_group
-
-	tasks.withType(JavaCompile).configureEach {
-		options.encoding = 'UTF-8'
-		options.release.set(17)
+tasks.register('nukeGradleCaches') {
+	group = 'build'
+	doLast {
+		allprojects.each {
+			it.file('.gradle').deleteDir()
+		}
 	}
 }
 
@@ -64,35 +75,12 @@ def setup() {
 	} else ext.build_number = null
 	println()
 
+	ext.modVersion = mod_version + (build_number != null ? "-build.${build_number}" : '')
+
 	apply from: 'gradle/preprocessor.gradle'
 
 	println '\nPlugin versions:'
 	apply plugin: 'architectury-plugin'
 
 	defineMixins()
-
-	tasks.register('moveJars') {
-		dependsOn mergeJars
-		def subs = rootProject.subprojects
-		subs.remove(rootProject.project(':common'))
-
-		def unmerged = rootProject.file('artifacts/unmerged')
-		unmerged.mkdirs()
-		def merged = rootProject.file('artifacts/merged')
-		merged.mkdirs()
-
-		subs.each { p ->
-			p.buildDir.toPath().resolve('libs').toFile().listFiles().each { file ->
-				File newFile = new File(unmerged, file.name.replace('.jar', "-${p.name}+mc${rootProject.mcVer}.jar"))
-				file.renameTo newFile
-				file.delete()
-			}
-		}
-
-		rootProject.buildDir.toPath().resolve('libs/merged').toFile().listFiles().each { file ->
-			File newFile = new File(merged, file.name)
-			file.renameTo newFile
-			file.delete()
-		}
-	}
 }
