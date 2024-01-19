@@ -44,13 +44,13 @@ public class UtilImpl {
 	static {
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
 		try {
-			if(SupportedMinecraftVersion.v1_19_2.isCurrent()) {
+			if(SupportedMinecraftVersion.v1_19_2.isCurrentOrOlder()) {
 				Class<?> modLoadingContextClass = Class.forName("net.minecraftforge.api.ModLoadingContext");
 				modLoadingContextRegisterConfig = lookup.findStatic(modLoadingContextClass, "registerConfig",
 					MethodType.methodType(ModConfig.class, String.class, Type.class, IConfigSpec.class));
 			}
 
-			if(SupportedMinecraftVersion.v1_20_1.isCurrent()) {
+			if(SupportedMinecraftVersion.v1_20_1.isCurrentOrNewer()) {
 				Class<?> forgeConfigRegistryClass = Class.forName("fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry");
 				forgeConfigRegistryRegister = lookup.findVirtual(forgeConfigRegistryClass, "register",
 					MethodType.methodType(ModConfig.class, String.class, Type.class, IConfigSpec.class));
@@ -63,11 +63,11 @@ public class UtilImpl {
 
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		try {
-			if(SupportedMinecraftVersion.v1_19_2.isCurrent()) {
+			if(SupportedMinecraftVersion.v1_19_2.isCurrentOrOlder()) {
 				ModConfig ignore = (ModConfig) modLoadingContextRegisterConfig.invokeExact(CreateUnlimited.ID, type, spec);
 			}
 
-			if(SupportedMinecraftVersion.v1_20_1.isCurrent()){
+			if(SupportedMinecraftVersion.v1_20_1.isCurrentOrNewer()) {
 				//cannot use invokeExact because the instance class only exists in 1.20.1
 				forgeConfigRegistryRegister.invoke(forgeConfigRegistryInstance, CreateUnlimited.ID, type, spec);
 			}
