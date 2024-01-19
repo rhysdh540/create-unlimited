@@ -46,21 +46,23 @@ shadowJar {
 	exclude 'META-INF/jars/**'
 
 	configurations = [project.configurations.shadowCommon, project.configurations.shade]
-	archiveClassifier = 'shadow'
+	archiveClassifier = "shadow-${project.name}"
 }
 
 remapJar {
 	inputFile.set shadowJar.archiveFile
 	dependsOn shadowJar
-	archiveClassifier = null
+	archiveClassifier = project.name
 }
 
-jar.archiveClassifier = 'dev'
+jar.archiveClassifier = "dev-${project.name}"
 
 sourcesJar {
 	def commonSources = project(':common').sourcesJar
 	dependsOn commonSources
 	from commonSources.archiveFile.map { zipTree(it) }
+
+	archiveClassifier = "sources-${project.name}"
 }
 
 components.java {
