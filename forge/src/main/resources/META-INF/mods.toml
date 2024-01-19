@@ -1,7 +1,7 @@
 modLoader = "javafml"
-loaderVersion = "[${forge},)"
+loaderVersion = "[1,)"
 issueTrackerURL = "https://github.com/rhysdh540/createunlimited/issues"
-license = "GPL-3.0"
+license = "GPL-3.0-or-later"
 
 [[mods]]
 modId = "createunlimited"
@@ -16,20 +16,20 @@ logoFile = "icon.png"
 [[dependencies.createunlimited]]
 modId = "forge"
 mandatory = true
-versionRange = "[${forge},)"
+versionRange = "[1,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.createunlimited]]
 modId = "minecraft"
 mandatory = true
-versionRange = "${minecraft_version}"
+versionRange = "${minecraft}"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.createunlimited]]
 modId="create"
 mandatory=true
-versionRange="[${create_forge},)"
+versionRange="[${create},)"
 ordering="NONE"
 side="BOTH"

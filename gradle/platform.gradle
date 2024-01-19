@@ -33,8 +33,7 @@ configurations {
 }
 
 dependencies {
-	shade(implementation("io.github.llamalad7:mixinextras-${project.name}:${rootProject.mixin_extras}"))
-	common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+	common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
 	shadowCommon(project(path: ':common', configuration: "transformProduction${project.name.capitalize()}")) { transitive = false }
 }
 
