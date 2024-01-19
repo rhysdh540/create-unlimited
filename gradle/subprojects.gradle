@@ -52,7 +52,7 @@ dependencies {
 
 	def me = "io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras}"
 	annotationProcessor(implementation(me))
-	if(project.name != 'common') {
+	if (project.name != 'common') {
 		shade(me)
 	}
 }

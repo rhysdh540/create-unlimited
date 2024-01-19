@@ -1,0 +1,30 @@
+name: build
+on: [ workflow_dispatch, push, pull_request ]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: checkout
+                uses: actions/checkout@v4
+
+            -   name: setup java
+                uses: actions/setup-java@v4
+                with:
+                    distribution: zulu
+                    java-version: 17
+            -   name: setup gradle
+                uses: gradle/gradle-build-action@v2.4.2
+                with:
+                    cache-read-only: false
+
+            -   name: do the build
+                run: ./gradlew clean assemble
+
+            -   name: Upload artifacts
+                uses: actions/upload-artifact@v3
+                with:
+                    name: unlimited-artifacts
+                    path: |
+                        build/libs/merged/*.jar
+                        */build/libs/*.jar
