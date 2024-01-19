@@ -23,21 +23,27 @@ public class CreateUnlimitedFabric implements ModInitializer {
         CreateUnlimited.init();
     }
 
+
+	/**
+	 * @param <L> The type of the loading lambda
+	 * @param <R> The type of the reloading lambda
+	 * @apiNote no they are not left and right
+	 */
 	@SuppressWarnings("unchecked")
-	private static <Loading, Reloading> void registerConfigEvents() {
+	private static <L, R> void registerConfigEvents() {
 		Class<?> modConfigEventsClass = getModConfigEventsClass();
 
 		try {
-			Event<Loading> loadingEvent = (Event<Loading>) modConfigEventsClass.getMethod("loading", String.class).invoke(null, CreateUnlimited.ID);
-			Loading loading = createHandlerProxy(CUConfigs::onLoad, modConfigEventsClass, "Loading", "onModConfigLoading");
+			Event<L> loadingEvent = (Event<L>) modConfigEventsClass.getMethod("loading", String.class).invoke(null, CreateUnlimited.ID);
+			L loading = createHandlerProxy(CUConfigs::onLoad, modConfigEventsClass, "Loading", "onModConfigLoading");
 			loadingEvent.register(loading);
 		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 
 		try {
-			Event<Reloading> reloadingEvent = (Event<Reloading>) modConfigEventsClass.getMethod("reloading", String.class).invoke(null, CreateUnlimited.ID);
-			Reloading reloading = createHandlerProxy(CUConfigs::onReload, modConfigEventsClass, "Reloading", "onModConfigReloading");
+			Event<R> reloadingEvent = (Event<R>) modConfigEventsClass.getMethod("reloading", String.class).invoke(null, CreateUnlimited.ID);
+			R reloading = createHandlerProxy(CUConfigs::onReload, modConfigEventsClass, "Reloading", "onModConfigReloading");
 			reloadingEvent.register(reloading);
 		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
 			throw new RuntimeException(e);
