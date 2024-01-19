@@ -4,9 +4,13 @@ plugins {
 	id 'com.github.johnrengelman.shadow' version "${shadow_version}" apply false
 
     id 'io.github.pacifistmc.forgix' version "${forgix_version}"
+	id 'io.github.p03w.machete' version '2.0.1'
 }
 
 setup()
+import io.github.p03w.machete.config.MachetePluginExtension
+import io.github.p03w.machete.tasks.OptimizeJarsTask
+setupForgixAndMachete()
 
 allprojects {
 	apply plugin: 'java'
@@ -22,36 +26,18 @@ allprojects {
 	}
 }
 
-forgix {
-	group = project.group
-	mergedJarName = "createunlimited-${modVersion}.jar"
-	outputDir = 'build/libs/merged'
+architectury {
+	minecraft = minecraft_version
+	compileOnly()
 }
 
-architectury {
-    minecraft = minecraft_version
-}
+clean { delete '.architectury-transformer' }
+
+jar { enabled = false }
 
 subprojects {
     apply from: rootProject.file('gradle/subprojects.gradle')
 	remapJar.finalizedBy(mergeJars)
-}
-
-clean {
-	delete '.architectury-transformer'
-}
-
-tasks.register('nukeGradleCaches') {
-	group = 'build'
-	doLast {
-		allprojects.each {
-			it.file('.gradle').deleteDir()
-		}
-	}
-}
-
-jar {
-	enabled = false
 }
 
 def defineMixins() {
@@ -85,4 +71,39 @@ def setup() {
 	apply plugin: 'architectury-plugin'
 
 	defineMixins()
+
+	tasks.register('nukeGradleCaches') {
+		group = 'build'
+		doLast {
+			allprojects.each {
+				it.file('.gradle').deleteDir()
+			}
+		}
+	}
+}
+
+def setupForgixAndMachete() {
+	forgix {
+		group = project.group
+		mergedJarName = "createunlimited-${modVersion}.jar"
+		outputDir = 'build/libs/merged'
+	}
+
+	machete {
+		ignoredTasks.add('jar')
+
+		jij.enabled = false
+		png.enabled = false
+		json.enabled = true
+	}
+
+	tasks.register('optimizeMergeJars', OptimizeJarsTask) {
+		dependsOn mergeJars
+		//noinspection GrDeprecatedAPIUsage
+		buildDir = project.buildDir
+		extension = project.extensions.getByType(MachetePluginExtension)
+		inputs.file(forgix.outputDir + File.separator + forgix.mergedJarName)
+	}
+
+	mergeJars.finalizedBy(optimizeMergeJars)
 }
