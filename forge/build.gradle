@@ -27,7 +27,6 @@ loom {
 	forge {
 		mixinConfig(
 			'createunlimited.mixins.json',
-			'createunlimited-common.mixins.json',
 		)
 	}
 }

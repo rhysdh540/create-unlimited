@@ -33,7 +33,7 @@ configurations {
 }
 
 dependencies {
-	include(implementation("io.github.llamalad7:mixinextras-${project.name}:${rootProject.mixin_extras}"))
+	shade(implementation("io.github.llamalad7:mixinextras-${project.name}:${rootProject.mixin_extras}"))
 	common(project(path: ':common', configuration: 'namedElements')) { transitive false }
 	shadowCommon(project(path: ':common', configuration: "transformProduction${project.name.capitalize()}")) { transitive = false }
 }
@@ -41,6 +41,10 @@ dependencies {
 shadowJar {
 	exclude 'architectury.common.json'
 	exclude '**/PlatformMethods.class'
+	exclude 'LICENSE_MixinExtras'
+	exclude 'META-INF/jarjar/**'
+	exclude 'META-INF/services/**'
+	exclude 'META-INF/jars/**'
 
 	configurations = [project.configurations.shadowCommon, project.configurations.shade]
 	archiveClassifier = 'shadow'

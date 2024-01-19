@@ -17,3 +17,9 @@ dependencies {
 
 	modCompileOnly "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api}+${rootProject.minecraft_version}"
 }
+
+processResources {
+	from(rootProject.file('LICENSE')) {
+		rename { "${it}_${archives_base_name}" }
+	}
+}

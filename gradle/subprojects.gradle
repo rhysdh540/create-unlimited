@@ -14,21 +14,7 @@ loom {
 java.withSourcesJar()
 
 configurations {
-	addJar
 	shade
-
-	addJarCompile
-	addJarRuntime
-	addJarEverywhere
-
-	compileOnly.extendsFrom addJarCompile
-	annotationProcessor.extendsFrom addJarCompile
-	implementation.extendsFrom addJarRuntime
-	api.extendsFrom addJarEverywhere
-
-	addJar.extendsFrom addJarRuntime
-	addJar.extendsFrom addJarEverywhere
-
 	implementation.extendsFrom shade
 }
 
@@ -62,11 +48,10 @@ dependencies {
 		it.officialMojangMappings { nameSyntheticMembers = false }
 	})
 
-	manifold 'preprocessor'
-	manifold 'ext'
-	manifold 'props'
+	annotationProcessor("systems.manifold:manifold-preprocessor:${manifold_version}")
+	annotationProcessor(compileOnly("systems.manifold:manifold-props:${manifold_version}"))
 
-	annotationProcessor implementation("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras}")
+	annotationProcessor compileOnly("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras}")
 	//annotationProcessor include("com.github.bawnorton.mixinsquared:mixinsquared-${p.name}:${rootProject.mixin_squared}")
 }
 
@@ -92,16 +77,6 @@ processResources {
 	filesMatching('META-INF/mods.toml') {
 		expand properties
 	}
-}
-
-def manifold(String path) {
-	def coords = "systems.manifold:manifold-${path}:${manifold_version}"
-	if(path == 'util')
-		dependencies { addJarEverywhere(coords) }
-	else if(path.endsWith('rt'))
-		dependencies { addJarRuntime(coords) }
-	else
-		dependencies { addJarCompile(coords) }
 }
 
 def maven(String path) {
