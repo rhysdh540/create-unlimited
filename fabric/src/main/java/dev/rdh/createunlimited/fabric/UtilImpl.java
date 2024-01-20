@@ -41,7 +41,7 @@ public class UtilImpl {
 	private static MethodHandle forgeConfigRegistryRegister;
 	private static Object forgeConfigRegistryInstance;
 
-	static {
+	private static void setupConfigRegistry() {
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
 		try {
 			if(SupportedMinecraftVersion.v1_19_2.isCurrentOrOlder()) {
@@ -62,6 +62,9 @@ public class UtilImpl {
 	}
 
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
+		if(modLoadingContextRegisterConfig == null && forgeConfigRegistryRegister == null) {
+			setupConfigRegistry();
+		}
 		try {
 			if(SupportedMinecraftVersion.v1_19_2.isCurrentOrOlder()) {
 				ModConfig ignore = (ModConfig) modLoadingContextRegisterConfig.invokeExact(CreateUnlimited.ID, type, spec);
