@@ -28,7 +28,6 @@ allprojects {
 
 architectury {
 	minecraft = minecraft_version
-	compileOnly()
 }
 
 clean { delete '.architectury-transformer' }
@@ -73,6 +72,7 @@ def setup() {
 	defineMixins()
 
 	tasks.register('nukeGradleCaches') {
+		dependsOn clean
 		group = 'build'
 		doLast {
 			allprojects.each {
@@ -84,9 +84,12 @@ def setup() {
 
 def setupForgixAndMachete() {
 	forgix {
-		group = project.group
+		group = rootProject.maven_group
+		println 'Group: ' + group
 		mergedJarName = "createunlimited-${modVersion}.jar"
 		outputDir = 'build/libs/merged'
+
+		removeDuplicate('com.llamalad7.mixinextras')
 	}
 
 	machete {
