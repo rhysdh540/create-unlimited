@@ -47,6 +47,8 @@ shadowJar {
 
 	configurations = [project.configurations.shadowCommon, project.configurations.shade]
 	archiveClassifier = "shadow-${project.name}"
+
+	relocate('com.github.llamalad7.mixinextras', 'dev.rdh.createunlimited.shadow.mixinextras')
 }
 
 remapJar {
