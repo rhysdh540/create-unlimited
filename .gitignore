@@ -1,9 +1,9 @@
 build/
+!**/src/**/build/
 **/run/
 *.iml
 .gradle/
 .idea/
-build.properties
 .DS_Store
 artifacts/
 .architectury-transformer/
