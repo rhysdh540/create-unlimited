@@ -14,6 +14,8 @@ dependencies {
 	modImplementation "com.tterrag.registrate:Registrate:${registrate}"
 	modImplementation "com.jozufozu.flywheel:flywheel-forge-${flywheel_mc}:${flywheel}"
 
+	forgeRuntimeLibrary("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras}")
+
 	// Dev Env Optimizations
 	if (rootProject.hasProperty("bmb")) {
 		modRuntimeOnly "curse.maven:better-mods-button-541584:${rootProject.bmb}"

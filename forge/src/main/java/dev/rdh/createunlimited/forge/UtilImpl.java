@@ -4,7 +4,6 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
-import dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion;
 
 import net.minecraft.commands.CommandSourceStack;
 
@@ -30,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 
 import manifold.rt.api.NoBootstrap;
+
+import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
 @NoBootstrap
 @SuppressWarnings({"UnstableApiUsage", "RedundantSuppression"})
@@ -75,14 +76,14 @@ public class UtilImpl {
 	@SuppressWarnings({"unchecked", "JavaReflectionMemberAccess"})
 	private static RegistryObject<Attribute> makeReachAttribute() {
 		try {
-			if(SupportedMinecraftVersion.v1_20_1.isCurrentOrNewer()) {
+			if(v1_20_1 <= CURRENT) {
 				return (RegistryObject<Attribute>) ForgeMod.class.getField("BLOCK_REACH").get(null);
-			} else if(SupportedMinecraftVersion.v1_19_2.isCurrentOrOlder()) {
+			} else if(v1_19_2 <= CURRENT) {
 				return (RegistryObject<Attribute>) ForgeMod.class.getField("REACH_DISTANCE").get(null);
 			}
-			throw new IllegalStateException("Unsupported minecraft version: " + SupportedMinecraftVersion.CURRENT);
+			throw new IllegalStateException("Unsupported minecraft version: " + CURRENT);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
-			throw new RuntimeException("Failed to get reach attribute for minecraft version " + SupportedMinecraftVersion.CURRENT, e);
+			throw new RuntimeException("Failed to get reach attribute for minecraft version " + CURRENT, e);
 		}
 	}
 
