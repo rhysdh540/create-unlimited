@@ -7,7 +7,6 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
-import dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion;
 
 import manifold.rt.api.NoBootstrap;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
@@ -30,6 +29,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
+import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
+
 @NoBootstrap
 public class UtilImpl {
 
@@ -44,13 +45,13 @@ public class UtilImpl {
 	private static void setupConfigRegistry() {
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
 		try {
-			if(SupportedMinecraftVersion.v1_19_2.isCurrentOrOlder()) {
+			if(v1_19_2 >= CURRENT) {
 				Class<?> modLoadingContextClass = Class.forName("net.minecraftforge.api.ModLoadingContext");
 				modLoadingContextRegisterConfig = lookup.findStatic(modLoadingContextClass, "registerConfig",
 					MethodType.methodType(ModConfig.class, String.class, Type.class, IConfigSpec.class));
 			}
 
-			if(SupportedMinecraftVersion.v1_20_1.isCurrentOrNewer()) {
+			if(v1_20_1 <= CURRENT) {
 				Class<?> forgeConfigRegistryClass = Class.forName("fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry");
 				forgeConfigRegistryRegister = lookup.findVirtual(forgeConfigRegistryClass, "register",
 					MethodType.methodType(ModConfig.class, String.class, Type.class, IConfigSpec.class));
@@ -61,16 +62,17 @@ public class UtilImpl {
 		}
 	}
 
+	@SuppressWarnings("DataFlowIssue")
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		if(modLoadingContextRegisterConfig == null && forgeConfigRegistryRegister == null) {
 			setupConfigRegistry();
 		}
 		try {
-			if(SupportedMinecraftVersion.v1_19_2.isCurrentOrOlder()) {
+			if(v1_19_2 >= CURRENT) {
 				ModConfig ignore = (ModConfig) modLoadingContextRegisterConfig.invokeExact(CreateUnlimited.ID, type, spec);
 			}
 
-			if(SupportedMinecraftVersion.v1_20_1.isCurrentOrNewer()) {
+			if(v1_20_1 <= CURRENT) {
 				//cannot use invokeExact because the instance class only exists in 1.20.1
 				forgeConfigRegistryRegister.invoke(forgeConfigRegistryInstance, CreateUnlimited.ID, type, spec);
 			}

@@ -49,10 +49,11 @@ dependencies {
 	})
 
 	annotationProcessor(compileOnly("systems.manifold:manifold-props:${manifold_version}"))
+	annotationProcessor(compileOnly("systems.manifold:manifold-ext:${manifold_version}"))
 
 	def me = "io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras}"
 	annotationProcessor(implementation(me))
-	if (project.name != 'common') {
+	if(project != project(':common')) {
 		shade(me)
 	}
 }
