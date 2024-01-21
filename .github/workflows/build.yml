@@ -22,10 +22,28 @@ jobs:
             -   name: do the build
                 run: ./gradlew clean assemble
 
-            -   name: Upload artifacts
+            -   name: upload artifacts
                 uses: actions/upload-artifact@v4
                 with:
                     name: unlimited-artifacts
                     path: |
                         build/libs/merged/*.jar
                         */build/libs/*.jar
+
+            -   name: upload artifacts to discord
+                if: success()
+                uses: appleboy/upload-artifact-action@v1.0.0
+                with:
+                    webhook_id: ${{ secrets.WEBHOOK_ID }}
+                    webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+                    message: '# Build #${{ github.run_number }}'
+                    file: |
+                        build/libs/merged/*.jar
+
+            -   name: send failure message
+                if: failure()
+                uses: appleboy/discord-action@v1.0.0
+                with:
+                    webhook_id: ${{ secrets.WEBHOOK_ID }}
+                    webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+                    args: '# Build #${{ github.run_number }} failed'

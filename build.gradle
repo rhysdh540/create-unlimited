@@ -85,7 +85,6 @@ def setup() {
 def setupForgixAndMachete() {
 	forgix {
 		group = rootProject.maven_group
-		println 'Group: ' + group
 		mergedJarName = "createunlimited-${modVersion}.jar"
 		outputDir = 'build/libs/merged'
 
