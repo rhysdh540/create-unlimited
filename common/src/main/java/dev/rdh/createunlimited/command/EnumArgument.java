@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package dev.rdh.createunlimited.config.command;
+package dev.rdh.createunlimited.command;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
@@ -92,6 +92,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public Template deserializeFromNetwork(FriendlyByteBuf buffer) {
 			try {
 				String name = buffer.readUtf();

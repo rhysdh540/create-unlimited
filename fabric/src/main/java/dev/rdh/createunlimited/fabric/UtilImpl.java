@@ -58,7 +58,7 @@ public class UtilImpl {
 				forgeConfigRegistryInstance = forgeConfigRegistryClass.getField("INSTANCE").get(null);
 			}
 		} catch (Throwable e) {
-			throw new RuntimeException(e);
+			throw unchecked(e);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class UtilImpl {
 				forgeConfigRegistryRegister.invoke(forgeConfigRegistryInstance, CreateUnlimited.ID, type, spec);
 			}
 		} catch (Throwable e) {
-			throw new RuntimeException(e);
+			throw unchecked(e);
 		}
 	}
 

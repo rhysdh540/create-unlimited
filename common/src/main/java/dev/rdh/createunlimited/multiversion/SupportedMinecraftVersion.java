@@ -28,4 +28,9 @@ public enum SupportedMinecraftVersion {
 	public String toString() {
 		return name().substring(1).replace('_', '.');
 	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Throwable> RuntimeException unchecked(Throwable t) throws T {
+		throw (T) t;
+	}
 }
