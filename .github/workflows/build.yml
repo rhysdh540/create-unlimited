@@ -4,7 +4,7 @@ on: [ workflow_dispatch, push, pull_request ]
 jobs:
     build:
         if: "!contains(github.event.head_commit.message, '[skip]')"
-        runs-on: windows-latest
+        runs-on: macos-latest
         steps:
             -   name: checkout
                 uses: actions/checkout@v4
@@ -30,9 +30,6 @@ jobs:
                     path: |
                         build/libs/merged/*.jar
                         */build/libs/*.jar
-
-            -   name: make artifact readable
-                run: attrib -r build/libs/merged/*.jar
 
             -   name: upload artifacts to discord
                 uses: hugoalh/send-discord-webhook-ghaction@v6.0.1
