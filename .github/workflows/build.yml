@@ -3,6 +3,7 @@ on: [ workflow_dispatch, push, pull_request ]
 
 jobs:
     build:
+        if: "!contains(github.event.head_commit.message, '[skip]')"
         runs-on: windows-latest
         steps:
             -   name: checkout
@@ -30,10 +31,12 @@ jobs:
                         build/libs/merged/*.jar
                         */build/libs/*.jar
 
+            -   name: make artifact readable
+                run: attrib -r build/libs/merged/*.jar
+
             -   name: upload artifacts to discord
                 uses: hugoalh/send-discord-webhook-ghaction@v6.0.1
                 with:
                     key: ${{ secrets.DISCORD_WEBHOOK }}
                     content: '# Build #${{ github.run_number }}'
-                    files: |
-                        build/libs/merged/*.jar
+                    files: 'build/libs/merged/*.jar'
