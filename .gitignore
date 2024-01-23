@@ -7,3 +7,9 @@ build/
 .DS_Store
 artifacts/
 .architectury-transformer/
+
+## eclipse bad ##
+.classpath
+.project
+.settings/
+**/module-info.java
