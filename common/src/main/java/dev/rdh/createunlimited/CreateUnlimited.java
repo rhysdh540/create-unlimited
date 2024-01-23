@@ -4,7 +4,7 @@ import com.simibubi.create.Create;
 
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import dev.rdh.createunlimited.config.command.EnumArgument;
+import dev.rdh.createunlimited.command.EnumArgument;
 import dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion;
 
 import manifold.rt.api.NoBootstrap;

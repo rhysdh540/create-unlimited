@@ -15,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.util.MavenVersionStringHelper;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.IConfigSpec;
@@ -60,7 +59,7 @@ public class UtilImpl {
 		}
 		for (IModInfo info : infoList) {
 			if (info.getModId().equals(modid)) {
-				versionString = MavenVersionStringHelper.artifactVersionToString(info.getVersion());
+				versionString = info.getVersion().toString();
 				break;
 			}
 		}

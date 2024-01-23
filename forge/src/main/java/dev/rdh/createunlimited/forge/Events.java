@@ -3,6 +3,7 @@ package dev.rdh.createunlimited.forge;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
+import dev.rdh.createunlimited.command.CUCommands;
 import dev.rdh.createunlimited.config.CUConfigs;
 
 import manifold.rt.api.NoBootstrap;
@@ -16,6 +17,8 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+
+import net.minecraft.commands.Commands.CommandSelection;
 
 @NoBootstrap
 public abstract class Events {
@@ -34,8 +37,9 @@ public abstract class Events {
 
 	@SubscribeEvent
 	static void registerCommands(RegisterCommandsEvent event) {
-		for(var command : UtilImpl.commands)
-			event.getDispatcher().register(command);
+		CommandSelection selection = event.getCommandSelection();
+		boolean dedicated = selection == CommandSelection.ALL || selection == CommandSelection.DEDICATED;
+		CUCommands.register(event.getDispatcher(), dedicated);
 	}
 
 	@SubscribeEvent

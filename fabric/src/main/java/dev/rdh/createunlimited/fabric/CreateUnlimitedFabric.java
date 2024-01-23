@@ -2,10 +2,12 @@ package dev.rdh.createunlimited.fabric;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
+import dev.rdh.createunlimited.command.CUCommands;
 import dev.rdh.createunlimited.config.CUConfigs;
 
 import manifold.rt.api.NoBootstrap;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
 
 import net.minecraftforge.fml.config.ModConfig;
@@ -22,6 +24,9 @@ public class CreateUnlimitedFabric implements ModInitializer {
     public void onInitialize() {
 		registerConfigEvents();
         CreateUnlimited.init();
+
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+			CUCommands.register(dispatcher, environment.includeDedicated));
     }
 
 
@@ -39,7 +44,7 @@ public class CreateUnlimitedFabric implements ModInitializer {
 			L loading = createHandlerProxy(CUConfigs::onLoad, modConfigEventsClass, "Loading", "onModConfigLoading");
 			loadingEvent.register(loading);
 		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-			throw new RuntimeException(e);
+			throw unchecked(e);
 		}
 
 		try {
@@ -47,7 +52,7 @@ public class CreateUnlimitedFabric implements ModInitializer {
 			R reloading = createHandlerProxy(CUConfigs::onReload, modConfigEventsClass, "Reloading", "onModConfigReloading");
 			reloadingEvent.register(reloading);
 		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-			throw new RuntimeException(e);
+			throw unchecked(e);
 		}
 	}
 
@@ -84,7 +89,7 @@ public class CreateUnlimitedFabric implements ModInitializer {
 				throw new IllegalStateException("Unsupported Minecraft version: " + CURRENT);
 			}
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
+			throw unchecked(e);
 		}
 	}
 }

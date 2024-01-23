@@ -39,6 +39,7 @@ public class PlatformPlugin implements Plugin<Project> {
 			container.remove(container.findByName("server"));
 
 			Consumer<RunConfigSettings> clientConfig = settings -> {
+				if(settings == null) throw new IllegalStateException("Cannot configure client run config settings because settings is null");
 				settings.client();
 				settings.setName("Minecraft Client");
 				settings.setIdeConfigGenerated(true);
@@ -57,10 +58,10 @@ public class PlatformPlugin implements Plugin<Project> {
 		configurations.getByName("runtimeClasspath").extendsFrom(common);
 
 		DependencyHandler deps = project.getDependencies();
-		ModuleDependency commonDep = (ModuleDependency) deps.add("common", deps.project(Map.of("path", ":common", "configuration", "namedElements")));
-		commonDep.setTransitive(false);
-		ModuleDependency shadowCommonDep = (ModuleDependency) deps.add("shadowCommon", deps.project(Map.of("path", ":common", "configuration", "transformProduction" + capitalize(project.getName()))));
-		shadowCommonDep.setTransitive(false);
+		((ModuleDependency) deps.add("common", deps.project(Map.of("path", ":common", "configuration", "namedElements"))))
+			.setTransitive(false);
+		((ModuleDependency) deps.add("shadowCommon", deps.project(Map.of("path", ":common", "configuration", "transformProduction" + capitalize(project.getName())))))
+			.setTransitive(false);
 
 		TaskContainer tasks = project.getTasks();
 
@@ -93,11 +94,11 @@ public class PlatformPlugin implements Plugin<Project> {
 			task.getArchiveClassifier().set("sources-" + project.getName());
 		});
 
-		project.getComponents().named("java", sc -> {
-			if(sc instanceof AdhocComponentWithVariants adhoc) {
+		project.getComponents().named("java", softwareCompoment -> {
+			if(softwareCompoment instanceof AdhocComponentWithVariants adhoc) {
 				adhoc.withVariantsFromConfiguration(project.getConfigurations().named("shadowRuntimeElements").get(), ConfigurationVariantDetails::skip);
 			} else {
-				throw new RuntimeException("Unexpected component type: " + sc.getClass().getName());
+				throw new RuntimeException("Unexpected component type: " + softwareCompoment.getClass().getName());
 			}
 		});
 	}
