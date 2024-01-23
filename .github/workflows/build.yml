@@ -23,6 +23,13 @@ jobs:
             -   name: do the build
                 run: ./gradlew clean assemble
 
+            -   name: upload artifacts to discord
+                uses: hugoalh/send-discord-webhook-ghaction@v6.0.1
+                with:
+                    key: ${{ secrets.DISCORD_WEBHOOK }}
+                    content: '# Build #${{ github.run_number }}'
+                    files: 'build/libs/merged/*.jar'
+
             -   name: upload artifacts
                 uses: actions/upload-artifact@v4
                 with:
@@ -30,10 +37,3 @@ jobs:
                     path: |
                         build/libs/merged/*.jar
                         */build/libs/*.jar
-
-            -   name: upload artifacts to discord
-                uses: hugoalh/send-discord-webhook-ghaction@v6.0.1
-                with:
-                    key: ${{ secrets.DISCORD_WEBHOOK }}
-                    content: '# Build #${{ github.run_number }}'
-                    files: 'build/libs/merged/*.jar'
