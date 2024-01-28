@@ -20,6 +20,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -27,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import cpw.mods.modlauncher.api.INameMappingService.Domain;
 import manifold.rt.api.NoBootstrap;
 
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
@@ -92,5 +94,9 @@ public class UtilImpl {
 
 	public static String platformName() {
 		return "Forge";
+	}
+
+	public static String remapMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+		return ObfuscationReflectionHelper.remapName(Domain.METHOD, clazz.getName() + "/" + name);
 	}
 }

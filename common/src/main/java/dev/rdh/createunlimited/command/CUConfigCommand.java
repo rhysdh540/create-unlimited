@@ -12,6 +12,7 @@ import com.mojang.brigadier.context.CommandContext;
 import manifold.rt.api.NoBootstrap;
 
 import dev.rdh.createunlimited.CreateUnlimited;
+import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfigs;
 import dev.rdh.createunlimited.config.CUServer;
 import dev.rdh.createunlimited.mixin.accessor.CValueAccessor;
@@ -246,8 +247,9 @@ public class CUConfigCommand {
 			throw new RuntimeException("Unsupported Minecraft version: " + CURRENT);
 		}
 
+		String remapped = Util.remapMethod(CommandSourceStack.class, "sendSuccess", type.parameterArray());
 		try {
-			SEND_SUCCESS = lookup.findVirtual(CommandSourceStack.class, "sendSuccess", type);
+			SEND_SUCCESS = lookup.findVirtual(CommandSourceStack.class, remapped, type);
 		} catch(NoSuchMethodException | IllegalAccessException e) {
 			throw unchecked(e);
 		}
@@ -255,7 +257,12 @@ public class CUConfigCommand {
 
 	private static void sendSuccess(CommandContext<CommandSourceStack> context, Component message) {
 		try {
-			SEND_SUCCESS.invokeExact(context.getSource(), message, false);
+			if(CURRENT <= v1_19_2)
+				SEND_SUCCESS.invokeExact(context.getSource(), message, false);
+			else if(CURRENT >= v1_20_1)
+				SEND_SUCCESS.invoke(context.getSource(), (Supplier<Component>) () -> message, false);
+			else
+				throw new RuntimeException("Unsupported Minecraft version: " + CURRENT);
 		} catch(Throwable t) {
 			throw unchecked(t);
 		}

@@ -73,6 +73,7 @@ public class PlatformPlugin implements Plugin<Project> {
 			task.exclude("META-INF/jarjar/**");
 			task.exclude("META-INF/jars/**");
 			task.setConfigurations(List.of(shadowCommon, project.getConfigurations().getByName("shade")));
+			task.relocate("com.llamalad7.mixinextras", "dev.rdh.createunlimited.shadow.mixinextras");
 			task.getArchiveClassifier().set("shadow-" + project.getName());
 		});
 

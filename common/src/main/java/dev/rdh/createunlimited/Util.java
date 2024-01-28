@@ -68,6 +68,11 @@ public abstract class Util {
 		throw new AssertionError();
 	}
 
+	@ExpectPlatform
+	public static String remapMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+		throw new AssertionError();
+	}
+
 	public static Supplier<Multimap<Attribute, AttributeModifier>> singleRange() {
 		AttributeModifier am = new AttributeModifier(UUID.fromString("7f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
 				CUConfigs.server().singleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
