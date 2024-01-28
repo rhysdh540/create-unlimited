@@ -20,8 +20,8 @@ import java.util.Collections;
 @NoBootstrap
 public class CUCommands {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
-		LiteralArgumentBuilder<CommandSourceStack> base = Commands.literal(CreateUnlimited.ID)
-			.then(CUConfigCommand.register());
+		LiteralArgumentBuilder<CommandSourceStack> base = Commands.literal(CreateUnlimited.ID);
+//			.then(CUConfigCommand.register()); - does not work in prod because obfuscation :(
 
 		LiteralCommandNode<CommandSourceStack> root = dispatcher.register(base);
 

@@ -20,6 +20,8 @@ dependencies {
 	plugin("architectury-plugin", "3.4.151")
 	plugin("dev.architectury.loom", "1.4.380")
 	plugin("com.github.johnrengelman.shadow", "8.1.1")
+	plugin("io.github.pacifistmc.forgix", "1.2.6")
+	plugin("io.github.p03w.machete", "2.0.1")
 }
 
 gradlePlugin {

@@ -25,7 +25,7 @@ public abstract class CreateUnlimited {
 		LOGGER.info("{} v{} initializing! Create version: {} on platform: {}",
 				NAME, VERSION, Create.VERSION, Util.platformName());
 
-		LOGGER.info("Minecraft version: {}", SupportedMinecraftVersion.CURRENT);
+		LOGGER.info("Detected Minecraft version: {}", SupportedMinecraftVersion.CURRENT);
 
 		EnumArgument.init();
 		CUConfigs.register();

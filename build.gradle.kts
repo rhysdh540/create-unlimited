@@ -8,8 +8,8 @@ plugins {
 	id("dev.architectury.loom") apply(false)
 	id("com.github.johnrengelman.shadow") apply(false)
 
-	id("io.github.pacifistmc.forgix") version("1.2.6")
-	id("io.github.p03w.machete") version("2.0.1")
+	id("io.github.pacifistmc.forgix")
+	id("io.github.p03w.machete")
 
 	id("properties") apply(false)
 	id("subprojects") apply(false)
@@ -30,10 +30,15 @@ allprojects {
 	version = "modVersion"()
 	group = "maven_group"()
 
-	tasks.withType<JavaCompile>().configureEach {
+	tasks.withType<JavaCompile> {
 		options.encoding = "UTF-8"
 		options.release.set(17)
 		options.compilerArgs.addAll(listOf("-Xplugin:Manifold", "-implicit:none"))
+	}
+
+	tasks.withType<AbstractArchiveTask> {
+		setPreserveFileTimestamps(false)
+		setReproducibleFileOrder(true)
 	}
 }
 
@@ -88,7 +93,7 @@ fun setupForgixAndMachete() {
 		mergedJarName = "createunlimited-${"modVersion"()}.jar"
 		outputDir = "build/libs/merged"
 
-		removeDuplicate("com.llamalad7.mixinextras")
+		removeDuplicate("dev.rdh.createunlimited.shadow.mixinextras")
 	}
 
 	tasks.assemble.configure {
