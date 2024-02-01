@@ -8,10 +8,6 @@ import com.simibubi.create.content.contraptions.glue.SuperGlueSelectionPacket;
 
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.rt.api.NoBootstrap;
-
-
-@NoBootstrap
 @Mixin(value = SuperGlueSelectionPacket.class, remap = false)
 public abstract class SuperGlueSelectionPacketMixin {
 	// server-side modification

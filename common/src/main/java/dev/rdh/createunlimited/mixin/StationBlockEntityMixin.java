@@ -3,15 +3,12 @@ package dev.rdh.createunlimited.mixin;
 import com.simibubi.create.content.trains.station.StationBlockEntity;
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.rt.api.NoBootstrap;
-
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@NoBootstrap
 @SuppressWarnings("unused")
 @Mixin(value = StationBlockEntity.class, remap = false)
 public abstract class StationBlockEntityMixin {

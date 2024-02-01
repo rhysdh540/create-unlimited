@@ -6,7 +6,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-import manifold.rt.api.NoBootstrap;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
@@ -17,7 +16,6 @@ import net.minecraft.commands.Commands;
 
 import java.util.Collections;
 
-@NoBootstrap
 public class CUCommands {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
 		LiteralArgumentBuilder<CommandSourceStack> base = Commands.literal(CreateUnlimited.ID);

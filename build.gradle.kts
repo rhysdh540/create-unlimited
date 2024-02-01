@@ -1,6 +1,4 @@
 import dev.architectury.plugin.ArchitectPluginExtension
-import io.github.p03w.machete.config.MachetePluginExtension
-import io.github.p03w.machete.tasks.OptimizeJarsTask
 
 plugins {
 	java
@@ -9,14 +7,14 @@ plugins {
 	id("com.github.johnrengelman.shadow") apply(false)
 
 	id("io.github.pacifistmc.forgix")
-	id("io.github.p03w.machete")
 
 	id("properties") apply(false)
 	id("subprojects") apply(false)
 	id("platform") apply(false)
+	id("postprocessor") apply(false)
 }
 setup()
-setupForgixAndMachete()
+setupForgix()
 
 operator fun String.invoke(): String {
 	return rootProject.ext[this] as? String
@@ -46,20 +44,16 @@ extensions.getByType<ArchitectPluginExtension>().apply {
 	minecraft = "minecraft_version"()
 }
 
-tasks.clean.configure {
+tasks.clean {
 	delete(".architectury-transformer")
 }
 
-tasks.jar.configure {
+tasks.jar {
 	enabled = false
 }
 
 subprojects {
 	apply(plugin = "subprojects")
-}
-
-tasks.assemble.configure {
-	finalizedBy("mergeJars")
 }
 
 fun setup() {
@@ -87,7 +81,7 @@ fun setup() {
 	}
 }
 
-fun setupForgixAndMachete() {
+fun setupForgix() {
 	forgix {
 		group = "maven_group"()
 		mergedJarName = "createunlimited-${"modVersion"()}.jar"
@@ -96,30 +90,16 @@ fun setupForgixAndMachete() {
 		removeDuplicate("dev.rdh.createunlimited.shadow.mixinextras")
 	}
 
-	tasks.assemble.configure {
+	tasks.mergeJars {
+		dependsOn("assemble")
+	}
+
+	tasks.assemble {
 		subprojects.forEach {
 			this.dependsOn(it.tasks.named("assemble"))
 		}
 		finalizedBy("mergeJars")
 	}
 
-	machete {
-		ignoredTasks.add("jar")
-
-		jij.enabled = false
-		png.enabled = false
-		json.enabled = true
-	}
-
-	tasks.register<OptimizeJarsTask>("optimizeMergeJars") {
-		dependsOn("mergeJars")
-
-		buildDir.set(project.layout.buildDirectory.get().asFile)
-		extension = project.extensions.getByType<MachetePluginExtension>()
-		inputs.file(forgix.outputDir + File.separator + forgix.mergedJarName)
-	}
-
-	tasks.mergeJars.configure {
-		finalizedBy("optimizeMergeJars")
-	}
+	apply(plugin = "postprocessor")
 }

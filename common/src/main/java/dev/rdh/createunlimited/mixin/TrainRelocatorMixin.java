@@ -5,12 +5,10 @@ import com.simibubi.create.content.trains.entity.TrainRelocator;
 import dev.rdh.createunlimited.config.CUConfigs;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import manifold.rt.api.NoBootstrap;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@NoBootstrap
 @Mixin(value = TrainRelocator.class, remap = false)
 public abstract class TrainRelocatorMixin {
 	@ModifyExpressionValue(method = {"onClicked", "clientTick"}, at = @At(value = "CONSTANT", args = "doubleValue=24.0"))

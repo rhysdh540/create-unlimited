@@ -4,13 +4,10 @@ import com.simibubi.create.infrastructure.config.CTrains;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
-import manifold.rt.api.NoBootstrap;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@NoBootstrap
 @Mixin(value = CTrains.class, remap = false)
 public abstract class CTrainsMixin {
 	@ModifyConstant(method = "<init>", constant = @Constant(intValue = 128, ordinal = 0))

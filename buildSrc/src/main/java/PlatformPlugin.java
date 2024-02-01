@@ -17,9 +17,12 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.*;
+import org.objectweb.asm.tree.*;
 
 import dev.architectury.plugin.ArchitectPluginExtension;
 
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;

@@ -7,14 +7,11 @@ import dev.rdh.createunlimited.config.CUConfigs;
 import dev.rdh.createunlimited.command.EnumArgument;
 import dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion;
 
-import manifold.rt.api.NoBootstrap;
-
 import net.minecraft.resources.ResourceLocation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@NoBootstrap
 public abstract class CreateUnlimited {
 	public static final String ID = "createunlimited";
 	public static final String NAME = "Create Unlimited";

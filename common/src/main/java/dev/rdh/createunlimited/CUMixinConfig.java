@@ -9,9 +9,6 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
-import manifold.rt.api.NoBootstrap;
-
-@NoBootstrap
 public class CUMixinConfig implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {
