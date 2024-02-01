@@ -5,7 +5,6 @@ import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.command.CUCommands;
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.rt.api.NoBootstrap;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
@@ -18,7 +17,6 @@ import java.util.function.Consumer;
 
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
-@NoBootstrap
 public class CreateUnlimitedFabric implements ModInitializer {
     @Override
     public void onInitialize() {

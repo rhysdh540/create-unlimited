@@ -21,7 +21,9 @@ dependencies {
 	plugin("dev.architectury.loom", "1.4.380")
 	plugin("com.github.johnrengelman.shadow", "8.1.1")
 	plugin("io.github.pacifistmc.forgix", "1.2.6")
-	plugin("io.github.p03w.machete", "2.0.1")
+
+	implementation("org.ow2.asm:asm:9.6")
+	implementation("org.ow2.asm:asm-analysis:9.6")
 }
 
 gradlePlugin {
@@ -39,6 +41,11 @@ gradlePlugin {
 		create("platform") {
 			id = "platform"
 			implementationClass = "PlatformPlugin"
+		}
+
+		create("postprocessor") {
+			id = "postprocessor"
+			implementationClass = "JarPostProcessorPlugin"
 		}
 	}
 }

@@ -1,10 +1,7 @@
 package dev.rdh.createunlimited.multiversion;
 
-import manifold.rt.api.NoBootstrap;
-
 import dev.rdh.createunlimited.Util;
 
-@NoBootstrap
 public enum SupportedMinecraftVersion {
 	v1_18_2,
 	v1_19_2,

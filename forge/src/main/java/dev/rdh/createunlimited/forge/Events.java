@@ -6,8 +6,6 @@ import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.command.CUCommands;
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.rt.api.NoBootstrap;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -20,9 +18,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 
 import net.minecraft.commands.Commands.CommandSelection;
 
-@NoBootstrap
 public abstract class Events {
-	@NoBootstrap
 	@Mod.EventBusSubscriber(modid = CreateUnlimited.ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 	public static abstract class ClientModBusEvents {
 		@SubscribeEvent

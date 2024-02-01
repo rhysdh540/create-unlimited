@@ -5,9 +5,6 @@ import com.terraformersmc.modmenu.api.ModMenuApi;
 
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.rt.api.NoBootstrap;
-
-@NoBootstrap
 public class ModMenuIntegration implements ModMenuApi {
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {

@@ -29,11 +29,9 @@ import java.util.List;
 import java.util.Set;
 
 import cpw.mods.modlauncher.api.INameMappingService.Domain;
-import manifold.rt.api.NoBootstrap;
 
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
-@NoBootstrap
 @SuppressWarnings({"UnstableApiUsage", "RedundantSuppression"})
 public class UtilImpl {
 

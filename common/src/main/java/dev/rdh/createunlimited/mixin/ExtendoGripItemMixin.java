@@ -14,12 +14,9 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.function.Supplier;
 
-import manifold.rt.api.NoBootstrap;
-
 import static dev.rdh.createunlimited.Util.doubleRange;
 import static dev.rdh.createunlimited.Util.singleRange;
 
-@NoBootstrap
 @SuppressWarnings({"unused", "UnresolvedMixinReference"})
 @Mixin(value = ExtendoGripItem.class, remap = false)
 public abstract class ExtendoGripItemMixin {

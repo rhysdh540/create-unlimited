@@ -4,13 +4,10 @@ import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.rt.api.NoBootstrap;
-
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@NoBootstrap
 @SuppressWarnings("unused")
 @Mixin(value = CopycatBlock.class)
 public abstract class CopycatBlockMixin {

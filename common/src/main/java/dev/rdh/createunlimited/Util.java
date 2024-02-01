@@ -27,9 +27,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import manifold.rt.api.NoBootstrap;
-
-@NoBootstrap
 public abstract class Util {
 
 	@ExpectPlatform

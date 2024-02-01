@@ -4,7 +4,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
-import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.AbstractCopyTask;
 import org.jetbrains.annotations.NotNull;
@@ -57,7 +56,7 @@ public class SubprojectsPlugin implements Plugin<Project> {
 			deps.add("mappings", loom.layered(builder -> {
 				builder.mappings("org.quiltmc:quilt-mappings:" + getProperty("minecraft_version") + "+build." + getProperty("quilt") + ":intermediary-v2");
 				builder.parchment("org.parchmentmc.data:parchment-" + getProperty("minecraft_version") + ":" + getProperty("parchment") + "@zip");
-				builder.officialMojangMappings(mapping -> mapping.setNameSyntheticMembers(false));
+				builder.officialMojangMappings();
 			}));
 
 			manifold(deps, "props");
@@ -89,8 +88,7 @@ public class SubprojectsPlugin implements Plugin<Project> {
 	}
 
 	void manifold(DependencyHandler deps, String module) {
-		String version = getProperty("manifold_version");
-		String location = "systems.manifold:manifold-" + module + ":" + version;
+		String location = "systems.manifold:manifold-" + module + ":" + getProperty("manifold_version");
 		deps.add("annotationProcessor", location);
 		deps.add("compileOnly", location);
 	}

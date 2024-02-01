@@ -9,8 +9,6 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 
-import manifold.rt.api.NoBootstrap;
-
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfigs;
@@ -48,7 +46,6 @@ import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
-@NoBootstrap
 public class CUConfigCommand {
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
 		List<MutableComponent> links = List.of(

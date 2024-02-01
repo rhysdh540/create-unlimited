@@ -8,7 +8,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
-import manifold.rt.api.NoBootstrap;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
@@ -32,7 +31,6 @@ import java.lang.invoke.MethodType;
 
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
-@NoBootstrap
 public class UtilImpl {
 
 	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {

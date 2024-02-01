@@ -9,9 +9,6 @@ import com.simibubi.create.content.contraptions.glue.SuperGlueSelectionHandler;
 
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.rt.api.NoBootstrap;
-
-@NoBootstrap
 @Mixin(value = SuperGlueSelectionHandler.class, remap = false)
 public abstract class SuperGlueSectionHandlerMixin {
 	// client-side modification

@@ -6,12 +6,9 @@ import com.simibubi.create.content.trains.entity.CarriageContraption;
 
 import dev.rdh.createunlimited.config.CUConfigs;
 
-import manifold.rt.api.NoBootstrap;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@NoBootstrap
 @SuppressWarnings("unused")
 @Mixin(value = CarriageContraption.class)
 public abstract class CarriageContraptionMixin {

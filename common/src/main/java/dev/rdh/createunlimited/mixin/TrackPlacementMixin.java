@@ -11,8 +11,6 @@ import dev.rdh.createunlimited.config.CUConfigs;
 
 import dev.rdh.createunlimited.mixin.accessor.PlacementInfoAccessor;
 
-import manifold.rt.api.NoBootstrap;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -32,7 +30,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@NoBootstrap
 @SuppressWarnings("unused")
 @Mixin(value = TrackPlacement.class, remap = false, priority = 0) // inject before snr does
 public abstract class TrackPlacementMixin {
