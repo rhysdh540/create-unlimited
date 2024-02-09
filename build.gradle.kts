@@ -30,13 +30,13 @@ allprojects {
 
 	tasks.withType<JavaCompile> {
 		options.encoding = "UTF-8"
-		options.release.set(17)
+		options.release = 17
 		options.compilerArgs.addAll(listOf("-Xplugin:Manifold", "-implicit:none"))
 	}
 
 	tasks.withType<AbstractArchiveTask> {
-		setPreserveFileTimestamps(false)
-		setReproducibleFileOrder(true)
+		isPreserveFileTimestamps = false
+		isReproducibleFileOrder = true
 	}
 }
 
@@ -87,7 +87,7 @@ fun setupForgix() {
 		mergedJarName = "createunlimited-${"modVersion"()}.jar"
 		outputDir = "build/libs/merged"
 
-		removeDuplicate("dev.rdh.createunlimited.shadow.mixinextras")
+		removeDuplicate("dev.rdh.createunlimited.shadow")
 	}
 
 	tasks.mergeJars {
