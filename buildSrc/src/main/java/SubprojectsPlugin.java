@@ -55,12 +55,13 @@ public class SubprojectsPlugin implements Plugin<Project> {
 			deps.add("minecraft", "com.mojang:minecraft:" + getProperty("minecraft_version"));
 			deps.add("mappings", loom.layered(builder -> {
 				builder.mappings("org.quiltmc:quilt-mappings:" + getProperty("minecraft_version") + "+build." + getProperty("quilt") + ":intermediary-v2");
-				builder.parchment("org.parchmentmc.data:parchment-" + getProperty("minecraft_version") + ":" + getProperty("parchment") + "@zip");
 				builder.officialMojangMappings();
+				builder.parchment("org.parchmentmc.data:parchment-" + getProperty("minecraft_version") + ":" + getProperty("parchment") + "@zip");
 			}));
 
 			manifold(deps, "props");
 			manifold(deps, "ext");
+			deps.add("localRuntime", "systems.manifold:manifold-ext-rt:" + getProperty("manifold_version"));
 
 			String me = "io.github.llamalad7:mixinextras-common:" + getProperty("mixin_extras");
 			deps.add("annotationProcessor", me);

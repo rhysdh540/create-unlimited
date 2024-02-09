@@ -31,9 +31,7 @@ public class PropertiesPlugin implements Plugin<Project> {
 			mcVersion = (String) rootProject.findProperty("mcVer");
 		}
 
-		int mcIndex = mcVers.indexOf(mcVersion);
-
-		if(mcIndex == -1) {
+		if(!mcVers.contains(mcVersion)) {
 			println("No mcVer set or the set mcVer is invalid!");
 			println("Use -PmcVer='mc_version' or edit gradle.properties to set the minecraft version.");
 			throw new RuntimeException("Invalid Minecraft Version");
