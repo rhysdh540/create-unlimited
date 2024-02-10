@@ -72,13 +72,13 @@ public abstract class Util {
 
 	public static Supplier<Multimap<Attribute, AttributeModifier>> singleRange() {
 		AttributeModifier am = new AttributeModifier(UUID.fromString("7f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
-				CUConfigs.server().singleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
+				CUConfigs.server.singleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
 		return Suppliers.memoize(() -> ImmutableMultimap.of(getReachAttribute(), am));
 	}
 
 	public static Supplier<Multimap<Attribute, AttributeModifier>> doubleRange() {
 		AttributeModifier am = new AttributeModifier(UUID.fromString("8f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
-				CUConfigs.server().doubleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
+				CUConfigs.server.doubleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
 		return Suppliers.memoize(() -> ImmutableMultimap.of(getReachAttribute(), am));
 	}
 

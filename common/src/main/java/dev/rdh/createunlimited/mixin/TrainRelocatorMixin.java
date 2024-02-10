@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class TrainRelocatorMixin {
 	@ModifyExpressionValue(method = {"onClicked", "clientTick"}, at = @At(value = "CONSTANT", args = "doubleValue=24.0"))
 	private static double modifyMaxTrainRelocatingDistance(double original) {
-		return CUConfigs.server().maxTrainRelocationDistance.get();
+		return CUConfigs.server.maxTrainRelocationDistance.get();
 	}
 }

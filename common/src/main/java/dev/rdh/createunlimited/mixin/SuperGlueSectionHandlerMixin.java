@@ -14,6 +14,6 @@ public abstract class SuperGlueSectionHandlerMixin {
 	// client-side modification
 	@ModifyConstant(method = "tick", constant = @Constant(doubleValue = 24))
 	private double modifyMaxSuperGlueDistance(double original) {
-		return CUConfigs.server().maxGlueConnectionRange.get();
+		return CUConfigs.server.maxGlueConnectionRange.get();
 	}
 }

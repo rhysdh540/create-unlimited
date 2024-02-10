@@ -30,7 +30,7 @@ public class ClientHandshakePacketListenerImplMixin {
 		CreateUnlimited.LOGGER.info("Checking if Create Unlimited is installed on the server...");
 		try {
 			// this will fail if unlimited is not installed on the server
-			CUConfigs.server().allowAllCopycatBlocks.get();
+			CUConfigs.server.allowAllCopycatBlocks.get();
 		} catch (IllegalStateException e) {
 			Component c = Component.literal("Create Unlimited is not installed on the server!" +
 				"\nPlease either install it or remove it from your client.");

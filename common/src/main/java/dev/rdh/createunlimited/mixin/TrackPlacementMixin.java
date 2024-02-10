@@ -46,7 +46,7 @@ public abstract class TrackPlacementMixin {
 	@Overwrite
 	public static PlacementInfo tryConnect(Level level, Player player, BlockPos pos2, BlockState state2,
 										   ItemStack stack, boolean girder, boolean maximiseTurn) {
-		boolean enabled = CUConfigs.server().placementChecks.get().isEnabledFor(player);
+		boolean enabled = CUConfigs.server.placementChecks.get().isEnabledFor(player);
 
 		Vec3 lookVec = player.getLookAngle();
 		int lookAngle = (int) (22.5 + AngleHelper.deg(Mth.atan2(lookVec.z, lookVec.x)) % 360) / 8;

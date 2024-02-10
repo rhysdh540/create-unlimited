@@ -13,6 +13,6 @@ public abstract class SuperGlueSelectionPacketMixin {
 	// server-side modification
 	@ModifyConstant(method = "lambda$handle$0", constant = @Constant(doubleValue = 25))
 	private double modifyMaxSuperGlueDistance(double original) {
-		return CUConfigs.server().maxGlueConnectionRange.get();
+		return CUConfigs.server.maxGlueConnectionRange.get();
 	}
 }
