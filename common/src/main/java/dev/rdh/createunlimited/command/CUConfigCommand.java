@@ -90,7 +90,7 @@ public class CUConfigCommand {
 			// get config as CValue
 			CValue<?, ?> cValue;
 			try {
-				cValue = (CValue<?, ?>) field.get(CUConfigs.server());
+				cValue = (CValue<?, ?>) field.get(CUConfigs.server);
 			} catch (IllegalAccessException | ClassCastException e) {
 				CreateUnlimited.LOGGER.error("Failed to get config value for " + field.getName(), e);
 				continue;
@@ -106,15 +106,15 @@ public class CUConfigCommand {
 			if (value instanceof BooleanValue bValue)
 				setBoolean(category, name, bValue);
 
-				// set for enums
+			// set for enums
 			else if (value instanceof EnumValue<? extends Enum<?>> eValue)
 				setEnum(category, name, eValue);
 
-				// set for int
+			// set for int
 			else if (value instanceof IntValue iValue)
 				setInt(category, name, iValue);
 
-				// set for double
+			// set for double
 			else if (value instanceof DoubleValue dValue)
 				setDouble(category, name, dValue);
 
