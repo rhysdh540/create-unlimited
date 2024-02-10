@@ -15,9 +15,12 @@
     "TrackEdgeMixin",
     "TrackPlacementMixin",
     "TrainMixin",
-    "TrainRelocatorMixin",
     "accessor.CValueAccessor",
     "accessor.PlacementInfoAccessor"
+  ],
+  "client": [
+    "ClientHandshakePacketListenerImplMixin",
+    "TrainRelocatorMixin"
   ],
   "injectors": {
     "defaultRequire": 1
