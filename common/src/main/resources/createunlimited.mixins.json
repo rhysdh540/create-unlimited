@@ -13,6 +13,7 @@
     "SuperGlueSelectionPacketMixin",
     "TrackEdgeMixin",
     "TrackPlacementMixin",
+    "TrackTargetingBlockItemMixin",
     "TrainMixin",
     "accessor.CValueAccessor",
     "accessor.PlacementInfoAccessor"
