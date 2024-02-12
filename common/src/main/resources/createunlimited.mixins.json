@@ -7,7 +7,6 @@
   "mixins": [
     "CarriageContraptionMixin",
     "CopycatBlockMixin",
-    "CTrainsMixin",
     "ExtendoGripItemMixin",
     "StationBlockEntityMixin",
     "SuperGlueSectionHandlerMixin",
@@ -19,8 +18,10 @@
     "accessor.PlacementInfoAccessor"
   ],
   "client": [
-    "ClientHandshakePacketListenerImplMixin",
     "TrainRelocatorMixin"
+  ],
+  "server": [
+    "CTrainsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

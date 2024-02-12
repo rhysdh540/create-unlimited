@@ -1,11 +1,8 @@
 package dev.rdh.createunlimited.forge;
 
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
-
-import net.minecraft.commands.CommandSourceStack;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 
@@ -23,20 +20,12 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
 @SuppressWarnings({"UnstableApiUsage", "RedundantSuppression"})
 public class UtilImpl {
-
-	static Set<LiteralArgumentBuilder<CommandSourceStack>> commands = new HashSet<>();
-
-	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
-		commands.add(command);
-	}
 
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		ModLoadingContext.get().registerConfig(type, spec);

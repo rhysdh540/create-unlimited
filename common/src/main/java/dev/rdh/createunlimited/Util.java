@@ -5,12 +5,13 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.brigadier.arguments.ArgumentType;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-
 import dev.architectury.injectables.annotations.ExpectPlatform;
 
 import dev.rdh.createunlimited.config.CUConfigs;
-import net.minecraft.commands.CommandSourceStack;
+
+import com.simibubi.create.foundation.config.ConfigBase.CValue;
+import com.simibubi.create.foundation.config.ConfigBase.ConfigBool;
+
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Direction.Axis;
@@ -20,6 +21,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 
@@ -44,11 +46,6 @@ public abstract class Util {
 	}
 
 	@ExpectPlatform
-	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
-		throw new AssertionError();
-	}
-
-	@ExpectPlatform
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		throw new AssertionError();
 	}
@@ -66,13 +63,13 @@ public abstract class Util {
 
 	public static Supplier<Multimap<Attribute, AttributeModifier>> singleRange() {
 		AttributeModifier am = new AttributeModifier(UUID.fromString("7f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
-				CUConfigs.server.singleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
+				orElse(CUConfigs.server.singleExtendoGripRange, 3), AttributeModifier.Operation.ADDITION);
 		return Suppliers.memoize(() -> ImmutableMultimap.of(getReachAttribute(), am));
 	}
 
 	public static Supplier<Multimap<Attribute, AttributeModifier>> doubleRange() {
 		AttributeModifier am = new AttributeModifier(UUID.fromString("8f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
-				CUConfigs.server.doubleExtendoGripRange.get(), AttributeModifier.Operation.ADDITION);
+			orElse(CUConfigs.server.doubleExtendoGripRange, 5), AttributeModifier.Operation.ADDITION);
 		return Suppliers.memoize(() -> ImmutableMultimap.of(getReachAttribute(), am));
 	}
 
@@ -106,5 +103,24 @@ public abstract class Util {
 		ItemStack copy = stack.copy();
 		copy.setCount(size);
 		return copy;
+	}
+
+	public static <V, T extends ConfigValue<V>> V orElse(CValue<V, T> value, V orElse) {
+		try {
+			return value.get();
+		} catch (IllegalStateException e) {
+			if(e.message.contains("config")) {
+				return orElse;
+			}
+			throw e;
+		}
+	}
+
+	public static boolean orFalse(ConfigBool config) {
+		return orElse(config, false);
+	}
+
+	public static boolean orTrue(ConfigBool config) {
+		return orElse(config, true);
 	}
 }

@@ -50,6 +50,9 @@ public class PlatformPlugin implements Plugin<Project> {
 				String memoryArgs = "-Xmx4G -Xms4G";
 				String gcArgs = "-XX:+UseShenandoahGC -XX:ShenandoahGCMode=iu -XX:ShenandoahGuaranteedGCInterval=1000000 -XX:AllocatePrefetchStyle=1";
 				settings.vmArgs(String.join(" ", baseArgs, memoryArgs, gcArgs).split(" "));
+				if("true".equals(project.findProperty("mixin.debug"))) {
+					settings.vmArgs("-Dmixin.debug.export=true", "-Dmixin.debug.verbose=true");
+				}
 			};
 			clientConfig.accept(container.findByName("client"));
 		});

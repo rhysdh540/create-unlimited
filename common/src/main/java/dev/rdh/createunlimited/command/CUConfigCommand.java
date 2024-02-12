@@ -67,7 +67,7 @@ public class CUConfigCommand extends CUCommands {
 			}
 
 			// get config as forge config value
-			ConfigValue<?> value = ((CValueAccessor) cValue).value;
+			ConfigValue<?> value = ((CValueAccessor) cValue).getValue();
 
 			// get, description, reset
 			gdr(category, name, value);

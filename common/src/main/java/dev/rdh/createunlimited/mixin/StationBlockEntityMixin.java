@@ -1,6 +1,8 @@
 package dev.rdh.createunlimited.mixin;
 
 import com.simibubi.create.content.trains.station.StationBlockEntity;
+
+import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfigs;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -14,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class StationBlockEntityMixin {
 	@ModifyExpressionValue(method = "assemble", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/bogey/AbstractBogeyBlock;allowsSingleBogeyCarriage()Z", ordinal = 0))
 	private boolean forceAllowSingleBogeyCarriage(boolean original) {
-		return !CUConfigs.server.trainAssemblyChecks.get() || original;
+		return !Util.orTrue(CUConfigs.server.trainAssemblyChecks) || original;
 	}
 
 	@ModifyExpressionValue(method = "assemble", at = @At(value = "CONSTANT", args = "intValue=3", ordinal = 0))
@@ -24,7 +26,7 @@ public abstract class StationBlockEntityMixin {
 
 	@Inject(method = "isValidBogeyOffset", at = @At("HEAD"), cancellable = true)
 	private void disableBogeyOffsetCheck(CallbackInfoReturnable<Boolean> cir) {
-		if(!CUConfigs.server.trainAssemblyChecks.get())
+		if(!Util.orTrue(CUConfigs.server.trainAssemblyChecks))
 			cir.setReturnValue(true);
 	}
 }

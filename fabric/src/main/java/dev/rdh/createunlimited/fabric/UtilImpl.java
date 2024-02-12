@@ -4,16 +4,10 @@ import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-
 import dev.rdh.createunlimited.CreateUnlimited;
 
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-
 import net.fabricmc.loader.api.FabricLoader;
-
-import net.minecraft.commands.CommandSourceStack;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 
@@ -31,10 +25,6 @@ import java.lang.invoke.MethodType;
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
 public class UtilImpl {
-
-	public static void registerCommand(LiteralArgumentBuilder<CommandSourceStack> command) {
-		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, selection) -> dispatcher.register(command));
-	}
 
 	private static MethodHandle modLoadingContextRegisterConfig;
 	private static MethodHandle forgeConfigRegistryRegister;
