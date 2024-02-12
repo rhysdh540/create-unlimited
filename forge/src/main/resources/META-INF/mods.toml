@@ -17,19 +17,19 @@ logoFile = "icon.png"
 modId = "forge"
 mandatory = true
 versionRange = "[1,)"
-ordering = "NONE"
+ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.createunlimited]]
 modId = "minecraft"
 mandatory = true
 versionRange = "${minecraft}"
-ordering = "NONE"
+ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.createunlimited]]
 modId="create"
 mandatory=true
 versionRange="[${create},)"
-ordering="NONE"
+ordering="AFTER"
 side="BOTH"

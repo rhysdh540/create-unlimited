@@ -1,5 +1,8 @@
 package dev.rdh.createunlimited.mixin;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -29,7 +32,7 @@ public class ClientHandshakePacketListenerImplMixin {
 	private void onAuthenticateServer(String serverHash, CallbackInfoReturnable<Component> cir) {
 		CreateUnlimited.LOGGER.info("Checking if Create Unlimited is installed on the server...");
 		try {
-			// this will fail if unlimited is not installed on the server
+			// this always fails - make it only fail if the server doesn't have the mod installed
 			CUConfigs.server.allowAllCopycatBlocks.get();
 		} catch (IllegalStateException e) {
 			Component c = Component.literal("Create Unlimited is not installed on the server!" +

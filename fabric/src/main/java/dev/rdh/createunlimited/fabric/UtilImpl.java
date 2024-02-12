@@ -12,7 +12,6 @@ import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.MappingResolver;
 
 import net.minecraft.commands.CommandSourceStack;
 
@@ -104,19 +103,5 @@ public class UtilImpl {
 
 	public static String platformName() {
 		return FabricLoader.getInstance().isModLoaded("quilt_loader") ? "Quilt" : "Fabric";
-	}
-
-	public static String remapMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
-		MappingResolver resolver = FabricLoader.getInstance().getMappingResolver();
-		String namespace = resolver.getCurrentRuntimeNamespace();
-		return resolver.mapMethodName(namespace, clazz.getName(), name, makeDescriptor(parameterTypes));
-	}
-
-	static String makeDescriptor(Class<?>... parameterTypes) {
-		StringBuilder builder = new StringBuilder("(");
-		for(Class<?> parameterType : parameterTypes) {
-			builder.append(parameterType.getName());
-		}
-		return builder.append(")").toString();
 	}
 }

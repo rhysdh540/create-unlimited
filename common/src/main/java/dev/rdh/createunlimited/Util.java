@@ -10,7 +10,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 
 import dev.rdh.createunlimited.config.CUConfigs;
-
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.resources.ResourceLocation;
@@ -62,11 +61,6 @@ public abstract class Util {
 
 	@ExpectPlatform
 	public static Attribute getReachAttribute() {
-		throw new AssertionError();
-	}
-
-	@ExpectPlatform
-	public static String remapMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
 		throw new AssertionError();
 	}
 
