@@ -1,12 +1,7 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-operator fun String.invoke(): String {
-	return rootProject.ext[this] as? String
-		?: throw IllegalStateException("Property $this is not defined")
+plugins {
+	id("com.github.johnrengelman.shadow")
+	id("platform")
 }
-
-apply(plugin = "com.github.johnrengelman.shadow")
-apply(plugin = "platform")
 
 architectury.forge()
 
@@ -41,6 +36,11 @@ loom {
 	}
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+tasks.shadowJar {
 	exclude("fabric.mod.json")
+}
+
+operator fun String.invoke(): String {
+	return rootProject.ext[this] as? String
+		?: throw IllegalStateException("Property $this is not defined")
 }

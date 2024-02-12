@@ -16,11 +16,6 @@ plugins {
 setup()
 setupForgix()
 
-operator fun String.invoke(): String {
-	return rootProject.ext[this] as? String
-		?: throw IllegalStateException("Property $this is not defined")
-}
-
 allprojects {
 	apply(plugin = "java")
 
@@ -102,4 +97,9 @@ fun setupForgix() {
 	}
 
 	apply(plugin = "postprocessor")
+}
+
+operator fun String.invoke(): String {
+	return rootProject.ext[this] as? String
+		?: throw IllegalStateException("Property $this is not defined")
 }

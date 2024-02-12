@@ -32,7 +32,7 @@ public abstract class ExtendoGripItemMixin {
 		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraft/class_1297;Lnet/minecraft/class_2487;)V", // fabric obf
 		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraftforge/event/entity/player/PlayerEvent$PlayerLoggedInEvent;)V" // forge
 	}, at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;rangeModifier:Ljava/util/function/Supplier;"))
-	private static Supplier<Multimap<Attribute, AttributeModifier>> mainSingle(Supplier<?> original) {
+	private static Supplier<Multimap<Attribute, AttributeModifier>> modifySingle(Supplier<?> original) {
 		return singleRange();
 	}
 
@@ -45,7 +45,7 @@ public abstract class ExtendoGripItemMixin {
 		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraft/class_1297;Lnet/minecraft/class_2487;)V", // fabric obf
 		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraftforge/event/entity/player/PlayerEvent$PlayerLoggedInEvent;)V" // forge
 	}, at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;doubleRangeModifier:Ljava/util/function/Supplier;"))
-	private static Supplier<Multimap<Attribute, AttributeModifier>> mainDouble(Supplier<?> original) {
+	private static Supplier<Multimap<Attribute, AttributeModifier>> modifyDouble(Supplier<?> original) {
 		return doubleRange();
 	}
 }

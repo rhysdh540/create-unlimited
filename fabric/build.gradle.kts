@@ -1,10 +1,7 @@
-operator fun String.invoke(): String {
-	return rootProject.ext[this] as? String
-		?: throw IllegalStateException("Property $this is not defined")
+plugins {
+	id("com.github.johnrengelman.shadow")
+	id("platform")
 }
-
-apply(plugin = "com.github.johnrengelman.shadow")
-apply(plugin = "platform")
 
 architectury.fabric()
 
@@ -35,4 +32,9 @@ dependencies {
 
 tasks.remapJar {
 	injectAccessWidener.set(true)
+}
+
+operator fun String.invoke(): String {
+	return rootProject.ext[this] as? String
+		?: throw IllegalStateException("Property $this is not defined")
 }
