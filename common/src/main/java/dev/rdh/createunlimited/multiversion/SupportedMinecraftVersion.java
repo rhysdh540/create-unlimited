@@ -3,7 +3,6 @@ package dev.rdh.createunlimited.multiversion;
 import dev.rdh.createunlimited.Util;
 
 public enum SupportedMinecraftVersion {
-	v1_18_2,
 	v1_19_2,
 	v1_20_1,
 	;

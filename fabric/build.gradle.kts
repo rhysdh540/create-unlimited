@@ -22,7 +22,9 @@ dependencies {
 	}
 
 	// have deprecated modules present at runtime only
-	modLocalRuntime("net.fabricmc.fabric-api:fabric-api-deprecated:${"fabric_api"()}+${"minecraft_version"()}")
+	if("minecraft_version"() != "1.18.2") {
+		modLocalRuntime("net.fabricmc.fabric-api:fabric-api-deprecated:${"fabric_api"()}+${"minecraft_version"()}")
+	}
 
 	// Dev Env Optimizations
 	if (rootProject.hasProperty("lazydfu")) {

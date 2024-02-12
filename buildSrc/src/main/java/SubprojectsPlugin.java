@@ -45,6 +45,7 @@ public class SubprojectsPlugin implements Plugin<Project> {
 		maven("https://jitpack.io");
 		maven("https://maven.tterrag.com",
 			"com.simibubi.create", "com.jozufozu.flywheel", "com.tterrag.registrate");
+		maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/");
 
 		maven("https://api.modrinth.com/maven", "maven.modrinth");
 		maven("https://cursemaven.com", "curse.maven");
