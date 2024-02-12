@@ -93,7 +93,12 @@ public class SubprojectsPlugin implements Plugin<Project> {
 		String location = "systems.manifold:manifold-" + module + ":" + getProperty("manifold_version");
 		deps.add("annotationProcessor", location);
 		deps.add("compileOnly", location);
-		deps.add("localRuntime", location);
+		if(!project.getPath().equals(":common")) {
+			deps.add("localRuntime", location);
+		}
+		if(project.getPath().equals(":forge")) {
+			deps.add("forgeRuntimeLibrary", location);
+		}
 	}
 
 	void dependencies(Consumer<DependencyHandler> deps) {
