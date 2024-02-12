@@ -10,7 +10,7 @@ import dev.rdh.createunlimited.config.CUConfigs;
 
 import com.simibubi.create.content.trains.track.TrackTargetingBlockItem;
 
-@Mixin(TrackTargetingBlockItem.class)
+@Mixin(value = TrackTargetingBlockItem.class, remap = false)
 public class TrackTargetingBlockItemMixin {
 	@ModifyExpressionValue(method = "useOn", at = {
 		@At(value = "CONSTANT", args = "doubleValue=80.0"),

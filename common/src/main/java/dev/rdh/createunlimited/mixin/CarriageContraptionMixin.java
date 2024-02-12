@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @SuppressWarnings("unused")
-@Mixin(value = CarriageContraption.class)
+@Mixin(value = CarriageContraption.class, remap = false)
 public abstract class CarriageContraptionMixin {
 	@ModifyExpressionValue(method = "assemble", at = @At(value = "INVOKE", target = "Ljava/util/Map;size()I", ordinal = 0))
 	private int modifyMinBlocksOnTrain(int original) {
