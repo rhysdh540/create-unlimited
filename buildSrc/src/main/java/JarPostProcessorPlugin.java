@@ -56,6 +56,8 @@ public class JarPostProcessorPlugin implements Plugin<Project> {
 					return bytes;
 				});
 
+				entries.entrySet().removeIf(entry -> entry.getKey().startsWith("META-INF/services/"));
+
 				try(JarOutputStream out = new JarOutputStream(Files.newOutputStream(output.toPath()))) {
 					out.setLevel(Deflater.BEST_COMPRESSION);
 					entries.forEach((name, bytes) -> {
