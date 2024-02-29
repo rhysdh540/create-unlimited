@@ -1,9 +1,6 @@
 import groovy.json.JsonOutput;
 import groovy.json.JsonSlurper;
 
-import io.github.pacifistmc.forgix.plugin.ForgixMergeExtension;
-import io.github.pacifistmc.forgix.plugin.MergeJarsTask;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.jvm.tasks.Jar;
@@ -32,16 +29,16 @@ public class JarPostProcessorPlugin implements Plugin<Project> {
 
 		boolean stripLVTs = Boolean.parseBoolean(project.property("strip_lvts").toString());
 
-		ForgixMergeExtension forgix = project.getExtensions().getByType(ForgixMergeExtension.class);
+//		ForgixMergeExtension forgix = project.getExtensions().getByType(ForgixMergeExtension.class);
 
 		project.getTasks().register("squishJar", jar -> {
-			MergeJarsTask mergeJars = project.getTasks().named("mergeJars", MergeJarsTask.class).get();
-			jar.dependsOn(mergeJars);
-			mergeJars.finalizedBy(jar);
+//			MergeJarsTask mergeJars = project.getTasks().named("mergeJars", MergeJarsTask.class).get();
+//			jar.dependsOn(mergeJars);
+//			mergeJars.finalizedBy(jar);
 			jar.setGroup("forgix");
 
-			jar.getInputs().files(forgix.getOutputDir(), forgix.getMergedJarName());
-			File output = new File(forgix.getOutputDir(), forgix.getMergedJarName());
+//			jar.getInputs().files(forgix.getOutputDir(), forgix.getMergedJarName());
+			File output = null; //new File(forgix.getOutputDir(), forgix.getMergedJarName()); //TODO
 
 			jar.doLast(ignore -> {
 				Map<String, byte[]> entries = readJar(output);

@@ -1,20 +1,13 @@
-import dev.architectury.plugin.ArchitectPluginExtension
+import xyz.wagyourtail.unimined.api.unimined
 
 plugins {
 	java
-	id("architectury-plugin") apply(false)
-	id("dev.architectury.loom") apply(false)
+	id("xyz.wagyourtail.unimined") apply(false)
 	id("com.github.johnrengelman.shadow") apply(false)
-
-	id("io.github.pacifistmc.forgix")
-
 	id("properties") apply(false)
-	id("subprojects") apply(false)
-	id("platform") apply(false)
-	id("postprocessor") apply(false)
+	id("postprocessor")
 }
 setup()
-setupForgix()
 
 allprojects {
 	apply(plugin = "java")
@@ -33,14 +26,8 @@ allprojects {
 		isPreserveFileTimestamps = false
 		isReproducibleFileOrder = true
 	}
-}
 
-extensions.getByType<ArchitectPluginExtension>().apply {
-	minecraft = "minecraft_version"()
-}
-
-tasks.clean {
-	delete(".architectury-transformer")
+	setupRepos()
 }
 
 tasks.jar {
@@ -48,7 +35,59 @@ tasks.jar {
 }
 
 subprojects {
-	apply(plugin = "subprojects")
+	apply(plugin = "xyz.wagyourtail.unimined")
+	apply(plugin = "com.github.johnrengelman.shadow")
+
+	val localRuntime: Configuration by configurations.creating {
+		isCanBeResolved = true
+		isCanBeConsumed = false
+	}
+	val modLocalRuntime: Configuration by configurations.creating {
+		extendsFrom(localRuntime)
+	}
+
+	val shade: Configuration by configurations.creating
+	configurations["implementation"].extendsFrom(shade)
+
+	unimined.minecraft(sourceSets["main"], lateApply = true) {
+		version = "minecraft_version"()
+
+		mappings {
+			intermediary()
+			quilt() // for javadocs/parameters that parchment doesn't have
+			mojmap()
+			parchment(version = "parchment"())
+
+			devNamespace("mojmap")
+		}
+
+		mods {
+			remap(modLocalRuntime)
+		}
+
+		runs {
+			config("server") {
+				disabled = true
+			}
+		}
+	}
+
+	dependencies {
+		"systems.manifold:manifold-props:${"manifold_version"()}".also {
+			annotationProcessor(it)
+			compileOnly(it)
+		}
+		localRuntime("systems.manifold:manifold-ext-rt:${"manifold_version"()}")
+
+		"io.github.llamalad7:mixinextras-common:${"mixin_extras"()}".also {
+			annotationProcessor(it)
+			compileOnly(it)
+
+			if(this == project(":common")) {
+				shade(it)
+			}
+		}
+	}
 }
 
 fun setup() {
@@ -62,9 +101,6 @@ fun setup() {
 
 	apply(plugin = "properties")
 
-	println("\nPlugin versions:")
-	apply(plugin = "architectury-plugin")
-
 	tasks.register("nukeGradleCaches") {
 		dependsOn("clean")
 		group = "build"
@@ -74,32 +110,62 @@ fun setup() {
 			}
 		}
 	}
-}
-
-fun setupForgix() {
-	forgix {
-		group = "maven_group"()
-		mergedJarName = "createunlimited-${"modVersion"()}.jar"
-		outputDir = "build/libs/merged"
-
-		removeDuplicate("dev.rdh.createunlimited.shadow")
-	}
-
-	tasks.mergeJars {
-		dependsOn("assemble")
-	}
 
 	tasks.assemble {
 		subprojects.forEach {
 			this.dependsOn(it.tasks.named("assemble"))
 		}
-		finalizedBy("mergeJars")
 	}
-
-	apply(plugin = "postprocessor")
 }
 
 operator fun String.invoke(): String {
 	return rootProject.ext[this] as? String
 		?: throw IllegalStateException("Property $this is not defined")
+}
+
+fun Project.setupRepos() {
+	repositories {
+		mavenCentral {
+			content {
+				excludeGroup("ca.weblite")
+			}
+		}
+
+		maven("https://maven.parchmentmc.org")
+		maven("https://maven.quiltmc.org/repository/release")
+		maven("https://maven.fabricmc.net")
+		maven("https://maven.minecraftforge.net")
+		maven("https://maven.ithundxr.dev/releases")
+		maven("https://mvn.devos.one/snapshots")
+		maven("https://maven.cafeteria.dev/releases")
+		maven("https://maven.jamieswhiteshirt.com/libs-release")
+		maven("https://maven.theillusivec4.top")
+		maven("https://maven.terraformersmc.com/releases") {
+			content {
+				includeGroup("com.terraformersmc.modmenu")
+			}
+		}
+		maven("https://jitpack.io")
+		maven("https://maven.tterrag.com") {
+			content {
+				includeGroup("com.simibubi.create")
+				includeGroup("com.jozufozu.flywheel")
+				includeGroup("com.tterrag.registrate")
+			}
+		}
+
+		exclusiveContent {
+			forRepository { maven("https://api.modrinth.com/maven") }
+			filter {
+				includeGroup("maven.modrinth")
+			}
+		}
+
+		exclusiveContent {
+			forRepository { maven("https://cursemaven.com") }
+			filter {
+				includeGroup("curse.maven")
+			}
+		}
+	}
 }
