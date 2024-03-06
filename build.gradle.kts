@@ -37,6 +37,7 @@ tasks.jar {
 subprojects {
 	apply(plugin = "xyz.wagyourtail.unimined")
 	apply(plugin = "com.github.johnrengelman.shadow")
+	setupRepos()
 
 	val localRuntime: Configuration by configurations.creating {
 		isCanBeResolved = true
@@ -140,6 +141,7 @@ fun Project.setupRepos() {
 		maven("https://maven.cafeteria.dev/releases")
 		maven("https://maven.jamieswhiteshirt.com/libs-release")
 		maven("https://maven.theillusivec4.top")
+		maven("https://mcentral.firstdark.dev/releases")
 		maven("https://maven.terraformersmc.com/releases") {
 			content {
 				includeGroup("com.terraformersmc.modmenu")

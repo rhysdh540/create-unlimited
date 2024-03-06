@@ -1,5 +1,9 @@
 import xyz.wagyourtail.unimined.api.unimined
 
+dependencies {
+	implementation(project(":common"))
+}
+
 unimined.minecraft {
 	minecraftForge {
 		loader("forge"())
@@ -7,6 +11,14 @@ unimined.minecraft {
 	}
 
 	defaultRemapJar = true
+}
+
+tasks.processResources {
+	from(project(":common").sourceSets["main"].resources)
+}
+
+tasks.withType<JavaCompile> {
+	source(project(":common").sourceSets["main"].java.srcDirs)
 }
 
 operator fun String.invoke(): String {

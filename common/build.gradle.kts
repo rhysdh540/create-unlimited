@@ -1,8 +1,13 @@
 import xyz.wagyourtail.unimined.api.unimined
 
+dependencies {
+	"modImplementation"("net.fabricmc.fabric-api:fabric-api:${"fabric_api"()}+${"minecraft_version"()}")
+	"modImplementation"("com.terraformersmc:modmenu:${"modmenu"()}")
+}
+
 unimined.minecraft {
 	fabric {
-		loader("fabric"())
+		loader("0.15.3")
 	}
 
 	defaultRemapJar = false
