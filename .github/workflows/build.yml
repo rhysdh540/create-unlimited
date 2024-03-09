@@ -21,7 +21,10 @@ jobs:
                     cache-read-only: false
 
             -   name: do the build
-                run: .\gradlew.bat clean assemble squishJar
+                run: .\gradlew.bat assemble
+
+            -   name: squishy
+                run: .\gradlew.bat squishJar
 
             -   name: upload artifacts
                 uses: actions/upload-artifact@v4

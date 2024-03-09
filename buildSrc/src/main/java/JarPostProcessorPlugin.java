@@ -146,7 +146,7 @@ public class JarPostProcessorPlugin implements Plugin<Project> {
 			if(!(node.instructions.get(i + 3) instanceof InsnNode)) continue;
 			AbstractInsnNode insn = node.instructions.get(i + 2);
 			if(insn instanceof MethodInsnNode methodInsn) {
-				//target
+				//target static { IBootstrap.dasBoot(); }
 				if(methodInsn.name.equals("dasBoot") && methodInsn.owner.equals("manifold/rt/api/IBootstrap")
 				&& methodInsn.desc.equals("()Z") && methodInsn.getOpcode() == Opcodes.INVOKESTATIC) {
 					return i;
