@@ -31,13 +31,16 @@ import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
 public class CUConfigCommand extends CUCommands {
-	public static ArgumentBuilder<CommandSourceStack, ?> register() {
+	private static boolean dedicated;
+
+	public static ArgumentBuilder<CommandSourceStack, ?> register(boolean dedicated) {
+		CUConfigCommand.dedicated = dedicated;
 		LiteralArgumentBuilder<CommandSourceStack> base = literal("config");
 
 		LiteralArgumentBuilder<CommandSourceStack> category = null;
 
 		for (Field field : CUServer.class.getDeclaredFields()) {
-			// skip if not config value or string
+			// skip if not config value
 			if (!CValue.class.isAssignableFrom(field.getType())) continue;
 
 			String name = field.getName();
@@ -98,7 +101,7 @@ public class CUConfigCommand extends CUCommands {
 	private static boolean perms(Object o) {
 		if(!(o instanceof CommandSourceStack source)) return false;
 		Entity e = source.getEntity();
-		return e != null && e.hasPermissions(4);
+		return dedicated || e != null && e.hasPermissions(2);
 	}
 
 	private static <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, String name, ConfigValue<T> value) {

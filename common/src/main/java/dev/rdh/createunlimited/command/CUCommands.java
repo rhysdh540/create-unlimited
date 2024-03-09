@@ -42,7 +42,7 @@ public class CUCommands {
 				message(context, link);
 				return 1;
 			})
-			.then(CUConfigCommand.register());
+			.then(CUConfigCommand.register(dedicated));
 
 		LiteralCommandNode<CommandSourceStack> root = dispatcher.register(base);
 

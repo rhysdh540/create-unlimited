@@ -1,6 +1,8 @@
 package dev.rdh.createunlimited.config;
 
 import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
+import com.simibubi.create.foundation.config.ui.ConfigHelper.ConfigPath;
+import com.simibubi.create.foundation.config.ui.SubMenuConfigScreen;
 
 import dev.rdh.createunlimited.Util;
 
@@ -11,6 +13,7 @@ import dev.rdh.createunlimited.CreateUnlimited;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Type;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +39,7 @@ public class CUConfigs {
 			server.onReload();
 	}
 
-	public static BaseConfigScreen createConfigScreen(Screen parent) {
+	public static Screen createConfigScreen(Screen parent) {
 		initBCS();
 		return new BaseConfigScreen(parent, CreateUnlimited.ID);
 	}
@@ -51,7 +54,8 @@ public class CUConfigs {
 		);
 		done = true;
 	}
-	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
+
+	public static Screen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
 		return createConfigScreen(parent);
 	}
 }
