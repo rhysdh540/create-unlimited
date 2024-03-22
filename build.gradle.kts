@@ -26,7 +26,7 @@ allprojects {
 	tasks.withType<JavaCompile> {
 		options.encoding = "UTF-8"
 		options.release = 17
-		options.compilerArgs.addAll(listOf("-Xplugin:Manifold", "-implicit:none"))
+		options.compilerArgs.addAll(listOf("-Xplugin:Manifold no-bootstrap", "-implicit:none"))
 	}
 
 	tasks.withType<AbstractArchiveTask> {
