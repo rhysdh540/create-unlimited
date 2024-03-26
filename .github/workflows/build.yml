@@ -4,7 +4,7 @@ on: [ workflow_dispatch, push, pull_request ]
 jobs:
     build:
         if: "!contains(github.event.head_commit.message, '[skip]')"
-        runs-on: windows-latest
+        runs-on: ubuntu-20.04
         steps:
             -   name: checkout
                 uses: actions/checkout@v4
@@ -21,15 +21,15 @@ jobs:
                     cache-read-only: false
 
             -   name: do the build
-                run: .\gradlew.bat assemble
+                run: ./gradlew assemble
 
             -   name: squishy
-                run: .\gradlew.bat squishJar
+                run: ./gradlew squishJar
 
             -   name: upload artifacts
                 uses: actions/upload-artifact@v4
                 with:
-                    name: unlimited-artifacts
+                    name: unlimited-artifacts-${{ github.run_id }}
                     path: |
                         build/libs/merged/*.jar
                         */build/libs/*.jar
