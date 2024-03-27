@@ -52,7 +52,7 @@ public class CUConfigs {
 		done = true;
 	}
 
-	public static BaseConfigScreen createConfigScreen(@Nullable Minecraft mc, Screen parent) {
+	public static BaseConfigScreen createConfigScreen(@Nullable @SuppressWarnings("unused") Minecraft mc, Screen parent) {
 		return createConfigScreen(parent);
 	}
 }

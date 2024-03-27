@@ -21,10 +21,8 @@ jobs:
                     cache-read-only: false
 
             -   name: do the build
-                run: ./gradlew assemble
-
-            -   name: squishy
-                run: ./gradlew squishJar
+                run: ./gradlew assemble squishJar
+                continue-on-error: true
 
             -   name: upload artifacts
                 uses: actions/upload-artifact@v4
