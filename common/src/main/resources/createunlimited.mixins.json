@@ -9,20 +9,18 @@
     "CopycatBlockMixin",
     "ExtendoGripItemMixin",
     "StationBlockEntityMixin",
-    "SuperGlueSectionHandlerMixin",
     "SuperGlueSelectionPacketMixin",
     "TrackEdgeMixin",
     "TrackPlacementMixin",
     "TrackTargetingBlockItemMixin",
     "TrainMixin",
     "accessor.CValueAccessor",
-    "accessor.PlacementInfoAccessor"
+    "accessor.PlacementInfoAccessor",
+    "CTrainsMixin"
   ],
   "client": [
+    "SuperGlueSectionHandlerMixin",
     "TrainRelocatorMixin"
-  ],
-  "server": [
-    "CTrainsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
