@@ -69,19 +69,20 @@ body:
           - Fabric
           - Forge
           - Quilt
+          - NeoForge
       validations:
         required: true
   -   type: input
       attributes:
         label: Modloader Version
         description: The version of your selected modloader you were using when the bug occured
-        placeholder: 0.14.22
+        placeholder: 0.15.10
       validations:
         required: true
   -   type: textarea
       attributes:
         label: Other Mods
-        description: Please list any other mods that were running when the crash happened.
+        description: Please list any other mods that were running when the crash happened, besides Create.
       validations:
         required: false
   -   type: textarea

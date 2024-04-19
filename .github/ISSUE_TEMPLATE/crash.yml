@@ -22,14 +22,16 @@ body:
         validations:
             required: true
 
-    -   type: dropdown
+    -   type: input
         attributes:
-            label: Minecraft Version
-            options:
-                - "1.19.2"
-                - "1.20.1"
+            label: Game Log
+            description: "
+            If you have a game log, please upload it to https://mclo.gs/ and put the link here.
+            It can be found in the \"logs\" folder of your Minecraft folder, under the name \"latest.log\".
+            It provides additional information that can help us diagnose the issue.
+            "
         validations:
-            required: true
+            required: false
 
     -   type: markdown
         attributes:
