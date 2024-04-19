@@ -1,5 +1,5 @@
 plugins {
-	id("java-gradle-plugin")
+	`kotlin-dsl`
 }
 
 repositories {
@@ -7,7 +7,7 @@ repositories {
 	mavenCentral()
 	maven("https://maven.fabricmc.net/")
 	maven("https://maven.architectury.dev/")
-	maven("https://maven.minecraftforge.net/")
+	maven("https://maven.neoforged.net/releases")
 	maven("https://maven.firstdarkdev.xyz/releases")
 	gradlePluginPortal()
 }
@@ -45,7 +45,7 @@ gradlePlugin {
 
 		create("postprocessor") {
 			id = "postprocessor"
-			implementationClass = "JarPostProcessorPlugin"
+			implementationClass = "JarPostprocessorPlugin"
 		}
 	}
 }
