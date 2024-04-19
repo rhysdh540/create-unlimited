@@ -73,6 +73,7 @@ fun setup() {
 	tasks.register("nukeGradleCaches") {
 		dependsOn("clean")
 		group = "build"
+		description = "Deletes all .gradle directories in the project. WARNING: causes IDEs to freeze for a while."
 		doLast {
 			allprojects.forEach {
 				it.file(".gradle").deleteRecursively()

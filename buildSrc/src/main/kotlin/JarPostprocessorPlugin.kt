@@ -21,6 +21,11 @@ import java.util.jar.JarOutputStream
 import java.util.zip.Deflater
 
 class JarPostprocessorPlugin : Plugin<Project> {
+	private val annotationsToRemove: Set<Regex> = setOf(
+		Regex("Ldev/architectury/injectables/annotations/.*"),
+		Regex("Lorg/jetbrains/annotations/.*"),
+	)
+
 	override fun apply(project: Project) {
 		project.afterEvaluate {
 			if(rootProject != this) {
@@ -42,8 +47,13 @@ class JarPostprocessorPlugin : Plugin<Project> {
 					val entries = readJar(output)
 					output.delete()
 					entries.replaceAll { name, data ->
-						if(name.endsWith(".class") && stripLVTs) {
-							stripLVTsFrom(name, data)
+						if(name.endsWith(".class") && !name.startsWith("dev/rdh/createunlimited/shadow")) {
+							val deAnnotationed = removeUnnecessaryAnnotationsFrom(data)
+							if(stripLVTs) {
+								stripLVTsFrom(deAnnotationed)
+							} else {
+								deAnnotationed
+							}
 						} else if(name.endsWith(".json")) {
 							minifyJson(data)
 						} else {
@@ -78,15 +88,28 @@ class JarPostprocessorPlugin : Plugin<Project> {
 		return entries
 	}
 
-	private fun stripLVTsFrom(name: String, classBytes: ByteArray): ByteArray {
-		if (name.startsWith("dev/rdh/createunlimited/shadow")) return classBytes
-
+	private fun stripLVTsFrom(classBytes: ByteArray): ByteArray {
 		val classNode = ClassNode()
 		ClassReader(classBytes).accept(classNode, 0)
 
 		classNode.methods.forEach {
 			it.localVariables?.clear()
 			it.parameters?.clear()
+		}
+
+		val classWriter = ClassWriter(0)
+		classNode.accept(classWriter)
+		return classWriter.toByteArray()
+	}
+
+	private fun removeUnnecessaryAnnotationsFrom(classBytes: ByteArray): ByteArray {
+		val classNode = ClassNode()
+		ClassReader(classBytes).accept(classNode, 0)
+
+		classNode.methods?.forEach { method ->
+			method.invisibleAnnotations?.removeIf { annotation ->
+				annotationsToRemove.any { it.matches(annotation.desc) }
+			}
 		}
 
 		val classWriter = ClassWriter(0)
