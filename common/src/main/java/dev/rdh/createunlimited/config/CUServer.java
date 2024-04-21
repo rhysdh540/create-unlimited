@@ -8,6 +8,8 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.function.Predicate;
 
+import static com.google.common.base.Predicates.*;
+
 @SuppressWarnings("unused") // groups are used as markers for the screen and command
 public class CUServer extends ConfigBase {
 	@Override
@@ -66,9 +68,9 @@ public class CUServer extends ConfigBase {
 	}
 
 	public enum PlacementCheck {
-		ON(p -> true),
-		SURVIVAL_ONLY(p -> !p.isCreative()),
-		OFF(p -> false);
+		ON(alwaysTrue()),
+		SURVIVAL_ONLY(not(Player::isCreative)),
+		OFF(alwaysFalse());
 
 		final Predicate<Player> enabled;
 

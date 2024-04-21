@@ -39,10 +39,8 @@ public final class Asm {
 
 			LdcInsnNode ldc = findPreviousNode(insn, LdcInsnNode.class);
 			if(ldc == null) continue;
-			if(!(ldc.cst instanceof String message)) continue;
-			if(!targetMessages.contains(message)) continue;
+			if(!(ldc.cst instanceof String message && targetMessages.contains(message))) continue;
 
-			// now we know that we should inject here
 			JumpInsnNode jump = findPreviousNode(ldc, JumpInsnNode.class);
 			if(jump == null) continue;
 			LabelNode toInject = findPreviousNode(jump, LabelNode.class);
