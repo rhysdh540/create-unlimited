@@ -21,10 +21,6 @@ import java.util.jar.JarOutputStream
 import java.util.zip.Deflater
 
 class JarPostprocessorPlugin : Plugin<Project> {
-	private val annotationsToRemove: Set<Regex> = setOf(
-		Regex("Ldev/architectury/injectables/annotations/.*"),
-		Regex("Lorg/jetbrains/annotations/.*"),
-	)
 
 	override fun apply(project: Project) {
 		project.afterEvaluate {
@@ -107,9 +103,7 @@ class JarPostprocessorPlugin : Plugin<Project> {
 		ClassReader(classBytes).accept(classNode, 0)
 
 		classNode.methods?.forEach { method ->
-			method.invisibleAnnotations?.removeIf { annotation ->
-				annotationsToRemove.any { it.matches(annotation.desc) }
-			}
+			method.invisibleAnnotations?.clear()
 		}
 
 		val classWriter = ClassWriter(0)
