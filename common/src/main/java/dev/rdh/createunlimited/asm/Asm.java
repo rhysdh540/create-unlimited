@@ -22,7 +22,7 @@ public final class Asm {
 
 	public static void instrumentTrackPlacement(ClassNode targetClass) {
 		if(!targetClass.name.equals("com/simibubi/create/content/trains/track/TrackPlacement")) {
-			String caller = Thread.currentThread().getStackTrace()[2].getClassName();
+			String caller = Thread.currentThread().stackTrace[2].className;
 			throw new IllegalArgumentException("instrumentTrackPlacement called from \"" + caller + "\" with wrong target class: " + targetClass.name);
 		}
 
@@ -40,7 +40,7 @@ public final class Asm {
 
 		for(int i = 0; i < tryConnect.instructions.size(); i++) {
 			AbstractInsnNode areturn = tryConnect.instructions.get(i);
-			if(areturn.getOpcode() != ARETURN) continue;
+			if(areturn.opcode != ARETURN) continue;
 
 			LdcInsnNode ldc = findPreviousNode(areturn, LdcInsnNode.class);
 			if(ldc == null) continue;
@@ -59,6 +59,20 @@ public final class Asm {
 	}
 
 	private static int injectEnabledCheck(InsnList list) {
+		/*
+		boolean [var0] = Util.orElse(CUConfigs.server.placementChecks, PlacementCheck.ON).isEnabledFor(player);
+		compiles down to:
+
+		GETSTATIC dev/rdh/createunlimited/config/CUConfigs.server : Ldev/rdh/createunlimited/config/CUServer;
+		GETFIELD dev/rdh/createunlimited/config/CUServer.placementChecks : Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;
+		GETSTATIC com/simibubi/create/foundation/utility/PlacementCheck.ON : Lcom/simibubi/create/foundation/utility/PlacementCheck;
+		INVOKESTATIC dev/rdh/createunlimited/Util.orElse (Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;Ljava/lang/Object;)Ljava/lang/Object;
+		CHECKCAST dev/rdh/createunlimited/config/CUServer$PlacementCheck;
+		ALOAD 1
+		INVOKEVIRTUAL dev/rdh/createunlimited/config/CUServer$PlacementCheck.isEnabledFor (Lnet/minecraft/world/entity/player/Player;)Z
+		ISTORE [some free lvt index]
+		 */
+
 		int lvtIndex = list.size();
 		InsnList toInject = new InsnList();
 		// get CUConfigs.server.placementChecks
