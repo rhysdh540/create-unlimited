@@ -1,4 +1,4 @@
-package dev.rdh.createunlimited.mixin;
+package dev.rdh.createunlimited.asm.mixin;
 
 import com.simibubi.create.content.trains.graph.TrackEdge;
 

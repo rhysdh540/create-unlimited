@@ -1,4 +1,4 @@
-package dev.rdh.createunlimited;
+package dev.rdh.createunlimited.asm;
 
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 

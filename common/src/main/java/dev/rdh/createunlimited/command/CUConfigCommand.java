@@ -11,7 +11,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfigs;
 import dev.rdh.createunlimited.config.CUServer;
-import dev.rdh.createunlimited.mixin.accessor.CValueAccessor;
+import dev.rdh.createunlimited.asm.mixin.accessor.CValueAccessor;
 
 import com.simibubi.create.foundation.config.ConfigBase.CValue;
 import com.simibubi.create.foundation.config.ConfigBase.ConfigGroup;

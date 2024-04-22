@@ -1,4 +1,4 @@
-package dev.rdh.createunlimited.mixin;
+package dev.rdh.createunlimited.asm.mixin;
 
 import com.simibubi.create.content.trains.track.TrackPlacement;
 
@@ -7,12 +7,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import dev.rdh.createunlimited.Util;
+import dev.rdh.createunlimited.asm.Asm;
 
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * @see dev.rdh.createunlimited.Asm#instrumentTrackPlacement(org.objectweb.asm.tree.ClassNode) main asm hackery
+ * @see Asm#instrumentTrackPlacement(org.objectweb.asm.tree.ClassNode) main asm hackery
  */
 @Mixin(value = TrackPlacement.class, priority = 0)
 public abstract class TrackPlacementMixin {

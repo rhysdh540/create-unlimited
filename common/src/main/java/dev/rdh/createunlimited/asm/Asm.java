@@ -1,7 +1,16 @@
-package dev.rdh.createunlimited;
+package dev.rdh.createunlimited.asm;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
+
+import dev.rdh.createunlimited.Util;
+import dev.rdh.createunlimited.config.CUConfigs;
+import dev.rdh.createunlimited.config.CUServer;
+import dev.rdh.createunlimited.config.CUServer.PlacementCheck;
+
+import com.simibubi.create.foundation.config.ConfigBase.ConfigEnum;
+
+import net.minecraft.world.entity.player.Player;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,19 +23,15 @@ public final class Asm {
 	public static void instrumentTrackPlacement(ClassNode targetClass) {
 		if(!targetClass.name.equals("com/simibubi/create/content/trains/track/TrackPlacement")) {
 			String caller = Thread.currentThread().getStackTrace()[2].getClassName();
-			throw new RuntimeException("instrumentTrackPlacement called from \"" + caller + "\" with wrong target class: " + targetClass.name);
+			throw new IllegalArgumentException("instrumentTrackPlacement called from \"" + caller + "\" with wrong target class: " + targetClass.name);
 		}
 
 		MethodNode tryConnect = targetClass.methods.stream()
 			.filter(m -> m.name.equals("tryConnect"))
 			.findFirst()
-			.orElseThrow(() -> new RuntimeException("Could not find tryConnect method in TrackPlacement"));
+			.orElseThrow(() -> new NoSuchMethodError("Could not find tryConnect method in TrackPlacement"));
 
-		String playerClassName = tryConnect.localVariables.stream().filter(node -> node.index == 1)
-			.findFirst().orElseThrow().desc;
-		int lvtIndex = tryConnect.localVariables.size();
-
-		tryConnect.instructions.insert(getEnabledCheck(lvtIndex, playerClassName));
+		int lvtIndex = injectEnabledCheck(tryConnect.instructions);
 
 		Set<String> targetMessages = Set.of(
 			"perpendicular", "ascending_s_curve", "too_sharp", "slope_turn", "opposing_slopes",
@@ -53,30 +58,32 @@ public final class Asm {
 		}
 	}
 
-	private static InsnList getEnabledCheck(int lvtIndex, String playerClassName) {
-		InsnList list = new InsnList();
+	private static int injectEnabledCheck(InsnList list) {
+		int lvtIndex = list.size();
+		InsnList toInject = new InsnList();
 		// get CUConfigs.server.placementChecks
-		list.add(new FieldInsnNode(GETSTATIC, "dev/rdh/createunlimited/config/CUConfigs", "server", "Ldev/rdh/createunlimited/config/CUServer;"));
-		list.add(new FieldInsnNode(GETFIELD, "dev/rdh/createunlimited/config/CUServer", "placementChecks", "Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;"));
+		toInject.add(new FieldInsnNode(GETSTATIC, Type.getInternalName(CUConfigs.class), "server", Type.getDescriptor(CUServer.class)));
+		toInject.add(new FieldInsnNode(GETFIELD, Type.getInternalName(CUServer.class), "placementChecks", Type.getDescriptor(ConfigEnum.class)));
 
 		// get PlacementCheck.ON
-		list.add(new FieldInsnNode(GETSTATIC, "dev/rdh/createunlimited/config/CUServer$PlacementCheck", "ON", "Ldev/rdh/createunlimited/config/CUServer$PlacementCheck;"));
+		toInject.add(new FieldInsnNode(GETSTATIC, Type.getInternalName(PlacementCheck.class), "ON", Type.getDescriptor(PlacementCheck.class)));
 
 		// call Util.orElse(CUConfigs.server.placementChecks, PlacementCheck.ON)
-		list.add(new MethodInsnNode(INVOKESTATIC, "dev/rdh/createunlimited/Util", "orElse", "(Lcom/simibubi/create/foundation/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;"));
+		toInject.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(Util.class), "orElse", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(ConfigEnum.class), Type.getType(Object.class))));
 
 		// cast result of orElse to PlacementCheck
-		list.add(new TypeInsnNode(CHECKCAST, "dev/rdh/createunlimited/config/CUServer$PlacementCheck"));
+		toInject.add(new TypeInsnNode(CHECKCAST, Type.getInternalName(PlacementCheck.class)));
 
 		// load player (second argument of tryConnect)
-		list.add(new VarInsnNode(ALOAD, 1));
+		toInject.add(new VarInsnNode(ALOAD, 1));
 
 		// call isEnabledFor(player) on the PlacementCheck from above
-		list.add(new MethodInsnNode(INVOKEVIRTUAL, "dev/rdh/createunlimited/config/CUServer$PlacementCheck", "isEnabledFor", "(" + playerClassName + ")Z"));
+		toInject.add(new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(PlacementCheck.class), "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class))));
 
 		// store result of isEnabledFor in local variable
-		list.add(new VarInsnNode(ISTORE, lvtIndex));
-		return list;
+		toInject.add(new VarInsnNode(ISTORE, lvtIndex));
+		list.insert(toInject);
+		return lvtIndex;
 	}
 
 	private static void dumpClass(ClassNode classNode) {

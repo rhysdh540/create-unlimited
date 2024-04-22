@@ -1,4 +1,4 @@
-package dev.rdh.createunlimited.mixin;
+package dev.rdh.createunlimited.asm.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 

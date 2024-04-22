@@ -1,8 +1,8 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.rdh.createunlimited.mixin",
-  "plugin": "dev.rdh.createunlimited.CUMixinConfig",
+  "package": "dev.rdh.createunlimited.asm.mixin",
+  "plugin": "dev.rdh.createunlimited.asm.CUMixinConfig",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "CarriageContraptionMixin",
@@ -15,7 +15,6 @@
     "TrackTargetingBlockItemMixin",
     "TrainMixin",
     "accessor.CValueAccessor",
-    "accessor.PlacementInfoAccessor",
     "CTrainsMixin"
   ],
   "client": [

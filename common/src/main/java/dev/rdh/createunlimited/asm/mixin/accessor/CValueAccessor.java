@@ -1,4 +1,4 @@
-package dev.rdh.createunlimited.mixin.accessor;
+package dev.rdh.createunlimited.asm.mixin.accessor;
 
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 
