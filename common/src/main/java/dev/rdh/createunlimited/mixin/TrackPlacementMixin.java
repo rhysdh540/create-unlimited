@@ -12,9 +12,9 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * @see dev.rdh.createunlimited.Asm#instrumentTrackPlacement(org.objectweb.asm.tree.ClassNode, String) main asm hackery
+ * @see dev.rdh.createunlimited.Asm#instrumentTrackPlacement(org.objectweb.asm.tree.ClassNode) main asm hackery
  */
-@Mixin(value = TrackPlacement.class, remap = false, priority = 0)
+@Mixin(value = TrackPlacement.class, priority = 0)
 public abstract class TrackPlacementMixin {
 
 	@Redirect(method = "tryConnect", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/VecHelper;intersect(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/Direction$Axis;)[D", ordinal = 2))

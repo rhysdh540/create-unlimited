@@ -31,7 +31,7 @@ public final class CUMixinConfig implements IMixinConfigPlugin {
 	@Override
 	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
 		if(targetClassName.equals("com.simibubi.create.content.trains.track.TrackPlacement")) {
-			Asm.instrumentTrackPlacement(targetClass, targetClassName);
+			Asm.instrumentTrackPlacement(targetClass);
 		}
 	}
 
