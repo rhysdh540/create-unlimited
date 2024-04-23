@@ -8,6 +8,7 @@ import dev.rdh.createunlimited.config.CUConfigs;
 import dev.rdh.createunlimited.config.CUServer;
 import dev.rdh.createunlimited.config.CUServer.PlacementCheck;
 
+import com.simibubi.create.foundation.config.ConfigBase.CValue;
 import com.simibubi.create.foundation.config.ConfigBase.ConfigEnum;
 
 import net.minecraft.world.entity.player.Player;
@@ -66,7 +67,7 @@ public final class Asm {
 		GETSTATIC dev/rdh/createunlimited/config/CUConfigs.server : Ldev/rdh/createunlimited/config/CUServer;
 		GETFIELD dev/rdh/createunlimited/config/CUServer.placementChecks : Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;
 		GETSTATIC com/simibubi/create/foundation/utility/PlacementCheck.ON : Lcom/simibubi/create/foundation/utility/PlacementCheck;
-		INVOKESTATIC dev/rdh/createunlimited/Util.orElse (Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;Ljava/lang/Object;)Ljava/lang/Object;
+		INVOKESTATIC dev/rdh/createunlimited/Util.orElse (Lcom/simibubi/create/foundation/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
 		CHECKCAST dev/rdh/createunlimited/config/CUServer$PlacementCheck;
 		ALOAD 1
 		INVOKEVIRTUAL dev/rdh/createunlimited/config/CUServer$PlacementCheck.isEnabledFor (Lnet/minecraft/world/entity/player/Player;)Z
@@ -83,7 +84,7 @@ public final class Asm {
 		toInject.add(new FieldInsnNode(GETSTATIC, Type.getInternalName(PlacementCheck.class), "ON", Type.getDescriptor(PlacementCheck.class)));
 
 		// call Util.orElse(CUConfigs.server.placementChecks, PlacementCheck.ON)
-		toInject.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(Util.class), "orElse", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(ConfigEnum.class), Type.getType(Object.class))));
+		toInject.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(Util.class), "orElse", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(CValue.class), Type.getType(Object.class))));
 
 		// cast result of orElse to PlacementCheck
 		toInject.add(new TypeInsnNode(CHECKCAST, Type.getInternalName(PlacementCheck.class)));
