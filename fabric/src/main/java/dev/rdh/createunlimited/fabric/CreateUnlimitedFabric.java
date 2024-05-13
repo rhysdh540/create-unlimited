@@ -23,8 +23,7 @@ public class CreateUnlimitedFabric implements ModInitializer {
 		registerConfigEvents();
         CreateUnlimited.init();
 
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
-			CUCommands.register(dispatcher, environment.includeDedicated));
+		CommandRegistrationCallback.EVENT.register(CUCommands::register);
     }
 
 
@@ -58,7 +57,7 @@ public class CreateUnlimitedFabric implements ModInitializer {
 	private static <T> T createHandlerProxy(Consumer<ModConfig> handler, Class<?> modConfigEventsClass, String handlerTypeName, String handlerMethodName) {
 		return (T) Proxy.newProxyInstance(
 			modConfigEventsClass.getClassLoader(),
-			new Class<?>[]{findNestedClass(modConfigEventsClass, handlerTypeName)},
+			new Class<?>[]{ findNestedClass(modConfigEventsClass, handlerTypeName) },
 			(proxy, method, args) -> {
 				if (method.getName().equals(handlerMethodName) && args.length == 1 && args[0] instanceof ModConfig config) {
 					handler.accept(config);

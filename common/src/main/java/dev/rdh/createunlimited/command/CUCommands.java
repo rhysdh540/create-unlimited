@@ -14,10 +14,10 @@ import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.infrastructure.command.AllCommands;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class CUCommands {
-	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
 		List<MutableComponent> links = List.of(
 			link("https://github.com/rhysdh540/create-unlimited", "GitHub", ChatFormatting.GRAY),
 			link("https://modrinth.com/mod/create-unlimited", "Modrinth", ChatFormatting.GREEN),
@@ -37,12 +37,13 @@ public class CUCommands {
 		LiteralArgumentBuilder<CommandSourceStack> base = Commands.literal(CreateUnlimited.ID)
 			.executes(context -> {
 				message(context, CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:");
-				MutableComponent link = MutableComponent.create(CommonComponents.EMPTY.getContents());
+				MutableComponent link = Component.empty();
 				links.forEach(a -> link.append(a).append(Component.literal(" ")));
 				message(context, link);
 				return 1;
 			})
-			.then(CUConfigCommand.register(dedicated));
+			.then(new CUConfigCommand(environment.includeIntegrated).register())
+			;
 
 		LiteralCommandNode<CommandSourceStack> root = dispatcher.register(base);
 

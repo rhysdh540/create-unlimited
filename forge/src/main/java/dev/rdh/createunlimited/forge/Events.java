@@ -33,9 +33,7 @@ public abstract class Events {
 
 	@SubscribeEvent
 	static void registerCommands(RegisterCommandsEvent event) {
-		CommandSelection selection = event.getCommandSelection();
-		boolean dedicated = selection == CommandSelection.ALL || selection == CommandSelection.DEDICATED;
-		CUCommands.register(event.getDispatcher(), dedicated);
+		CUCommands.register(event.getDispatcher(), event.getBuildContext(), event.getCommandSelection());
 	}
 
 	@SubscribeEvent

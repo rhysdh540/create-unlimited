@@ -19,7 +19,7 @@ class PlatformPlugin : Plugin<Project> {
 			val loom = extensions.getByType<LoomGradleExtensionAPI>()
 
 			loom.runs {
-				remove(getByName("server"))
+//				remove(getByName("server"))
 
 				named("client") {
 					client()

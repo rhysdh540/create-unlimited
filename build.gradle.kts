@@ -108,7 +108,5 @@ fun setupForgix() {
 	apply(plugin = "postprocessor")
 }
 
-operator fun String.invoke(): String {
-	return rootProject.ext[this] as? String
-		?: throw IllegalStateException("Property $this is not defined")
-}
+operator fun String.invoke(): String = rootProject.ext[this] as? String
+	?: error("Property $this is not defined")
