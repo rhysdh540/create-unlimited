@@ -1,4 +1,4 @@
-package dev.rdh.createunlimited.asm.mixin;
+package dev.rdh.createunlimited.asm.mixin.train;
 
 import com.simibubi.create.content.trains.track.TrackPlacement;
 

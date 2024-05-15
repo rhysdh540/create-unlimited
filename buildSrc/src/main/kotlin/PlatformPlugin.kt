@@ -18,19 +18,32 @@ class PlatformPlugin : Plugin<Project> {
 			extensions.getByType<ArchitectPluginExtension>().platformSetupLoomIde()
 			val loom = extensions.getByType<LoomGradleExtensionAPI>()
 
-			loom.runs {
-//				remove(getByName("server"))
+			afterEvaluate {
+				loom.runs {
+//					remove(getByName("server"))
 
-				named("client") {
-					client()
-					name = "Minecraft Client"
-					isIdeConfigGenerated = true
-					val baseArgs = "-XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysActAsServerClassMachine -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3"
-					val memoryArgs = "-Xmx4G -Xms4G"
-					val gcArgs = "-XX:+UseShenandoahGC -XX:ShenandoahGCMode=iu -XX:ShenandoahGuaranteedGCInterval=1000000 -XX:AllocatePrefetchStyle=1"
-					vmArgs("$baseArgs $memoryArgs $gcArgs".split(" "))
-					if(project.findProperty("mixin.debug")?.toString()?.toBoolean() == true) {
-						vmArgs("-Dmixin.debug.export=true", "-Dmixin.debug.verbose=true")
+					named("client") {
+						client()
+						name = "Minecraft Client"
+						isIdeConfigGenerated = true
+						val baseArgs =
+							"-XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysActAsServerClassMachine -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3"
+						val memoryArgs = "-Xmx4G -Xms4G"
+						val gcArgs =
+							"-XX:+UseShenandoahGC -XX:ShenandoahGCMode=iu -XX:ShenandoahGuaranteedGCInterval=1000000 -XX:AllocatePrefetchStyle=1"
+						vmArgs("$baseArgs $memoryArgs $gcArgs".split(" "))
+						if (project.findProperty("mixin.debug")?.toString()?.toBoolean() == true) {
+							vmArgs("-Dmixin.debug.export=true", "-Dmixin.debug.verbose=true")
+						}
+
+
+						val mixinJar = configurations["compileClasspath"].resolvedConfiguration.resolvedArtifacts
+							.single {
+								(it.moduleVersion.id.group == "dev.architectury" && it.moduleVersion.id.name == "mixin-patched") || // forge
+									(it.moduleVersion.id.group == "net.fabricmc" && it.moduleVersion.id.name == "sponge-mixin") // fabric
+							}.file
+
+						vmArgs("-javaagent:${mixinJar.absolutePath}")
 					}
 				}
 			}
