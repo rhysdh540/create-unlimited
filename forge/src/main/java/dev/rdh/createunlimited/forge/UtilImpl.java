@@ -33,7 +33,7 @@ public class UtilImpl {
 
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
 	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
-		ArgumentTypeInfos.registerByClass(clazz, info);
+		CreateUnlimitedForge.ARGUMENTS.register(id.getPath(), () -> ArgumentTypeInfos.registerByClass(clazz, info));
 	}
 
 	public static String getVersion(String modid) {
