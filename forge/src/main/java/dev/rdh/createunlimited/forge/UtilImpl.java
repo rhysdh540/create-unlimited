@@ -56,7 +56,7 @@ public class UtilImpl {
 		return !FMLLoader.isProduction();
 	}
 
-	private static final RegistryObject<Attribute> reachAttribute = makeReachAttribute();
+	private static RegistryObject<Attribute> reachAttribute = null;
 
 	@SuppressWarnings({"unchecked", "JavaReflectionMemberAccess"})
 	private static RegistryObject<Attribute> makeReachAttribute() {
@@ -73,6 +73,9 @@ public class UtilImpl {
 	}
 
 	public static Attribute getReachAttribute() {
+		if(reachAttribute == null) {
+			reachAttribute = makeReachAttribute();
+		}
 		return reachAttribute.get();
 	}
 
