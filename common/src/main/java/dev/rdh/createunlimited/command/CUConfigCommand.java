@@ -1,6 +1,7 @@
 package dev.rdh.createunlimited.command;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -45,7 +46,7 @@ public final class CUConfigCommand extends CUCommands {
 			// skip if not config value
 			if (!CValue.class.isAssignableFrom(field.getType())) continue;
 
-			String name = field.getName();
+			final String name = field.getName();
 
 			// change category if needed
 			if (field.getType() == ConfigGroup.class) {
@@ -53,7 +54,7 @@ public final class CUConfigCommand extends CUCommands {
 				category = literal(name);
 
 				// add description for category
-				base.then(literal(field.getName()).executes(context -> {
+				base.then(literal(name).executes(context -> {
 					message(context, CUServer.getComment(name));
 					return Command.SINGLE_SUCCESS;
 				}));
@@ -67,28 +68,12 @@ public final class CUConfigCommand extends CUCommands {
 			try {
 				cValue = (CValue<?, ?>) field.get(CUConfigs.server);
 			} catch (IllegalAccessException | ClassCastException e) {
-				CreateUnlimited.LOGGER.error("Failed to get config value for {}", field.getName(), e);
+				//noinspection StringConcatenationArgumentToLogCall
+				CreateUnlimited.LOGGER.error("Failed to get config value for " + name, e);
 				continue;
 			}
 
-			// get config as forge config value
-			ConfigValue<?> value = ((CValueAccessor) cValue).getValue();
-
-			// handle getting, description, and resetting
-			gdr(category, name, value);
-
-			if (value instanceof BooleanValue bValue)
-				setBoolean(category, name, bValue);
-
-			else if (value instanceof EnumValue<? extends Enum<?>> eValue)
-				setEnum(category, name, eValue);
-
-			else if (value instanceof IntValue iValue)
-				setInt(category, name, iValue);
-
-			else if (value instanceof DoubleValue dValue)
-				setDouble(category, name, dValue);
-
+			configure(category, name, ((CValueAccessor) cValue).getValue());
 		}
 
 		if (category != null)
@@ -100,7 +85,10 @@ public final class CUConfigCommand extends CUCommands {
 		return integrated || source.hasPermission(2);
 	}
 
-	private <T> void gdr(LiteralArgumentBuilder<CommandSourceStack> category, String name, ConfigValue<T> value) {
+	private <T> void configure(LiteralArgumentBuilder<CommandSourceStack> category, String name, ConfigValue<T> value) {
+		@SuppressWarnings("unchecked")
+		Class<T> clazz = (Class<T>) value.getDefault().getClass();
+
 		category.then(literal(name)
 			.executes(context -> {
 				message(context, name + ": " + CUServer.getComment(name));
@@ -119,78 +107,28 @@ public final class CUConfigCommand extends CUCommands {
 					return Command.SINGLE_SUCCESS;
 				})
 			)
-		);
-	}
-
-	private void setBoolean(LiteralArgumentBuilder<CommandSourceStack> category, String name, BooleanValue value) {
-		category.then(literal(name)
-			.then(argument("value", BoolArgumentType.bool()).requires(this::perms)
+			.then(argument("value", getArgument(value)).requires(this::perms)
 				.executes(context -> {
-					boolean set = BoolArgumentType.getBool(context, "value");
+					T set = context.getArgument("value", clazz);
 					if(set == value.get()) {
 						error(context, "Value is already set to " + set);
 						return 0;
 					}
 					value.set(set);
-					message(context, name + " set to: " + set);
+					message(context, "Value set to: " + set);
 					return Command.SINGLE_SUCCESS;
 				})
 			)
 		);
 	}
 
-	private void setInt(LiteralArgumentBuilder<CommandSourceStack> category, String name, IntValue value) {
-		category.then(literal(name)
-			.then(argument("value", IntegerArgumentType.integer()).requires(this::perms)
-				.executes(context -> {
-					int set = IntegerArgumentType.getInteger(context, "value");
-					if(set == value.get()) {
-						error(context, "Value is already set to " + set);
-						return 0;
-					}
-					value.set(set);
-					message(context, name + " set to: " + set);
-					return Command.SINGLE_SUCCESS;
-				})
-			)
-		);
-	}
-
-	private void setDouble(LiteralArgumentBuilder<CommandSourceStack> category, String name, DoubleValue value) {
-		category.then(literal(name)
-			.then(argument("value", DoubleArgumentType.doubleArg())
-				.requires(this::perms)
-				.executes(context -> {
-					double set = DoubleArgumentType.getDouble(context, "value");
-					if(set == value.get()) {
-						error(context, "Value is already set to " + set);
-						return 0;
-					}
-					value.set(set);
-					message(context, name + " set to: " + set);
-					return Command.SINGLE_SUCCESS;
-				})
-			)
-		);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends Enum<T>> void setEnum(LiteralArgumentBuilder<CommandSourceStack> category, String name, EnumValue<T> value) {
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private <T> ArgumentType<T> getArgument(ConfigValue<T> value) {
+		if(value instanceof BooleanValue) return (ArgumentType<T>) BoolArgumentType.bool();
+		if(value instanceof DoubleValue) return (ArgumentType<T>) DoubleArgumentType.doubleArg();
+		if(value instanceof IntValue) return (ArgumentType<T>) IntegerArgumentType.integer();
 		Class<T> clazz = (Class<T>) value.getDefault().getClass();
-		category.then(literal(name)
-			.then(argument("value", EnumArgument.enumArg(clazz, true))
-				.requires(this::perms)
-				.executes(context -> {
-					T set = EnumArgument.getEnum(context, "value", clazz);
-					if(set == value.get()) {
-						error(context, "Value is already set to " + set.name().toLowerCase());
-						return 0;
-					}
-					value.set(set);
-					message(context, name + " set to: " + set.name().toLowerCase());
-					return Command.SINGLE_SUCCESS;
-				})
-			)
-		);
+		if(value instanceof EnumValue<?> && clazz.isEnum()) return (ArgumentType<T>) EnumArgument.enumArg((Class<Enum>) clazz, true);
+		throw new IllegalArgumentException("Unsupported class for argument: " + clazz);
 	}
 }
