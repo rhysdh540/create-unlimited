@@ -1,6 +1,7 @@
 package dev.rdh.createunlimited.forge;
 
 import dev.rdh.createunlimited.CreateUnlimited;
+import dev.rdh.createunlimited.Util;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -36,10 +37,11 @@ public final class CreateUnlimitedForge {
 		try {
 			if(v1_19_2 >= CURRENT) {
 				return (ResourceKey<Registry<ArgumentTypeInfo<?, ?>>>)
-					Registry.class.getDeclaredField("COMMAND_ARGUMENT_TYPE_REGISTRY").get(null);
+					Registry.class.getDeclaredField(Util.isDevEnv() ? "COMMAND_ARGUMENT_TYPE_REGISTRY" : "f_235729_").get(null);
 			} else if(v1_20_1 <= CURRENT) {
 				return (ResourceKey<Registry<ArgumentTypeInfo<?, ?>>>)
-					Class.forName("net.minecraft.core.registries.Registries").getDeclaredField("COMMAND_ARGUMENT_TYPE").get(null);
+					Class.forName("net.minecraft.core.registries.Registries")
+						.getDeclaredField(Util.isDevEnv() ? "COMMAND_ARGUMENT_TYPE" : "f_256982_").get(null);
 			} else {
 				throw new IllegalStateException("Unsupported Minecraft version: " + CURRENT);
 			}

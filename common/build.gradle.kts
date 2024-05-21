@@ -1,7 +1,7 @@
 architectury {
 	common {
-		for(p in rootProject.subprojects) {
-			if(p != project) add(p.name)
+		for(p in rootProject.subprojects.filter { it != project }) {
+			add(p.name)
 		}
 	}
 }
@@ -11,9 +11,8 @@ dependencies {
 
 	modCompileOnly("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric"()}+mc${"minecraft_version"()}") {
 		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
+		exclude(group = "net.fabricmc.fabric-api") // fabric access wideners are not safe to use
 	}
-
-	modCompileOnly("net.fabricmc.fabric-api:fabric-api:${"fabric_api"()}+${"minecraft_version"()}")
 }
 
 tasks.processResources {
@@ -22,7 +21,5 @@ tasks.processResources {
 	}
 }
 
-operator fun String.invoke(): String {
-	return rootProject.ext[this] as? String
-		?: throw IllegalStateException("Property $this is not defined")
-}
+operator fun String.invoke(): String = rootProject.ext[this] as? String
+	?: error("Property $this is not defined")

@@ -72,9 +72,6 @@ class SubprojectsPlugin : Plugin<Project> {
 				"io.github.llamalad7:mixinextras-common:${project.property("mixin_extras")}".also {
 					"annotationProcessor"(it)
 					"implementation"(it)
-					if(project.getPath() != ":common") {
-						shade(it)
-					}
 				}
 			}
 

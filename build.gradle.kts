@@ -11,7 +11,7 @@ plugins {
 	id("properties") apply(false)
 	id("subprojects") apply(false)
 	id("platform") apply(false)
-	id("postprocessor") apply(false)
+	id("postprocessor")
 }
 setup()
 setupForgix()
@@ -90,8 +90,6 @@ fun setupForgix() {
 		group = "maven_group"()
 		mergedJarName = "createunlimited-${"modVersion"()}.jar"
 		outputDir = "build/libs/merged"
-
-		removeDuplicate("dev.rdh.createunlimited.shadow")
 	}
 
 	tasks.mergeJars {

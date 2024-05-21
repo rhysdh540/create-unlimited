@@ -17,6 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.Commands.CommandSelection;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -27,13 +28,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class CUCommands {
-	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, CommandSelection environment) {
 		List<MutableComponent> links = List.of(
 			link("https://github.com/rhysdh540/create-unlimited", "GitHub", ChatFormatting.GRAY),
 			link("https://modrinth.com/mod/create-unlimited", "Modrinth", ChatFormatting.GREEN),
 			link("https://curseforge.com/minecraft/mc-mods/create-unlimited", "CurseForge", ChatFormatting.GOLD),
 			link("https://discord.gg/GeGm3DRDWY", "Discord", ChatFormatting.BLUE)
 		);
+
+		boolean includeIntegrated = environment == CommandSelection.ALL || environment == CommandSelection.INTEGRATED;
+
 		LiteralArgumentBuilder<CommandSourceStack> base = Commands.literal(CreateUnlimited.ID)
 			.executes(context -> {
 				message(context, CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:");
@@ -42,7 +46,7 @@ public class CUCommands {
 				message(context, link);
 				return 1;
 			})
-			.then(new CUConfigCommand(environment.includeIntegrated).register())
+			.then(new CUConfigCommand(includeIntegrated).register())
 			;
 
 		LiteralCommandNode<CommandSourceStack> root = dispatcher.register(base);

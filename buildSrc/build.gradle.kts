@@ -20,7 +20,7 @@ dependencies {
 	plugin("architectury-plugin", "3.4.155")
 	plugin("dev.architectury.loom", "1.5.391")
 	plugin("com.github.johnrengelman.shadow", "8.1.1")
-	plugin("io.github.pacifistmc.forgix", "1.2.6")
+	plugin("io.github.pacifistmc.forgix", "1.2.9")
 
 	implementation("org.ow2.asm:asm:9.6")
 	implementation("org.ow2.asm:asm-analysis:9.6")

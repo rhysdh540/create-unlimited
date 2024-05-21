@@ -18,6 +18,7 @@ dependencies {
 	modImplementation("com.tterrag.registrate:Registrate:${"registrate"()}")
 	modImplementation("com.jozufozu.flywheel:flywheel-forge-${"flywheel_mc"()}:${"flywheel"()}")
 	forgeRuntimeLibrary("io.github.llamalad7:mixinextras-common:${"mixin_extras"()}")
+	include("io.github.llamalad7:mixinextras-forge:${"mixin_extras"()}")
 
 	// Dev Env Optimizations
 	if(rootProject.hasProperty("bmb")) {
@@ -40,7 +41,5 @@ tasks.shadowJar {
 	exclude("fabric.mod.json")
 }
 
-operator fun String.invoke(): String {
-	return rootProject.ext[this] as? String
-		?: throw IllegalStateException("Property $this is not defined")
-}
+operator fun String.invoke(): String = rootProject.ext[this] as? String
+	?: error("Property $this is not defined")

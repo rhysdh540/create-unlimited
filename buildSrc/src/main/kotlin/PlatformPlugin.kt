@@ -72,7 +72,6 @@ class PlatformPlugin : Plugin<Project> {
 				exclude("META-INF/jarjar/**")
 				exclude("META-INF/jars/**")
 				configurations = listOf(shadowCommon, project.configurations.getByName("shade"))
-				relocate("com.llamalad7.mixinextras", "dev.rdh.createunlimited.shadow.mixinextras")
 				archiveClassifier.set("shadow-${project.getName()}")
 			}
 
