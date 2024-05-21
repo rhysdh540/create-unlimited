@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
 	`kotlin-dsl`
 }
@@ -14,6 +16,10 @@ repositories {
 
 fun DependencyHandler.plugin(id: String, version: String) {
 	this.implementation(group = id, name = "$id.gradle.plugin", version = version)
+}
+
+tasks.compileKotlin {
+	compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
 }
 
 dependencies {

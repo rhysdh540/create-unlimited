@@ -7,7 +7,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.component.AdhocComponentWithVariants
-import org.gradle.api.file.RegularFileProperty
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.*
@@ -20,7 +19,9 @@ class PlatformPlugin : Plugin<Project> {
 
 			afterEvaluate {
 				loom.runs {
-//					remove(getByName("server"))
+					configureEach {
+						vmArgs("-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions")
+					}
 
 					named("client") {
 						client()
@@ -77,7 +78,7 @@ class PlatformPlugin : Plugin<Project> {
 
 			tasks.withType<RemapJarTask>()["remapJar"].apply {
 				dependsOn(shadowJar)
-				inputFile = shadowJar.archiveFile as RegularFileProperty
+				inputFile.set(shadowJar.archiveFile)
 				archiveClassifier = project.name
 			}
 
