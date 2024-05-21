@@ -11,6 +11,7 @@ import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,12 +24,12 @@ import dev.rdh.createunlimited.config.CUConfigs;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "UnresolvedMixinReference", "MixinAnnotationTarget"})
 @Mixin(value = ExtendoGripItem.class, remap = false)
 public abstract class ExtendoGripItemMixin {
 
 	// the annotation processor is a little broken so we have to specify `remap = false` and use the obfuscated names
 
+	@Dynamic
 	@ModifyExpressionValue(method = {
 		"holdingExtendoGripIncreasesRange(Lnet/minecraft/world/entity/LivingEntity;)V",
 		"holdingExtendoGripIncreasesRange(Lnet/minecraft/class_1309;)V",
@@ -40,6 +41,7 @@ public abstract class ExtendoGripItemMixin {
 		return cu$singleRange();
 	}
 
+	@Dynamic
 	@ModifyExpressionValue(method = {
 		"holdingExtendoGripIncreasesRange(Lnet/minecraftforge/event/entity/living/LivingEvent$LivingTickEvent;)V",
 		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraftforge/event/entity/player/PlayerEvent$PlayerLoggedInEvent;)V"
@@ -49,6 +51,7 @@ public abstract class ExtendoGripItemMixin {
 		return cu$singleRange();
 	}
 
+	@Dynamic
 	@ModifyExpressionValue(method = {
 		"holdingExtendoGripIncreasesRange(Lnet/minecraft/world/entity/LivingEntity;)V",
 		"holdingExtendoGripIncreasesRange(Lnet/minecraft/class_1309;)V",
@@ -60,6 +63,7 @@ public abstract class ExtendoGripItemMixin {
 		return cu$doubleRange();
 	}
 
+	@Dynamic
 	@ModifyExpressionValue(method = {
 		"holdingExtendoGripIncreasesRange(Lnet/minecraftforge/event/entity/living/LivingEvent$LivingTickEvent;)V",
 		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraftforge/event/entity/player/PlayerEvent$PlayerLoggedInEvent;)V"
