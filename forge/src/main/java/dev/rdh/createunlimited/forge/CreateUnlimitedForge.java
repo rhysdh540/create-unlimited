@@ -37,7 +37,7 @@ public final class CreateUnlimitedForge {
 		try {
 			if(v1_19_2 >= CURRENT) {
 				return (ResourceKey<Registry<ArgumentTypeInfo<?, ?>>>)
-					Registry.class.getDeclaredField(Util.isDevEnv() ? "COMMAND_ARGUMENT_TYPE_REGISTRY" : "f_235729_").get(null);
+					Registry.class.getDeclaredField(Util.isDevEnv() ? "COMMAND_ARGUMENT_TYPE_REGISTRY" : "f_235724_").get(null);
 			} else if(v1_20_1 <= CURRENT) {
 				return (ResourceKey<Registry<ArgumentTypeInfo<?, ?>>>)
 					Class.forName("net.minecraft.core.registries.Registries")
