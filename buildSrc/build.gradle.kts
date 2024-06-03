@@ -23,35 +23,11 @@ tasks.compileKotlin {
 }
 
 dependencies {
-	plugin("architectury-plugin", "3.4.155")
-	plugin("dev.architectury.loom", "1.5.391")
-	plugin("com.github.johnrengelman.shadow", "8.1.1")
-	plugin("io.github.pacifistmc.forgix", "1.2.9")
+//	plugin("architectury-plugin", "3.4.155")
+//	plugin("dev.architectury.loom", "1.5.391")
+//	plugin("com.github.johnrengelman.shadow", "8.1.1")
+//	plugin("io.github.pacifistmc.forgix", "1.2.9")
 
-	implementation("org.ow2.asm:asm:9.6")
-	implementation("org.ow2.asm:asm-analysis:9.6")
-}
-
-gradlePlugin {
-	plugins {
-		create("properties") {
-			id = "properties"
-			implementationClass = "PropertiesPlugin"
-		}
-
-		create("subprojects") {
-			id = "subprojects"
-			implementationClass = "SubprojectsPlugin"
-		}
-
-		create("platform") {
-			id = "platform"
-			implementationClass = "PlatformPlugin"
-		}
-
-		create("postprocessor") {
-			id = "postprocessor"
-			implementationClass = "JarPostprocessorPlugin"
-		}
-	}
+//	implementation("org.ow2.asm:asm:9.7")
+//	implementation("org.ow2.asm:asm-analysis:9.7")
 }
