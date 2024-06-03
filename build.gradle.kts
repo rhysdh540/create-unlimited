@@ -5,16 +5,12 @@ plugins {
 	id("xyz.wagyourtail.unimined")
 	id("com.github.johnrengelman.shadow")
 }
-
-println("Create Unlimited v${"mod_version"()}")
-val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
-if(buildNumber != null) {
-	println("Build #$buildNumber")
+try {
+	Git.repository = rootDir.toPath()
+} catch(_: IllegalStateException) {
 }
-println()
-ext["modVersion"] = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
 
-findAndLoadProperties()
+setup()
 
 allprojects {
 	apply(plugin = "java")
@@ -136,6 +132,35 @@ dependencies {
 	"modImplementation"("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
 		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
 	}
+}
+
+fun setup() {
+	println("Create Unlimited v${"mod_version"()}")
+
+	val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
+	if(buildNumber != null) {
+		println("Build #$buildNumber")
+	}
+	println()
+	println("Current branch: ${Git.currentBranch()}")
+	println("Current commit: ${Git.hash()}")
+	if(Git.isDirty()) {
+		var changes = Git.getUncommitedChanges().split("\n").toMutableList()
+		val maxChanges = 10
+		if(changes.size > maxChanges) {
+			changes = changes.subList(0, maxChanges)
+			changes.add("... and ${changes.size - maxChanges} more")
+		}
+
+		changes.replaceAll { "  - $it" }
+
+		println("Uncommitted changes:\n${changes.joinToString("\n")}")
+	}
+	println()
+
+	ext["modVersion"] = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
+
+	findAndLoadProperties()
 }
 
 tasks.register("nukeGradleCaches") {
