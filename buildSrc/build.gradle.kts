@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import java.util.*
 
 plugins {
 	`kotlin-dsl`
@@ -11,6 +12,7 @@ repositories {
 	maven("https://maven.architectury.dev/")
 	maven("https://maven.neoforged.net/releases")
 	maven("https://maven.firstdarkdev.xyz/releases")
+	maven("https://maven.wagyourtail.xyz/releases")
 	gradlePluginPortal()
 }
 
@@ -22,12 +24,14 @@ tasks.compileKotlin {
 	compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
 }
 
-dependencies {
-//	plugin("architectury-plugin", "3.4.155")
-//	plugin("dev.architectury.loom", "1.5.391")
-//	plugin("com.github.johnrengelman.shadow", "8.1.1")
-//	plugin("io.github.pacifistmc.forgix", "1.2.9")
+val properties = Properties().apply {
+	load(rootDir.parentFile.resolve("gradle.properties").inputStream())
+}
 
-//	implementation("org.ow2.asm:asm:9.7")
-//	implementation("org.ow2.asm:asm-analysis:9.7")
+operator fun String.invoke(): String = properties.getProperty(this) ?: error("Property $this is not defined")
+
+dependencies {
+	plugin(id = "xyz.wagyourtail.unimined", version = "unimined_version"())
+	plugin(id = "com.github.johnrengelman.shadow", version = "shadow_version"())
+	plugin(id = "io.github.pacifistmc.forgix", version = "forgix_version"())
 }
