@@ -43,6 +43,12 @@ allprojects {
 				includeGroup("maven.modrinth")
 			}
 		}
+		exclusiveContent {
+			forRepository { maven("https://cursemaven.com") }
+			filter {
+				includeGroup("curse.maven")
+			}
+		}
 	}
 
 	tasks.withType<JavaCompile> {
@@ -71,6 +77,12 @@ allprojects {
 			disableRefmap()
 		}
 	}
+
+	dependencies {
+		compileOnly("systems.manifold:manifold-props:${"manifold_version"()}") {
+			annotationProcessor(this)
+		}
+	}
 }
 
 subprojects {
@@ -93,7 +105,9 @@ subprojects {
 	}
 
 	dependencies {
-		implementation(rootProject)
+		implementation(rootProject).apply {
+			(this as ModuleDependency).isTransitive = false
+		}
 	}
 }
 
@@ -101,6 +115,27 @@ unimined.minecraft {
 	fabric { loader("fabric_version"()) }
 
 	defaultRemapJar = false
+
+	mods {
+		modImplementation {
+			catchAWNamespaceAssertion()
+		}
+	}
+}
+
+repositories {
+	maven("https://maven.tterrag.com")
+	maven("https://mvn.devos.one/snapshots")
+	maven("https://maven.cafeteria.dev/releases")
+	maven("https://maven.jamieswhiteshirt.com/libs-release")
+	maven("https://maven.theillusivec4.top")
+	maven("https://jitpack.io")
+}
+
+dependencies {
+	"modImplementation"("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
+		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
+	}
 }
 
 tasks.register("nukeGradleCaches") {
