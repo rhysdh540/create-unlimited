@@ -41,6 +41,7 @@ allprojects {
 				includeGroup("maven.modrinth")
 			}
 		}
+		maven("https://maven.architectury.dev")
 		exclusiveContent {
 			forRepository { maven("https://cursemaven.com") }
 			filter {
@@ -80,6 +81,7 @@ allprojects {
 		compileOnly("systems.manifold:manifold-props:${"manifold_version"()}") {
 			annotationProcessor(this)
 		}
+		compileOnly("dev.architectury:architectury-injectables:${"arch_injectables_version"()}")
 	}
 }
 
@@ -89,6 +91,9 @@ subprojects {
 
 		val props = mapOf(
 			"mod_version" to "modVersion"(),
+			"minecraft_version" to "minecraft_version"(),
+			"fabric_version" to "fabric_version"(),
+			"create_version" to "minimum_create_version"(),
 		)
 
 		inputs.properties(props)
@@ -135,6 +140,7 @@ dependencies {
 	"modImplementation"("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
 		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
 	}
+	compileOnly("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
 }
 
 fun setup() {
@@ -196,4 +202,4 @@ tasks.register("nukeGradleCaches") {
 	}
 }
 
-operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("Property $this is not defined")
+operator fun String.invoke(): String = rootProject.ext[this] as String

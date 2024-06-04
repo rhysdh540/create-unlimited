@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "createunlimited",
-  "version": "${version}",
+  "version": "${mod_version}",
   "name": "Create Unlimited",
   "description": "Remove all the limits!",
   "authors": [ "rdh" ],
@@ -22,9 +22,9 @@
   ],
   "depends": {
     "minecraft": ["1.19.2", "1.20.1"],
-    "fabricloader": ">=${fabric}",
+    "fabricloader": ">=${fabric_version}",
     "fabric-api": "*",
-    "create": ">=${create}-a"
+    "create": ">=${create_version}-a"
   },
   "custom": {
     "modmenu": {

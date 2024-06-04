@@ -53,7 +53,7 @@ public abstract class Util {
 		try {
 			return value.get();
 		} catch (IllegalStateException e) {
-			if(e.message.contains("config")) {
+			if(e.getMessage().contains("config")) {
 				return orElse;
 			}
 			throw e;
