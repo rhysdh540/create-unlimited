@@ -2,6 +2,8 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
+import xyz.wagyourtail.unimined.internal.minecraft.MinecraftProvider
+import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
 import xyz.wagyourtail.unimined.util.sourceSets
 
 plugins {
@@ -112,6 +114,11 @@ subprojects {
 		source(rootProject.sourceSets["main"].allSource)
 	}
 
+	tasks.jar {
+		archiveClassifier = "unmapped"
+		destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
+	}
+
 	val common by configurations.registering {
 		isTransitive = false
 	}
@@ -123,18 +130,25 @@ subprojects {
 	tasks.shadowJar {
 		archiveBaseName.set("archives_base_name"())
 		archiveVersion.set("modVersion"())
-		archiveClassifier.set(project.name)
+		archiveClassifier.set("${project.name}-unmapped")
+		destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
 
 		configurations = listOf(common.get())
 
-		relocate("dev.rdh.createunlimited.${project.name}", "dev.rdh.createunlimited.platform")
+		relocate("dev.rdh.createunlimited.${project.name}", "dev.rdh.createunlimited.${project.name}.platform")
 		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${project.name}")
 	}
 
-	unimined.minecraft(sourceSet = sourceSets["main"], lateApply = true) {
-		remap(tasks.shadowJar.get())
+	val mcProvider = unimined.minecrafts[sourceSets["main"]]
+
+	val remapShadowJar = tasks.register("remapShadowJar", RemapJarTaskImpl::class.java, mcProvider)
+	remapShadowJar.configure {
+		dependsOn("shadowJar")
+		inputFile.set(tasks.shadowJar.get().archiveFile)
 	}
 }
+
+tasks.jar { enabled = false }
 
 unimined.minecraft {
 	fabric { loader("fabric_version"()) }

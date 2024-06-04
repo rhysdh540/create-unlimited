@@ -7,7 +7,9 @@ val modLocalRuntime: Configuration by configurations.creating {
 }
 
 unimined.minecraft {
-	fabric { loader("fabric_version"()) }
+	fabric {
+		loader("fabric_version"())
+	}
 
 	mods {
 		remap(modLocalRuntime)
