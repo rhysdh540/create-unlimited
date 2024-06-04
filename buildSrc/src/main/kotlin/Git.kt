@@ -7,7 +7,7 @@ object Git {
 	fun isDirty() = git("status", "--porcelain").isNotBlank()
 
 	// last commit hash
-	fun hash() = git("rev-parse", "HEAD").trim()
+	fun hash() = git("rev-parse", "--short", "HEAD").trim()
 
 	// current branch
 	fun currentBranch() = git("rev-parse", "--abbrev-ref", "HEAD").trim()

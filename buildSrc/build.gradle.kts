@@ -24,14 +24,26 @@ tasks.compileKotlin {
 	compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
 }
 
-val properties = Properties().apply {
+val gradleProperties = Properties().apply {
 	load(rootDir.parentFile.resolve("gradle.properties").inputStream())
 }
 
-operator fun String.invoke(): String = properties.getProperty(this) ?: error("Property $this is not defined")
+operator fun String.invoke(): String = gradleProperties.getProperty(this) ?: error("Property $this is not defined")
 
 dependencies {
+	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
+	implementation(group = "org.jetbrains", name = "annotations")
+
 	plugin(id = "xyz.wagyourtail.unimined", version = "unimined_version"())
 	plugin(id = "com.github.johnrengelman.shadow", version = "shadow_version"())
 	plugin(id = "io.github.pacifistmc.forgix", version = "forgix_version"())
+}
+
+gradlePlugin {
+	plugins {
+		create("budget-architectury") {
+			id = "budget-architectury"
+			implementationClass = "BudgetArchPlugin"
+		}
+	}
 }

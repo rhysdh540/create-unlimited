@@ -2,7 +2,9 @@ import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import xyz.wagyourtail.unimined.util.sourceSets
 
 plugins {
+	id("java")
 	id("xyz.wagyourtail.unimined")
+	id("io.github.pacifistmc.forgix")
 	id("com.github.johnrengelman.shadow")
 }
 try {
@@ -111,6 +113,7 @@ unimined.minecraft {
 	fabric { loader("fabric_version"()) }
 
 	defaultRemapJar = false
+	runs.off = true
 
 	mods {
 		modImplementation {
@@ -159,6 +162,23 @@ fun setup() {
 	println()
 
 	ext["modVersion"] = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
+
+	forgix {
+		group = "maven_group"()
+		mergedJarName = "${"archives_base_name"()}-${"modVersion"()}.jar"
+		outputDir = "build/libs"
+	}
+
+	tasks.mergeJars {
+		dependsOn("assemble")
+	}
+
+	tasks.assemble {
+		subprojects.forEach {
+			this.dependsOn(it.tasks.named("assemble"))
+		}
+		finalizedBy("mergeJars")
+	}
 
 	findAndLoadProperties()
 }
