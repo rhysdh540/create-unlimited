@@ -1,15 +1,13 @@
+@file:Suppress("UnstableApiUsage")
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import xyz.wagyourtail.unimined.util.sourceSets
 
 plugins {
 	id("java")
 	id("xyz.wagyourtail.unimined")
-	id("io.github.pacifistmc.forgix")
 	id("com.github.johnrengelman.shadow")
-}
-try {
-	Git.repository = rootDir.toPath()
-} catch(_: IllegalStateException) {
 }
 
 setup()
@@ -54,6 +52,10 @@ allprojects {
 		options.encoding = "UTF-8"
 		options.release = 17
 		options.compilerArgs.addAll(listOf("-Xplugin:Manifold no-bootstrap", "-implicit:none"))
+
+		javaCompiler = javaToolchains.compilerFor {
+			languageVersion.set(JavaLanguageVersion.of(17))
+		}
 	}
 
 	tasks.withType<AbstractArchiveTask> {
@@ -68,6 +70,8 @@ allprojects {
 			mojmap()
 			parchment(version = "parchment_version"())
 		}
+
+		defaultRemapJar = false
 	}
 
 	tasks.withType<RemapJarTask> {
@@ -82,6 +86,7 @@ allprojects {
 			annotationProcessor(this)
 		}
 		compileOnly("dev.architectury:architectury-injectables:${"arch_injectables_version"()}")
+		compileOnly("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
 	}
 }
 
@@ -107,10 +112,27 @@ subprojects {
 		source(rootProject.sourceSets["main"].allSource)
 	}
 
+	val common by configurations.registering {
+		isTransitive = false
+	}
+
 	dependencies {
-		implementation(rootProject).apply {
-			(this as ModuleDependency).isTransitive = false
-		}
+		common(rootProject)
+	}
+
+	tasks.shadowJar {
+		archiveBaseName.set("archives_base_name"())
+		archiveVersion.set("modVersion"())
+		archiveClassifier.set(project.name)
+
+		configurations = listOf(common.get())
+
+		relocate("dev.rdh.createunlimited.${project.name}", "dev.rdh.createunlimited.platform")
+		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${project.name}")
+	}
+
+	unimined.minecraft(sourceSet = sourceSets["main"], lateApply = true) {
+		remap(tasks.shadowJar.get())
 	}
 }
 
@@ -140,7 +162,21 @@ dependencies {
 	"modImplementation"("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
 		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
 	}
-	compileOnly("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
+}
+
+val mergeJars = tasks.register<ShadowJar>("mergeJars") {
+	group = "build"
+	description = "Merges the platform shadow jars into a single jar"
+	archiveBaseName.set("archives_base_name"())
+	archiveVersion.set("modVersion"())
+	subprojects.map { it.tasks["remapShadowJar"] }.forEach {
+		dependsOn(it)
+		from(it)
+	}
+}
+
+tasks.assemble {
+	dependsOn(mergeJars)
 }
 
 fun setup() {
@@ -151,10 +187,10 @@ fun setup() {
 		println("Build #$buildNumber")
 	}
 	println()
-	println("Current branch: ${Git.currentBranch()}")
-	println("Current commit: ${Git.hash()}")
-	if(Git.isDirty()) {
-		var changes = Git.getUncommitedChanges().split("\n").toMutableList()
+	println("Current branch: ${git.currentBranch()}")
+	println("Current commit: ${git.hash()}")
+	if(git.isDirty()) {
+		var changes = git.getUncommitedChanges().split("\n").toMutableList()
 		val maxChanges = 10
 		if(changes.size > maxChanges) {
 			changes = changes.subList(0, maxChanges)
@@ -169,21 +205,10 @@ fun setup() {
 
 	ext["modVersion"] = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
 
-	forgix {
-		group = "maven_group"()
-		mergedJarName = "${"archives_base_name"()}-${"modVersion"()}.jar"
-		outputDir = "build/libs"
-	}
-
-	tasks.mergeJars {
-		dependsOn("assemble")
-	}
-
 	tasks.assemble {
 		subprojects.forEach {
 			this.dependsOn(it.tasks.named("assemble"))
 		}
-		finalizedBy("mergeJars")
 	}
 
 	findAndLoadProperties()

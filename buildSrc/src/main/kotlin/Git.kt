@@ -1,8 +1,10 @@
-import xyz.wagyourtail.unimined.util.FinalizeOnWrite
-import xyz.wagyourtail.unimined.util.MustSet
-import java.nio.file.Path
+import org.gradle.api.Project
+import java.io.File
 
-object Git {
+val Project.git
+	get() = Git(rootProject.rootDir)
+
+class Git(val repository: File) {
 	// does the current git repository have uncommitted changes?
 	fun isDirty() = git("status", "--porcelain").isNotBlank()
 
@@ -19,10 +21,8 @@ object Git {
 
 	private fun git(vararg args: String): String {
 		val process = ProcessBuilder("git", *args)
-			.directory(repository.toFile())
+			.directory(repository)
 			.start()
 		return process.inputStream.bufferedReader().readText()
 	}
-
-	var repository by FinalizeOnWrite<Path>(MustSet())
 }

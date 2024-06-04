@@ -36,14 +36,4 @@ dependencies {
 
 	plugin(id = "xyz.wagyourtail.unimined", version = "unimined_version"())
 	plugin(id = "com.github.johnrengelman.shadow", version = "shadow_version"())
-	plugin(id = "io.github.pacifistmc.forgix", version = "forgix_version"())
-}
-
-gradlePlugin {
-	plugins {
-		create("budget-architectury") {
-			id = "budget-architectury"
-			implementationClass = "BudgetArchPlugin"
-		}
-	}
 }

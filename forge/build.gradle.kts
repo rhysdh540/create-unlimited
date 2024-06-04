@@ -23,7 +23,9 @@ dependencies {
 	modImplementation("com.simibubi.create:create-${"minecraft_version"()}:${"create_forge_version"()}:slim") { isTransitive = false }
 	modImplementation("com.tterrag.registrate:Registrate:${"registrate_version"()}")
 	modImplementation("com.jozufozu.flywheel:flywheel-forge-${"flywheel_mc_version"()}:${"flywheel_version"()}")
-	implementation("io.github.llamalad7:mixinextras-forge:${"mixin_extras_version"()}") // TODO jarjar this
+	implementation("io.github.llamalad7:mixinextras-forge:${"mixin_extras_version"()}") {
+		"include"(this)
+	}
 }
 
 operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("Property $this is not defined")
