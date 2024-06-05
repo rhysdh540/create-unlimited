@@ -2,13 +2,16 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
+import xyz.wagyourtail.unimined.expect.task.ExpectPlatformFiles
 import xyz.wagyourtail.unimined.internal.minecraft.MinecraftProvider
 import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
 import xyz.wagyourtail.unimined.util.sourceSets
+import java.util.*
 
 plugins {
 	id("java")
 	id("xyz.wagyourtail.unimined")
+	id("xyz.wagyourtail.unimined.expect-platform")
 	id("com.github.johnrengelman.shadow")
 }
 
@@ -17,6 +20,7 @@ setup()
 allprojects {
 	apply(plugin = "java")
 	apply(plugin = "xyz.wagyourtail.unimined")
+	apply(plugin = "xyz.wagyourtail.unimined.expect-platform")
 	apply(plugin = "com.github.johnrengelman.shadow")
 
 	base.archivesName.set("archives_base_name"())
@@ -48,6 +52,7 @@ allprojects {
 				includeGroup("curse.maven")
 			}
 		}
+		maven("https://maven.wagyourtail.xyz/snapshots")
 	}
 
 	tasks.withType<JavaCompile> {
@@ -87,12 +92,16 @@ allprojects {
 		compileOnly("systems.manifold:manifold-props:${"manifold_version"()}") {
 			annotationProcessor(this)
 		}
-		compileOnly("dev.architectury:architectury-injectables:${"arch_injectables_version"()}")
 		compileOnly("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
+
+//		compileOnly(expectPlatform.annotationsDep)
+		compileOnly("xyz.wagyourtail.unimined.expect-platform:expect-platform:1.0.0-20240605.031731-2:annotations")
 	}
 }
 
 subprojects {
+	val platform = project.name.lowercase()
+
 	tasks.processResources {
 		from(rootProject.sourceSets["main"].resources)
 
@@ -110,27 +119,33 @@ subprojects {
 		}
 	}
 
-	tasks.withType<JavaCompile> {
-		source(rootProject.sourceSets["main"].allSource)
-	}
-
 	tasks.jar {
-		archiveClassifier = "unmapped"
+		archiveClassifier = "$platform-dev-unmapped"
 		destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
 	}
 
 	val common by configurations.registering {
 		isTransitive = false
+		configurations.compileClasspath.get().extendsFrom(this)
+		configurations.runtimeClasspath.get().extendsFrom(this)
+	}
+
+	val expectPlatform by rootProject.tasks.register<ExpectPlatformFiles>("expectPlatform${platform.replaceFirstChar(Char::uppercase)}") {
+		group = "unimined"
+		platformName = platform
+		inputCollection = rootProject.sourceSets["main"].output
 	}
 
 	dependencies {
-		common(rootProject)
+		compileOnly(rootProject) // for ide
+		common(expectPlatform.outputCollection)
 	}
 
 	tasks.shadowJar {
+		dependsOn(expectPlatform)
 		archiveBaseName.set("archives_base_name"())
 		archiveVersion.set("modVersion"())
-		archiveClassifier.set("${project.name}-unmapped")
+		archiveClassifier.set("$platform-unmapped")
 		destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
 
 		configurations = listOf(common.get())
@@ -145,6 +160,7 @@ subprojects {
 	remapShadowJar.configure {
 		dependsOn("shadowJar")
 		inputFile.set(tasks.shadowJar.get().archiveFile)
+		archiveClassifier = platform
 	}
 }
 
@@ -153,12 +169,17 @@ tasks.jar { enabled = false }
 unimined.minecraft {
 	fabric { loader("fabric_version"()) }
 
-	defaultRemapJar = false
 	runs.off = true
 
 	mods {
 		modImplementation {
 			catchAWNamespaceAssertion()
+		}
+	}
+
+	runs {
+		config("client") {
+			launchClasspath
 		}
 	}
 }

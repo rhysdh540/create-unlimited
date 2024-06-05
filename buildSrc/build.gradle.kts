@@ -13,6 +13,7 @@ repositories {
 	maven("https://maven.neoforged.net/releases")
 	maven("https://maven.firstdarkdev.xyz/releases")
 	maven("https://maven.wagyourtail.xyz/releases")
+	maven("https://maven.wagyourtail.xyz/snapshots")
 	gradlePluginPortal()
 }
 
@@ -35,5 +36,6 @@ dependencies {
 	implementation(group = "org.jetbrains", name = "annotations")
 
 	plugin(id = "xyz.wagyourtail.unimined", version = "unimined_version"())
+	plugin(id = "xyz.wagyourtail.unimined.expect-platform", version = "expectplatform_version"())
 	plugin(id = "com.github.johnrengelman.shadow", version = "shadow_version"())
 }
