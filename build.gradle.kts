@@ -52,7 +52,7 @@ allprojects {
 				includeGroup("curse.maven")
 			}
 		}
-		maven("https://maven.wagyourtail.xyz/snapshots")
+		maven("https://maven.wagyourtail.xyz/releases")
 	}
 
 	tasks.withType<JavaCompile> {
@@ -94,8 +94,7 @@ allprojects {
 		}
 		compileOnly("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
 
-//		compileOnly(expectPlatform.annotationsDep)
-		compileOnly("xyz.wagyourtail.unimined.expect-platform:expect-platform:1.0.0-20240605.031731-2:annotations")
+		compileOnly(expectPlatform.annotationsDep)
 	}
 }
 

@@ -23,6 +23,12 @@ fun DependencyHandler.plugin(id: String, version: String) {
 
 tasks.compileKotlin {
 	compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
+	kotlinOptions.jvmTarget = "17"
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 val gradleProperties = Properties().apply {
