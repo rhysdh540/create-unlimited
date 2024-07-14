@@ -10,6 +10,7 @@ import java.util.*
 
 plugins {
 	id("java")
+	id("idea")
 	id("xyz.wagyourtail.unimined")
 	id("xyz.wagyourtail.unimined.expect-platform")
 	id("com.github.johnrengelman.shadow")
@@ -31,6 +32,8 @@ allprojects {
 		sourceCompatibility = JavaVersion.VERSION_17
 		targetCompatibility = JavaVersion.VERSION_17
 	}
+
+	idea.module.setDownloadSources(true)
 
 	repositories {
 		mavenCentral {
@@ -153,10 +156,7 @@ subprojects {
 		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${project.name}")
 	}
 
-	val mcProvider = unimined.minecrafts[sourceSets["main"]]
-
-	val remapShadowJar = tasks.register("remapShadowJar", RemapJarTaskImpl::class.java, mcProvider)
-	remapShadowJar.configure {
+	tasks.register<RemapJarTaskImpl>("remapShadowJar", unimined.minecrafts[sourceSets["main"]]).configure {
 		dependsOn("shadowJar")
 		inputFile.set(tasks.shadowJar.get().archiveFile)
 		archiveClassifier = platform
@@ -178,7 +178,7 @@ unimined.minecraft {
 
 	runs {
 		config("client") {
-			launchClasspath
+			jvmArgs("-Xms4G", "-Xmx4G")
 		}
 	}
 }
@@ -221,19 +221,23 @@ fun setup() {
 		println("Build #$buildNumber")
 	}
 	println()
-	println("Current branch: ${git.currentBranch()}")
-	println("Current commit: ${git.hash()}")
-	if(git.isDirty()) {
-		var changes = git.getUncommitedChanges().split("\n").toMutableList()
-		val maxChanges = 10
-		if(changes.size > maxChanges) {
-			changes = changes.subList(0, maxChanges)
-			changes.add("... and ${changes.size - maxChanges} more")
+	if(git.exists()) {
+		println("Current branch: ${git.currentBranch()}")
+		println("Current commit: ${git.hash()}")
+		if (git.isDirty()) {
+			var changes = git.getUncommitedChanges().split("\n").toMutableList()
+			val maxChanges = 10
+			if (changes.size > maxChanges) {
+				changes = changes.subList(0, maxChanges)
+				changes.add("... and ${changes.size - maxChanges} more")
+			}
+
+			changes.replaceAll { "  - $it" }
+
+			println("Uncommitted changes:\n${changes.joinToString("\n")}")
 		}
-
-		changes.replaceAll { "  - $it" }
-
-		println("Uncommitted changes:\n${changes.joinToString("\n")}")
+	} else {
+		println("No git repository")
 	}
 	println()
 

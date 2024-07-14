@@ -5,6 +5,8 @@ val Project.git
 	get() = Git(rootProject.rootDir)
 
 class Git(val repository: File) {
+	fun exists() = repository.resolve(".git").isDirectory
+
 	// does the current git repository have uncommitted changes?
 	fun isDirty() = git("status", "--porcelain").isNotBlank()
 

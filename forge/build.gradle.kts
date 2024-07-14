@@ -8,10 +8,10 @@ unimined.minecraft {
 	}
 
 	runs.config("client") {
-		jvmArgs.addAll(listOf(
+		jvmArgs(
 			"-Dmixin.env.remapRefMap=true",
 			"-Dmixin.env.refMapRemappingFile=${(mcPatcher as ForgeLikeMinecraftTransformer).srgToMCPAsSRG}"
-		))
+		)
 	}
 }
 
