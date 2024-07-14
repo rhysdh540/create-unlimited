@@ -2,27 +2,27 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
-import xyz.wagyourtail.unimined.expect.task.ExpectPlatformFiles
-import xyz.wagyourtail.unimined.internal.minecraft.MinecraftProvider
+import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
+import xyz.wagyourtail.unimined.util.OSUtils
 import xyz.wagyourtail.unimined.util.sourceSets
-import java.util.*
 
 plugins {
 	id("java")
 	id("idea")
 	id("xyz.wagyourtail.unimined")
-	id("xyz.wagyourtail.unimined.expect-platform")
 	id("com.github.johnrengelman.shadow")
+	id("xyz.wagyourtail.unimined.expect-platform")
 }
 
 setup()
 
 allprojects {
 	apply(plugin = "java")
+	apply(plugin = "idea")
 	apply(plugin = "xyz.wagyourtail.unimined")
-	apply(plugin = "xyz.wagyourtail.unimined.expect-platform")
 	apply(plugin = "com.github.johnrengelman.shadow")
+	apply(plugin = "xyz.wagyourtail.unimined.expect-platform")
 
 	base.archivesName.set("archives_base_name"())
 	version = "modVersion"()
@@ -79,6 +79,15 @@ allprojects {
 		mappings {
 			mojmap()
 			parchment(version = "parchment_version"())
+
+			devFallbackNamespace("official")
+		}
+
+		runs {
+			config("client") {
+				jvmArgs("-Xms4G", "-Xmx4G")
+				expectPlatform.insertAgent(spec = this, platformName = project.name)
+			}
 		}
 
 		defaultRemapJar = false
@@ -126,25 +135,13 @@ subprojects {
 		destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
 	}
 
-	val common by configurations.registering {
-		isTransitive = false
-		configurations.compileClasspath.get().extendsFrom(this)
-		configurations.runtimeClasspath.get().extendsFrom(this)
-	}
-
-	val expectPlatform by rootProject.tasks.register<ExpectPlatformFiles>("expectPlatform${platform.replaceFirstChar(Char::uppercase)}") {
-		group = "unimined"
-		platformName = platform
-		inputCollection = rootProject.sourceSets["main"].output
-	}
+	val common by configurations.registering
 
 	dependencies {
-		compileOnly(rootProject) // for ide
-		common(expectPlatform.outputCollection)
+		implementation(common(rootProject.sourceSets["main"].output)!!)
 	}
 
 	tasks.shadowJar {
-		dependsOn(expectPlatform)
 		archiveBaseName.set("archives_base_name"())
 		archiveVersion.set("modVersion"())
 		archiveClassifier.set("$platform-unmapped")
@@ -156,9 +153,15 @@ subprojects {
 		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${project.name}")
 	}
 
-	tasks.register<RemapJarTaskImpl>("remapShadowJar", unimined.minecrafts[sourceSets["main"]]).configure {
+	val expectPlatformJar by tasks.register<ExpectPlatformJar>("platformJar") {
+		group = "unimined"
+		platformName = platform
+		inputFiles = files(tasks.shadowJar.get().archiveFile)
+	}
+
+	tasks.register<RemapJarTaskImpl>("remapPlatformJar", unimined.minecrafts[sourceSets["main"]]).configure {
 		dependsOn("shadowJar")
-		inputFile.set(tasks.shadowJar.get().archiveFile)
+		inputFile.set(expectPlatformJar.archiveFile)
 		archiveClassifier = platform
 	}
 }
@@ -166,36 +169,37 @@ subprojects {
 tasks.jar { enabled = false }
 
 unimined.minecraft {
-	fabric { loader("fabric_version"()) }
-
 	runs.off = true
+
+	mappings.intermediary()
 
 	mods {
 		modImplementation {
 			catchAWNamespaceAssertion()
-		}
-	}
-
-	runs {
-		config("client") {
-			jvmArgs("-Xms4G", "-Xmx4G")
+			namespace("intermediary")
 		}
 	}
 }
 
 repositories {
+	maven("https://jitpack.io")
 	maven("https://maven.tterrag.com")
 	maven("https://mvn.devos.one/snapshots")
+	maven("https://maven.theillusivec4.top")
 	maven("https://maven.cafeteria.dev/releases")
 	maven("https://maven.jamieswhiteshirt.com/libs-release")
-	maven("https://maven.theillusivec4.top")
-	maven("https://jitpack.io")
+	maven("https://repo.spongepowered.org/repository/maven-public/")
 }
 
 dependencies {
 	"modImplementation"("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
 		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
 	}
+
+	implementation("org.ow2.asm:asm:${"asm_version"()}")
+	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
+	implementation("org.ow2.asm:asm-commons:${"asm_version"()}")
+	implementation("org.spongepowered:mixin:${"mixin_version"()}")
 }
 
 val mergeJars = tasks.register<ShadowJar>("mergeJars") {
@@ -203,7 +207,7 @@ val mergeJars = tasks.register<ShadowJar>("mergeJars") {
 	description = "Merges the platform shadow jars into a single jar"
 	archiveBaseName.set("archives_base_name"())
 	archiveVersion.set("modVersion"())
-	subprojects.map { it.tasks["remapShadowJar"] }.forEach {
+	subprojects.map { it.tasks["remapPlatformJar"] }.forEach {
 		dependsOn(it)
 		from(it)
 	}
@@ -220,7 +224,12 @@ fun setup() {
 	if(buildNumber != null) {
 		println("Build #$buildNumber")
 	}
+
 	println()
+	println("Gradle ${gradle.gradleVersion}, on ${System.getProperty("java.vm.name")} v${System.getProperty("java.version")}, by ${System.getProperty("java.vendor")}")
+	println("OS: \"${OSUtils.oSId}\", arch \"${OSUtils.osArch}\"")
+	println()
+
 	if(git.exists()) {
 		println("Current branch: ${git.currentBranch()}")
 		println("Current commit: ${git.hash()}")

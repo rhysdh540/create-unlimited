@@ -48,29 +48,33 @@ public final class Asm {
 			ISTORE [lvtIndex]
 		 	*/
 
-			InsnList toInject = new InsnList();
-			// get CUConfigs.server.placementChecks
-			toInject.add(new FieldInsnNode(GETSTATIC, Type.getInternalName(CUConfigs.class), "server", Type.getDescriptor(CUServer.class)));
-			toInject.add(new FieldInsnNode(GETFIELD, Type.getInternalName(CUServer.class), "placementChecks", Type.getDescriptor(ConfigEnum.class)));
+			AbstractInsnNode[] toInject = new AbstractInsnNode[] {
+				// get CUConfigs.server.placementChecks
+				new FieldInsnNode(GETSTATIC, Type.getInternalName(CUConfigs.class), "server", Type.getDescriptor(CUServer.class)),
+				new FieldInsnNode(GETFIELD, Type.getInternalName(CUServer.class), "placementChecks", Type.getDescriptor(ConfigEnum.class)),
 
-			// get PlacementCheck.ON
-			toInject.add(new FieldInsnNode(GETSTATIC, Type.getInternalName(PlacementCheck.class), "ON", Type.getDescriptor(PlacementCheck.class)));
+				// get PlacementCheck.ON
+				new FieldInsnNode(GETSTATIC, Type.getInternalName(PlacementCheck.class), "ON", Type.getDescriptor(PlacementCheck.class)),
 
-			// call Util.orElse(CUConfigs.server.placementChecks, PlacementCheck.ON)
-			toInject.add(new MethodInsnNode(INVOKESTATIC, Type.getInternalName(Util.class), "orElse", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(CValue.class), Type.getType(Object.class))));
+				// call Util.orElse(CUConfigs.server.placementChecks, PlacementCheck.ON)
+				new MethodInsnNode(INVOKESTATIC, Type.getInternalName(Util.class), "orElse", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(CValue.class), Type.getType(Object.class))),
 
-			// cast result of orElse to PlacementCheck
-			toInject.add(new TypeInsnNode(CHECKCAST, Type.getInternalName(PlacementCheck.class)));
+				// cast result of orElse to PlacementCheck
+				new TypeInsnNode(CHECKCAST, Type.getInternalName(PlacementCheck.class)),
 
-			// load player (second argument of tryConnect)
-			toInject.add(new VarInsnNode(ALOAD, 1));
+				// load player (second argument of tryConnect)
+				new VarInsnNode(ALOAD, 1),
 
-			// call isEnabledFor(player) on the PlacementCheck from above
-			toInject.add(new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(PlacementCheck.class), "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class))));
+				// call isEnabledFor(player) on the PlacementCheck from above
+				new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(PlacementCheck.class), "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class))),
 
-			// store result of isEnabledFor in local variable
-			toInject.add(new VarInsnNode(ISTORE, lvtIndex));
-			tryConnect.instructions.insert(toInject);
+				// store result of isEnabledFor in local variable
+				new VarInsnNode(ISTORE, lvtIndex),
+			};
+
+			for(int i = toInject.length - 1; i >= 0; i--) {
+				tryConnect.instructions.insert(toInject[i]);
+			}
 		}
 
 		Set<String> targetMessages = Set.of(

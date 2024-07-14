@@ -1,5 +1,6 @@
 import xyz.wagyourtail.unimined.api.unimined
 import xyz.wagyourtail.unimined.internal.minecraft.patch.forge.ForgeLikeMinecraftTransformer
+import xyz.wagyourtail.unimined.util.OSUtils
 
 unimined.minecraft {
 	minecraftForge {
@@ -12,6 +13,11 @@ unimined.minecraft {
 			"-Dmixin.env.remapRefMap=true",
 			"-Dmixin.env.refMapRemappingFile=${(mcPatcher as ForgeLikeMinecraftTransformer).srgToMCPAsSRG}"
 		)
+
+		if(OSUtils.oSId == OSUtils.OSX) {
+			// for some reason this doesn't get inserted automatically on forge?
+			jvmArgs("-XstartOnFirstThread")
+		}
 	}
 }
 
