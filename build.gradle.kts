@@ -41,21 +41,20 @@ allprojects {
 				excludeGroup("ca.weblite")
 			}
 		}
-		maven("https://maven.parchmentmc.org")
+		unimined.parchmentMaven()
 		exclusiveContent {
 			forRepository { maven("https://api.modrinth.com/maven") }
 			filter {
 				includeGroup("maven.modrinth")
 			}
 		}
-		maven("https://maven.architectury.dev")
 		exclusiveContent {
 			forRepository { maven("https://cursemaven.com") }
 			filter {
 				includeGroup("curse.maven")
 			}
 		}
-		maven("https://maven.wagyourtail.xyz/releases")
+		unimined.wagYourMaven("releases")
 	}
 
 	tasks.withType<JavaCompile> {

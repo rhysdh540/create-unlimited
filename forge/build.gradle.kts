@@ -8,6 +8,18 @@ unimined.minecraft {
 		mixinConfig("createunlimited.mixins.json")
 	}
 
+	mappings {
+		// TODO make this actually work
+		@Suppress("UnstableApiUsage")
+		mapping(files("patch.tiny")) {
+			sourceNamespace("searge")
+			dependsOn("searge")
+			outputs("patch", true) { listOf("searge") }
+			allowDuplicateOutputs()
+		}
+	}
+
+
 	runs.config("client") {
 		jvmArgs(
 			"-Dmixin.env.remapRefMap=true",

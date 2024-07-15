@@ -3,6 +3,7 @@ import java.util.*
 
 plugins {
 	`kotlin-dsl`
+	idea
 }
 
 repositories {
@@ -16,6 +17,8 @@ repositories {
 	maven("https://maven.wagyourtail.xyz/snapshots")
 	gradlePluginPortal()
 }
+
+idea.module.setDownloadSources(true)
 
 fun DependencyHandler.plugin(id: String, version: String) {
 	this.implementation(group = id, name = "$id.gradle.plugin", version = version)
