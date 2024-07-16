@@ -286,30 +286,9 @@ val compressJar = tasks.register<ProcessJar>("compressJar") {
 	archiveVersion = "modVersion"()
 	archiveClassifier = ""
 
-	addFileProcessor("json", "mcmeta") { // remove whitespace/comments from json files
-		val json = JsonSlurper().parse(it)
-		it.outputStream().write(JsonOutput.toJson(json).toByteArray())
-	}
+	addFileProcessor(setOf("json", "mcmeta"), Compressors.json)
 
-	addFileProcessor("jar") { // store jar files with no compression
-		val tmp = it.copyTo(File.createTempFile(it.nameWithoutExtension, ".jar"), overwrite = true)
-		JarInputStream(tmp.inputStream()).use { ins ->
-			JarOutputStream(it.outputStream()).use { out ->
-				out.setLevel(Deflater.NO_COMPRESSION)
-				var entry: JarEntry? = ins.nextEntry as JarEntry?
-				while (entry != null) {
-					out.putNextEntry(JarEntry(entry.name))
-					ins.copyTo(out)
-					out.closeEntry()
-					ins.closeEntry()
-					entry = ins.nextEntry as JarEntry?
-				}
-
-				out.finish()
-				out.flush()
-			}
-		}
-	}
+	addFileProcessor(setOf("jar"), Compressors.storeJars)
 
 	addDirProcessor { dir -> // proguard
 		val temp = temporaryDir.resolve("proguard")

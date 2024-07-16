@@ -28,6 +28,10 @@ open class ProcessJar : Jar() {
 	}
 
 	fun addFileProcessor(vararg extensions: String, processor: FileProcessor) {
+		addFileProcessor(extensions.asIterable(), processor)
+	}
+
+	fun addFileProcessor(extensions: Iterable<String>, processor: FileProcessor) {
 		processors.add {
 			it.walkTopDown().forEach { file ->
 				if (file.extension in extensions)
