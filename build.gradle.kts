@@ -1,6 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
@@ -29,8 +31,12 @@ allprojects {
 	group = "maven_group"()
 
 	java {
-		sourceCompatibility = JavaVersion.VERSION_17
-		targetCompatibility = JavaVersion.VERSION_17
+		toolchain {
+			languageVersion.set(JavaLanguageVersion.of("java_version"()))
+		}
+
+		sourceCompatibility = JavaVersion.toVersion("java_version"())
+		targetCompatibility = JavaVersion.toVersion("java_version"())
 	}
 
 	idea.module.setDownloadSources(true)
@@ -59,11 +65,11 @@ allprojects {
 
 	tasks.withType<JavaCompile> {
 		options.encoding = "UTF-8"
-		options.release = 17
+		options.release = "java_version"().toInt()
 		options.compilerArgs.addAll(listOf("-Xplugin:Manifold no-bootstrap", "-implicit:none"))
 
 		javaCompiler = javaToolchains.compilerFor {
-			languageVersion.set(JavaLanguageVersion.of(17))
+			languageVersion.set(JavaLanguageVersion.of("java_version"()))
 		}
 	}
 
@@ -131,7 +137,7 @@ subprojects {
 
 	tasks.jar {
 		archiveClassifier = "$platform-dev-unmapped"
-		destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
+		putInDevlibs()
 	}
 
 	val common by configurations.registering
@@ -144,24 +150,42 @@ subprojects {
 		archiveBaseName.set("archives_base_name"())
 		archiveVersion.set("modVersion"())
 		archiveClassifier.set("$platform-unmapped")
-		destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
+		putInDevlibs()
+
+		relocate("dev.rdh.createunlimited.$platform", "dev.rdh.createunlimited")
 
 		configurations = listOf(common.get())
-
-		relocate("dev.rdh.createunlimited.${project.name}", "dev.rdh.createunlimited.${project.name}.platform")
-		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${project.name}")
 	}
 
 	val expectPlatformJar by tasks.register<ExpectPlatformJar>("platformJar") {
 		group = "unimined"
 		platformName = platform
+		archiveClassifier = "expect-$platform"
+		putInDevlibs()
 		inputFiles = files(tasks.shadowJar.get().archiveFile)
 	}
 
-	tasks.register<RemapJarTaskImpl>("remapPlatformJar", unimined.minecrafts[sourceSets["main"]]).configure {
-		dependsOn("shadowJar")
+	val remapPlatformJar = tasks.register<RemapJarTaskImpl>("remapPlatformJar", unimined.minecrafts[sourceSets["main"]])
+	remapPlatformJar.configure {
+		dependsOn(expectPlatformJar)
 		inputFile.set(expectPlatformJar.archiveFile)
 		archiveClassifier = platform
+	}
+
+	tasks.register<ShadowJar>("preShadow") {
+		from(zipTree(remapPlatformJar.get().archiveFile)) {
+			rename {
+				if(it == "createunlimited.mixins.json") "createunlimited-$platform.mixins.json"
+				else if(it.endsWith(".jar")) it + "_"
+				else it
+			}
+			includeEmptyDirs = false
+		}
+
+		archiveClassifier.set("premerge-$platform")
+		putInDevlibs()
+
+		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${project.name}")
 	}
 }
 
@@ -201,14 +225,62 @@ dependencies {
 	implementation("org.spongepowered:mixin:${"mixin_version"()}")
 }
 
-val mergeJars = tasks.register<ShadowJar>("mergeJars") {
+val mergeJars by tasks.register<Jar>("mergeJars") {
 	group = "build"
 	description = "Merges the platform shadow jars into a single jar"
-	archiveBaseName.set("archives_base_name"())
-	archiveVersion.set("modVersion"())
-	subprojects.map { it.tasks["remapPlatformJar"] }.forEach {
-		dependsOn(it)
-		from(it)
+	archiveBaseName = "archives_base_name"()
+	archiveVersion = "modVersion"()
+	archiveClassifier = "almost-done"
+	putInDevlibs()
+
+	includeEmptyDirs = false
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+	val oldMixinConfig = "createunlimited.mixins.json"
+	fun newMixinConfig(platform: String) = "createunlimited-$platform.mixins.json"
+
+	val oldMixinPackage = "dev.rdh.createunlimited.asm"
+	fun newMixinPackage(platform: String) = "dev.rdh.createunlimited.$platform.asm"
+
+	from(zipTree(project(":fabric").tasks.get<ShadowJar>("preShadow").archiveFile)) {
+		includeEmptyDirs = false
+		val newMixinConfig = newMixinConfig("fabric")
+		val newMixinPackage = newMixinPackage("fabric")
+
+		filesMatching("fabric.mod.json") {
+			filter { it.replace(oldMixinConfig, newMixinConfig) }
+		}
+		filesMatching(newMixinConfig) {
+			filter { it.replace(oldMixinPackage, newMixinPackage) }
+		}
+	}
+
+	from(zipTree(project(":forge").tasks.get<ShadowJar>("preShadow").archiveFile)) {
+		includeEmptyDirs = false
+		filesMatching(newMixinConfig("forge")) {
+			filter { it.replace(oldMixinPackage, newMixinPackage("forge")) }
+		}
+
+		rename { if(it.endsWith(".jar_")) it.substring(0, it.length - 1) else it }
+	}
+
+	manifest {
+		attributes["MixinConfigs"] = newMixinConfig("forge")
+		attributes["Fabric-Loom-Mixin-Remap-Type"] = "static"
+	}
+}
+
+val compressJar = tasks.register<ProcessJar>("compressJar") {
+	input.set(mergeJars.archiveFile)
+	description = "Compresses the merged jar"
+
+	archiveBaseName = "archives_base_name"()
+	archiveVersion = "modVersion"()
+	archiveClassifier = ""
+
+	addFileProcessor("json", "mcmeta") { file ->
+		val json = JsonSlurper().parse(file)
+		file.outputStream().write(JsonOutput.toJson(json).toByteArray())
 	}
 }
 
@@ -217,7 +289,7 @@ tasks.assemble {
 }
 
 fun setup() {
-	println("Create Unlimited v${"mod_version"()}")
+	println("${project.name} v${"mod_version"()}")
 
 	val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
 	if(buildNumber != null) {
@@ -234,15 +306,14 @@ fun setup() {
 		println("Current commit: ${git.hash()}")
 		if (git.isDirty()) {
 			var changes = git.getUncommitedChanges().split("\n").toMutableList()
-			val maxChanges = 10
-			if (changes.size > maxChanges) {
+			val size = changes.size
+			val maxChanges = "git_max_changes"().toInt()
+			if (size > maxChanges) {
 				changes = changes.subList(0, maxChanges)
-				changes.add("... and ${changes.size - maxChanges} more")
+				changes.add("... and ${size - maxChanges} more")
 			}
 
-			changes.replaceAll { "  - $it" }
-
-			println("Uncommitted changes:\n${changes.joinToString("\n")}")
+			println("Uncommitted changes:\n${changes.map{ "  - $it" }.joinToString("\n")}")
 		}
 	} else {
 		println("No git repository")
