@@ -5,17 +5,10 @@
   "plugin": "dev.rdh.createunlimited.asm.CUMixinConfig",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "CopycatBlockMixin",
-    "ExtendoGripItemMixin",
-    "accessor.CValueAccessor",
-    "glue.SuperGlueSelectionPacketMixin",
-    "train.CarriageContraptionMixin",
-    "train.CTrainsMixin",
-    "train.StationBlockEntityMixin",
-    "train.TrackEdgeMixin",
-    "train.TrackPlacementMixin",
-    "train.TrackTargetingBlockItemMixin",
-    "train.TrainMixin"
+    "CopycatBlockMixin", "ExtendoGripItemMixin", "accessor.CValueAccessor", "glue.SuperGlueSelectionHelperMixin",
+    "glue.SuperGlueSelectionPacketMixin", "train.CarriageContraptionMixin", "train.CTrainsMixin",
+    "train.StationBlockEntityMixin", "train.TrackEdgeMixin", "train.TrackPlacementMixin",
+    "train.TrackTargetingBlockItemMixin", "train.TrainMixin"
   ],
   "client": [
     "glue.SuperGlueSectionHandlerMixin",
