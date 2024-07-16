@@ -9,13 +9,14 @@ unimined.minecraft {
 	}
 
 	mappings {
-		// TODO make this actually work
-		@Suppress("UnstableApiUsage")
-		mapping(files("patch.tiny")) {
-			sourceNamespace("searge")
-			dependsOn("searge")
-			outputs("patch", true) { listOf("searge") }
-			allowDuplicateOutputs()
+		stub.withMappings("searge", "mojmap") {
+			c(when (minecraft.version) {
+				"1.19.2" -> "exm"
+				"1.20.1" -> "fho"
+				else -> error("no ParticleEngine mapping for ${minecraft.version}")
+			}, listOf("net/minecraft/client/particle/ParticleEngine")) {
+				f("[nothing]", "Ljava/util/Map;", "f_107293_", "providers")
+			}
 		}
 	}
 

@@ -1,3 +1,0 @@
-tiny	2	0	official	searge	patch
-c	fho	net/minecraft/client/particle/ParticleEngine	net/minecraft/client/particle/ParticleEngine
-	f	Ljava/util/Map;	k	f_107293_	providers
