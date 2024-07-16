@@ -10,6 +10,7 @@ import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
 import xyz.wagyourtail.unimined.util.OSUtils
 import xyz.wagyourtail.unimined.util.sourceSets
 import xyz.wagyourtail.gradle.shadow.ShadowJar
+import java.util.jar.JarEntry
 import java.util.jar.JarInputStream
 import java.util.jar.JarOutputStream
 import java.util.zip.Deflater
@@ -290,19 +291,25 @@ val compressJar = tasks.register<ProcessJar>("compressJar") {
 		it.outputStream().write(JsonOutput.toJson(json).toByteArray())
 	}
 
-//	addFileProcessor("jar") { // store jar files with no compression
-//		val tmp = it.copyTo(File.createTempFile(it.nameWithoutExtension, ".jar"), overwrite = true)
-//		JarOutputStream(it.outputStream()).use { jos ->
-//			jos.setLevel(Deflater.NO_COMPRESSION)
-//			JarInputStream(tmp.inputStream()).use { ins ->
-//				while (true) {
-//					val entry = ins.nextJarEntry ?: break
-//					jos.putNextEntry(entry)
-//					ins.copyTo(jos)
-//				}
-//			}
-//		}
-//	}
+	addFileProcessor("jar") { // store jar files with no compression
+		val tmp = it.copyTo(File.createTempFile(it.nameWithoutExtension, ".jar"), overwrite = true)
+		JarInputStream(tmp.inputStream()).use { ins ->
+			JarOutputStream(it.outputStream()).use { out ->
+				out.setLevel(Deflater.NO_COMPRESSION)
+				var entry: JarEntry? = ins.nextEntry as JarEntry?
+				while (entry != null) {
+					out.putNextEntry(JarEntry(entry.name))
+					ins.copyTo(out)
+					out.closeEntry()
+					ins.closeEntry()
+					entry = ins.nextEntry as JarEntry?
+				}
+
+				out.finish()
+				out.flush()
+			}
+		}
+	}
 
 	addDirProcessor { dir -> // proguard
 		val temp = temporaryDir.resolve("proguard")

@@ -21,7 +21,7 @@ jobs:
                     cache-read-only: false
 
             -   name: do the build
-                run: ./gradlew assemble squishJar
+                run: ./gradlew assemble
                 continue-on-error: true
 
             -   name: upload artifacts
