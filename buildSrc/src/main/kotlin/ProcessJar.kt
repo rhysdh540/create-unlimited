@@ -15,6 +15,7 @@ open class ProcessJar : Jar() {
 
 	init {
 		group = "build"
+		outputs.upToDateWhen { false }
 	}
 
 	fun addFileProcessor(regex: Regex, processor: FileProcessor) {
@@ -71,11 +72,11 @@ open class ProcessJar : Jar() {
 		// repack jar
 		JarOutputStream(archiveFile.get().asFile.outputStream()).use { jos ->
 			jos.setLevel(Deflater.BEST_COMPRESSION)
-			for (it in dir.walkTopDown()) {
-				if(it.isDirectory) continue
-				val entry = JarEntry(it.relativeTo(dir).path)
+			for (file in dir.walkTopDown()) {
+				if(file.isDirectory) continue
+				val entry = JarEntry(file.relativeTo(dir).path)
 				jos.putNextEntry(entry)
-				it.inputStream().copyTo(jos)
+				file.inputStream().copyTo(jos)
 				jos.closeEntry()
 			}
 

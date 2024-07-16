@@ -1,19 +1,23 @@
 @file:Suppress("UnstableApiUsage")
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import proguard.ConfigurationParser
+import proguard.ProGuard
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
 import xyz.wagyourtail.unimined.util.OSUtils
 import xyz.wagyourtail.unimined.util.sourceSets
+import xyz.wagyourtail.gradle.shadow.ShadowJar
+import java.util.jar.JarInputStream
+import java.util.jar.JarOutputStream
+import java.util.zip.Deflater
 
 plugins {
 	id("java")
 	id("idea")
 	id("xyz.wagyourtail.unimined")
-	id("com.github.johnrengelman.shadow")
 	id("xyz.wagyourtail.unimined.expect-platform")
 }
 
@@ -23,7 +27,6 @@ allprojects {
 	apply(plugin = "java")
 	apply(plugin = "idea")
 	apply(plugin = "xyz.wagyourtail.unimined")
-	apply(plugin = "com.github.johnrengelman.shadow")
 	apply(plugin = "xyz.wagyourtail.unimined.expect-platform")
 
 	base.archivesName.set("archives_base_name"())
@@ -76,6 +79,7 @@ allprojects {
 	tasks.withType<AbstractArchiveTask> {
 		isPreserveFileTimestamps = false
 		isReproducibleFileOrder = true
+		includeEmptyDirs = false
 	}
 
 	unimined.minecraft(sourceSet = sourceSets["main"], lateApply = true) {
@@ -118,6 +122,10 @@ allprojects {
 subprojects {
 	val platform = project.name.lowercase()
 
+	dependencies {
+		implementation(rootProject.sourceSets["main"].output)
+	}
+
 	tasks.processResources {
 		from(rootProject.sourceSets["main"].resources)
 
@@ -137,24 +145,10 @@ subprojects {
 
 	tasks.jar {
 		archiveClassifier = "$platform-dev-unmapped"
+		from(rootProject.sourceSets["main"].output) {
+			include("**/*.class")
+		}
 		putInDevlibs()
-	}
-
-	val common by configurations.registering
-
-	dependencies {
-		implementation(common(rootProject.sourceSets["main"].output)!!)
-	}
-
-	tasks.shadowJar {
-		archiveBaseName.set("archives_base_name"())
-		archiveVersion.set("modVersion"())
-		archiveClassifier.set("$platform-unmapped")
-		putInDevlibs()
-
-		relocate("dev.rdh.createunlimited.$platform", "dev.rdh.createunlimited")
-
-		configurations = listOf(common.get())
 	}
 
 	val expectPlatformJar by tasks.register<ExpectPlatformJar>("platformJar") {
@@ -162,13 +156,26 @@ subprojects {
 		platformName = platform
 		archiveClassifier = "expect-$platform"
 		putInDevlibs()
-		inputFiles = files(tasks.shadowJar.get().archiveFile)
+		inputFiles = files(tasks.jar.get().archiveFile)
+	}
+
+	val shadowJar by tasks.register<ShadowJar>("shadowJar") {
+		dependsOn(expectPlatformJar)
+		archiveBaseName.set("archives_base_name"())
+		archiveVersion.set("modVersion"())
+		archiveClassifier.set("$platform-shadowJar")
+		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+		putInDevlibs()
+
+		shadowContents.add(files(expectPlatformJar.archiveFile))
+
+		relocate("dev.rdh.createunlimited.$platform", "dev.rdh.createunlimited")
 	}
 
 	val remapPlatformJar = tasks.register<RemapJarTaskImpl>("remapPlatformJar", unimined.minecrafts[sourceSets["main"]])
 	remapPlatformJar.configure {
-		dependsOn(expectPlatformJar)
-		inputFile.set(expectPlatformJar.archiveFile)
+		dependsOn(shadowJar)
+		inputFile.set(shadowJar.archiveFile)
 		archiveClassifier = platform
 	}
 
@@ -176,7 +183,7 @@ subprojects {
 		from(zipTree(remapPlatformJar.get().archiveFile)) {
 			rename {
 				if(it == "createunlimited.mixins.json") "createunlimited-$platform.mixins.json"
-				else if(it.endsWith(".jar")) it + "_"
+				//else if(it.endsWith(".jar")) it + "_"
 				else it
 			}
 			includeEmptyDirs = false
@@ -261,7 +268,7 @@ val mergeJars by tasks.register<Jar>("mergeJars") {
 			filter { it.replace(oldMixinPackage, newMixinPackage("forge")) }
 		}
 
-		rename { if(it.endsWith(".jar_")) it.substring(0, it.length - 1) else it }
+		//rename { if(it.endsWith(".jar_")) it.substring(0, it.length - 1) else it }
 	}
 
 	manifest {
@@ -278,9 +285,68 @@ val compressJar = tasks.register<ProcessJar>("compressJar") {
 	archiveVersion = "modVersion"()
 	archiveClassifier = ""
 
-	addFileProcessor("json", "mcmeta") { file ->
-		val json = JsonSlurper().parse(file)
-		file.outputStream().write(JsonOutput.toJson(json).toByteArray())
+	addFileProcessor("json", "mcmeta") { // remove whitespace/comments from json files
+		val json = JsonSlurper().parse(it)
+		it.outputStream().write(JsonOutput.toJson(json).toByteArray())
+	}
+
+//	addFileProcessor("jar") { // store jar files with no compression
+//		val tmp = it.copyTo(File.createTempFile(it.nameWithoutExtension, ".jar"), overwrite = true)
+//		JarOutputStream(it.outputStream()).use { jos ->
+//			jos.setLevel(Deflater.NO_COMPRESSION)
+//			JarInputStream(tmp.inputStream()).use { ins ->
+//				while (true) {
+//					val entry = ins.nextJarEntry ?: break
+//					jos.putNextEntry(entry)
+//					ins.copyTo(jos)
+//				}
+//			}
+//		}
+//	}
+
+	addDirProcessor { dir -> // proguard
+		val temp = temporaryDir.resolve("proguard")
+		temp.mkdirs()
+		dir.copyRecursively(temp, overwrite = true)
+		dir.deleteRecursively()
+		val args = mutableListOf(
+			"@${file("proguard.pro").absolutePath}",
+			"-injars", temp.absolutePath,
+			"-outjars", dir.absolutePath,
+		)
+
+		val libraries = mutableSetOf<String>()
+		libraries.add("${JAVA_HOME}/jmods/java.base.jmod")
+
+		for (minecraftConfig in subprojects.flatMap { it.unimined.minecrafts.values }) {
+			val prodNamespace = minecraftConfig.mcPatcher.prodNamespace
+
+			libraries.add(minecraftConfig.getMinecraft(prodNamespace, prodNamespace).toFile().absolutePath)
+
+			val minecrafts = listOf(
+				minecraftConfig.sourceSet.compileClasspath.files,
+				minecraftConfig.sourceSet.runtimeClasspath.files
+			).flatten()
+				.filter { !minecraftConfig.isMinecraftJar(it.toPath()) }
+				.toHashSet()
+
+			libraries += minecraftConfig.mods.getClasspathAs(prodNamespace, prodNamespace, minecrafts)
+				.filter { it.extension == "jar" && !it.name.startsWith("createunlimited") }
+				.map { it.absolutePath }
+		}
+
+		args.addAll(listOf("-libraryjars", libraries.joinToString(separator = File.pathSeparator) { "\"$it\"" }))
+
+		try {
+			ProGuard(proguard.Configuration().also {
+				ConfigurationParser(args.toTypedArray(), null)
+					.parse(it)
+			}).execute()
+		} catch (ex: Exception) {
+			throw IllegalStateException("ProGuard failed for $temp", ex)
+		} finally {
+			temp.deleteRecursively()
+		}
 	}
 }
 
@@ -335,11 +401,10 @@ tasks.register("nukeGradleCaches") {
 	dependsOn("clean")
 	group = "build"
 	description = "Deletes all .gradle directories in the project. WARNING: causes IDEs to freeze for a while."
+	outputs.upToDateWhen { false }
 	doLast {
-		fileTree(rootDir) {
-			include("**/.gradle")
-		}.forEach {
-			it.deleteRecursively()
+		allprojects.forEach {
+			it.file(".gradle").deleteRecursively()
 		}
 	}
 }

@@ -42,9 +42,10 @@ operator fun String.invoke(): String = gradleProperties.getProperty(this) ?: err
 
 dependencies {
 	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
+	implementation("org.ow2.asm:asm-commons:${"asm_version"()}")
 	implementation(group = "org.jetbrains", name = "annotations")
+	implementation("com.guardsquare:proguard-base:${"proguard_version"()}")
 
 	plugin(id = "xyz.wagyourtail.unimined", version = "unimined_version"())
-	plugin(id = "com.github.johnrengelman.shadow", version = "shadow_version"())
 	plugin(id = "xyz.wagyourtail.unimined.expect-platform", version = "expectplatform_version"())
 }
