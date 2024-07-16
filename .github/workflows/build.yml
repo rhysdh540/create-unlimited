@@ -29,5 +29,4 @@ jobs:
                 with:
                     name: unlimited-artifacts-v${{ github.run_number }}
                     path: |
-                        build/libs/merged/*.jar
                         */build/libs/*.jar
