@@ -2,8 +2,6 @@ package dev.rdh.createunlimited;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
-
 import com.simibubi.create.foundation.config.ConfigBase.CValue;
 import com.simibubi.create.foundation.config.ConfigBase.ConfigBool;
 
@@ -15,6 +13,8 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
+
+import xyz.wagyourtail.unimined.expect.annotation.ExpectPlatform;
 
 public abstract class Util {
 
@@ -53,7 +53,7 @@ public abstract class Util {
 		try {
 			return value.get();
 		} catch (IllegalStateException e) {
-			if(e.message.contains("config")) {
+			if(e.getMessage().contains("config")) {
 				return orElse;
 			}
 			throw e;

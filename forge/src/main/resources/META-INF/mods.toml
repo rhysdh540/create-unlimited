@@ -5,7 +5,7 @@ license = "GPL-3.0-or-later"
 
 [[mods]]
 modId = "createunlimited"
-version = "${version}"
+version = "${mod_version}"
 displayName = "Create Unlimited"
 authors = "rdh"
 description = '''
@@ -23,13 +23,13 @@ side = "BOTH"
 [[dependencies.createunlimited]]
 modId = "minecraft"
 mandatory = true
-versionRange = "${minecraft}"
+versionRange = "${minecraft_version}"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.createunlimited]]
 modId="create"
 mandatory=true
-versionRange="[${create},)"
+versionRange="[${create_version},)"
 ordering="AFTER"
 side="BOTH"
