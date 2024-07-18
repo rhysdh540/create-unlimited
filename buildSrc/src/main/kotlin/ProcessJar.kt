@@ -1,3 +1,5 @@
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.InputFile
 import org.gradle.jvm.tasks.Jar
 import java.io.File
@@ -7,34 +9,40 @@ import java.util.zip.Deflater
 
 typealias FileProcessor = (File) -> Unit
 
-open class ProcessJar : Jar() {
-	val input = project.objects.fileProperty()
+abstract class ProcessJar : Jar() {
+	abstract val input: RegularFileProperty
 		@InputFile get
 
-	private val processors = mutableListOf<FileProcessor>()
+	abstract val processors: ListProperty<FileProcessor>
 
 	init {
 		group = "build"
 		outputs.upToDateWhen { false }
+
+		addFileProcessor(paths = setOf("META-INF/MANIFEST.MF")) { file ->
+			manifest.from(file)
+			file.delete()
+			file.createNewFile()
+			manifest.effectiveManifest.writeTo(file)
+		}
 	}
 
 	fun addFileProcessor(regex: Regex, processor: FileProcessor) {
 		processors.add {
 			it.walkTopDown().forEach { file ->
-				if (file.extension.matches(regex))
+				if (file.path.matches(regex))
 					processor(file)
 			}
 		}
 	}
 
-	fun addFileProcessor(vararg extensions: String, processor: FileProcessor) {
-		addFileProcessor(extensions.asIterable(), processor)
-	}
-
-	fun addFileProcessor(extensions: Iterable<String>, processor: FileProcessor) {
+	fun addFileProcessor(extensions: Iterable<String> = emptySet(),
+						 names: Iterable<String> = emptySet(),
+						 paths: Iterable<String> = emptySet(),
+						 processor: FileProcessor) {
 		processors.add {
 			it.walkTopDown().forEach { file ->
-				if (file.extension in extensions)
+				if (file.extension in extensions || file.name in names || file.path in paths)
 					processor(file)
 			}
 		}
@@ -62,16 +70,8 @@ open class ProcessJar : Jar() {
 			into(dir)
 		}
 
-		processors.forEach { it(dir) }
-
-		// merge manifests
-		val manifestFile = dir.resolve("META-INF/MANIFEST.MF")
-		if (manifestFile.exists()) {
-			manifest.from(manifestFile)
-			manifestFile.delete()
-			manifestFile.createNewFile()
-			manifest.effectiveManifest.writeTo(manifestFile)
-		}
+		processors.finalizeValue()
+		processors.get().forEach { it(dir) }
 
 		// repack jar
 		JarOutputStream(archiveFile.get().asFile.outputStream()).use { jos ->

@@ -286,9 +286,8 @@ val compressJar = tasks.register<ProcessJar>("compressJar") {
 	archiveVersion = "modVersion"()
 	archiveClassifier = ""
 
-	addFileProcessor(setOf("json", "mcmeta"), Compressors.json)
-
-	addFileProcessor(setOf("jar"), Compressors.storeJars)
+	addFileProcessor(extensions = setOf("json", "mcmeta"), processor = Compressors.json)
+	addFileProcessor(extensions = setOf("jar"), processor = Compressors.storeJars)
 
 	addDirProcessor { dir -> // proguard
 		val temp = temporaryDir.resolve("proguard")
