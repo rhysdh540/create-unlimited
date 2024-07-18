@@ -21,7 +21,7 @@ jobs:
                     cache-read-only: false
 
             -   name: do the build
-                run: ./gradlew assemble squishJar
+                run: ./gradlew assemble
                 continue-on-error: true
 
             -   name: upload artifacts
@@ -29,5 +29,4 @@ jobs:
                 with:
                     name: unlimited-artifacts-v${{ github.run_number }}
                     path: |
-                        build/libs/merged/*.jar
                         */build/libs/*.jar
