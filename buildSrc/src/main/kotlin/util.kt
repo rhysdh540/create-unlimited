@@ -9,8 +9,8 @@ val JAVA_HOME = System.getProperty("java.home") ?: error("JAVA_HOME not set")
 fun Jar.clearSourcePaths() {
 	AbstractCopyTask::class.java.getDeclaredField("mainSpec").let {
 		it.isAccessible = true
-		val thing = it.get(this) as DefaultCopySpec
-		thing.sourcePaths.clear()
+		val spec = it.get(this) as DefaultCopySpec
+		spec.sourcePaths.clear()
 		it.isAccessible = false
 	}
 }

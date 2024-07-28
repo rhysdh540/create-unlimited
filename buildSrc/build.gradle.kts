@@ -1,5 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import java.util.*
+import java.util.Properties
 
 plugins {
 	`kotlin-dsl`
@@ -20,18 +20,12 @@ repositories {
 
 idea.module.setDownloadSources(true)
 
-fun DependencyHandler.plugin(id: String, version: String) {
-	this.implementation(group = id, name = "$id.gradle.plugin", version = version)
-}
+fun DependencyHandler.plugin(id: String, version: String) =
+	implementation(group = id, name = "$id.gradle.plugin", version = version)
 
 tasks.compileKotlin {
 	compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
 	kotlinOptions.jvmTarget = "17"
-}
-
-java {
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
 }
 
 val gradleProperties = Properties().apply {

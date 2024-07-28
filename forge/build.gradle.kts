@@ -6,6 +6,7 @@ unimined.minecraft {
 	minecraftForge {
 		loader("forge_version"())
 		mixinConfig("createunlimited.mixins.json")
+		accessTransformer(file("run/accesstransformer.cfg"))
 	}
 
 	mappings {
