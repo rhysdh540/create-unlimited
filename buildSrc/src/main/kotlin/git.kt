@@ -11,7 +11,11 @@ class Git(val repository: File) {
 	fun isDirty() = git("status", "--porcelain").isNotBlank()
 
 	// last commit hash
-	fun hash() = git("rev-parse", "--short", "HEAD").trim()
+	fun hash(long: Boolean = false) =
+		if(long)
+			git("rev-parse", "HEAD").trim()
+		else
+			git("rev-parse", "--short", "HEAD").trim()
 
 	// current branch
 	fun currentBranch() = git("rev-parse", "--abbrev-ref", "HEAD").trim()

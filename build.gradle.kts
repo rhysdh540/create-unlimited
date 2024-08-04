@@ -2,6 +2,13 @@
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.gradle.internal.xml.XmlTransformer
+import org.gradle.plugins.ide.idea.model.IdeaProject
+import org.jetbrains.gradle.ext.Gradle
+import org.jetbrains.gradle.ext.GradleTask
+import org.jetbrains.gradle.ext.RunConfiguration
+import org.jetbrains.gradle.ext.runConfigurations
+import org.jetbrains.gradle.ext.settings
 import proguard.ConfigurationParser
 import proguard.ProGuard
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
@@ -10,6 +17,7 @@ import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
 import xyz.wagyourtail.unimined.util.OSUtils
 import xyz.wagyourtail.unimined.util.sourceSets
 import xyz.wagyourtail.gradle.shadow.ShadowJar
+import xyz.wagyourtail.unimined.util.capitalized
 import java.util.jar.JarEntry
 import java.util.jar.JarInputStream
 import java.util.jar.JarOutputStream
@@ -19,16 +27,20 @@ plugins {
 	id("java")
 	id("idea")
 	id("xyz.wagyourtail.unimined")
+	id("org.jetbrains.gradle.plugin.idea-ext")
 	id("xyz.wagyourtail.unimined.expect-platform")
 }
 
 setup()
 
 allprojects {
-	apply(plugin = "java")
-	apply(plugin = "idea")
-	apply(plugin = "xyz.wagyourtail.unimined")
-	apply(plugin = "xyz.wagyourtail.unimined.expect-platform")
+	apply {
+		plugin("java")
+		plugin("idea")
+		plugin("xyz.wagyourtail.unimined")
+		plugin("org.jetbrains.gradle.plugin.idea-ext")
+		plugin("xyz.wagyourtail.unimined.expect-platform")
+	}
 
 	base.archivesName.set("archives_base_name"())
 	version = "modVersion"()
@@ -38,19 +50,13 @@ allprojects {
 		toolchain {
 			languageVersion.set(JavaLanguageVersion.of("java_version"()))
 		}
-
-		sourceCompatibility = JavaVersion.toVersion("java_version"())
-		targetCompatibility = JavaVersion.toVersion("java_version"())
 	}
 
-	idea.module.setDownloadSources(true)
+	idea {
+		module.isDownloadSources = true
+	}
 
 	repositories {
-		mavenCentral {
-			content {
-				excludeGroup("ca.weblite")
-			}
-		}
 		unimined.parchmentMaven()
 		exclusiveContent {
 			forRepository { maven("https://api.modrinth.com/maven") }
@@ -336,7 +342,7 @@ val compressJar = tasks.register<ProcessJar>("compressJar") {
 }
 
 tasks.assemble {
-	dependsOn(mergeJars)
+	dependsOn(mergeJars, compressJar)
 }
 
 fun setup() {

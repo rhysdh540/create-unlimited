@@ -6,7 +6,7 @@ import org.objectweb.asm.tree.*;
 import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfigs;
 import dev.rdh.createunlimited.config.CUServer;
-import dev.rdh.createunlimited.config.CUServer.PlacementCheck;
+import dev.rdh.createunlimited.config.PlacementCheck;
 
 import com.simibubi.create.foundation.config.ConfigBase.CValue;
 import com.simibubi.create.foundation.config.ConfigBase.ConfigEnum;
@@ -42,9 +42,9 @@ public final class Asm {
 			GETFIELD dev/rdh/createunlimited/config/CUServer.placementChecks : Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;
 			GETSTATIC com/simibubi/create/foundation/utility/PlacementCheck.ON : Lcom/simibubi/create/foundation/utility/PlacementCheck;
 			INVOKESTATIC dev/rdh/createunlimited/Util.orElse (Lcom/simibubi/create/foundation/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
-			CHECKCAST dev/rdh/createunlimited/config/CUServer$PlacementCheck;
+			CHECKCAST dev/rdh/createunlimited/config/PlacementCheck;
 			ALOAD 1
-			INVOKEVIRTUAL dev/rdh/createunlimited/config/CUServer$PlacementCheck.isEnabledFor (Lnet/minecraft/world/entity/player/Player;)Z
+			INVOKEVIRTUAL dev/rdh/createunlimited/config/PlacementCheck.isEnabledFor (Lnet/minecraft/world/entity/player/Player;)Z
 			ISTORE [lvtIndex]
 		 	*/
 

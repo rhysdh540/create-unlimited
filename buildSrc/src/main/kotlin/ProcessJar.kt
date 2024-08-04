@@ -1,6 +1,8 @@
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.jvm.tasks.Jar
 import java.io.File
 import java.util.jar.JarEntry
@@ -10,9 +12,10 @@ import java.util.zip.Deflater
 typealias FileProcessor = (File) -> Unit
 
 abstract class ProcessJar : Jar() {
+	@get:InputFile
 	abstract val input: RegularFileProperty
-		@InputFile get
 
+	@get:Internal
 	abstract val processors: ListProperty<FileProcessor>
 
 	init {
@@ -36,9 +39,9 @@ abstract class ProcessJar : Jar() {
 		}
 	}
 
-	fun addFileProcessor(extensions: Iterable<String> = emptySet(),
-						 names: Iterable<String> = emptySet(),
-						 paths: Iterable<String> = emptySet(),
+	fun addFileProcessor(extensions: Set<String> = emptySet(),
+						 names: Set<String> = emptySet(),
+						 paths: Set<String> = emptySet(),
 						 processor: FileProcessor) {
 		processors.add {
 			it.walkTopDown().forEach { file ->

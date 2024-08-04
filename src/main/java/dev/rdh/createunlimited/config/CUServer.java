@@ -4,12 +4,6 @@ import com.simibubi.create.foundation.config.ConfigBase;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
-import net.minecraft.world.entity.player.Player;
-
-import java.util.function.Predicate;
-
-import static com.google.common.base.Predicates.*;
-
 @SuppressWarnings("unused") // groups are used as markers for the screen and command
 public class CUServer extends ConfigBase {
 	@Override
@@ -64,21 +58,6 @@ public class CUServer extends ConfigBase {
 		} catch (IllegalAccessException | NoSuchFieldException e) {
 			CreateUnlimited.LOGGER.error("Failed to get comment for " + name, e);
 			return "No comment.";
-		}
-	}
-
-	public enum PlacementCheck {
-		ON(alwaysTrue()),
-		SURVIVAL_ONLY(not(Player::isCreative)),
-		OFF(alwaysFalse());
-
-		final Predicate<Player> enabled;
-
-		PlacementCheck(Predicate<Player> enabled) {
-			this.enabled = enabled;
-		}
-		public boolean isEnabledFor(Player player) {
-			return enabled.test(player);
 		}
 	}
 }

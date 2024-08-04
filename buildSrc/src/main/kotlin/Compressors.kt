@@ -9,7 +9,8 @@ import java.util.zip.Deflater
 object Compressors {
 	// minify json
 	val json: FileProcessor = {
-		it.outputStream().write(JsonOutput.toJson(JsonSlurper().parse(it)).toByteArray())
+		val minifed = JsonOutput.toJson(JsonSlurper().parse(it.readText().toCharArray())).toByteArray()
+		it.writeBytes(minifed)
 	}
 
 	// store JIJs instead of deflating them so that the outer jar compresses the entire thing (most of the time better)

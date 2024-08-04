@@ -34,7 +34,7 @@ public abstract class SuperGlueSelectionHelperMixin {
 		for(double posx = bb.minX; posx <= bb.maxX; posx++) {
 			for(double posy = bb.minY; posy <= bb.maxY; posy++) {
 				for(double posz = bb.minZ; posz <= bb.maxZ; posz++) {
-					BlockPos pos = new BlockPos(posx, posy, posz);
+					BlockPos pos = new BlockPos((int) posx, (int) posy, (int) posz);
 					Block block = level.getBlockState(pos).getBlock();
 
 					if(block != Blocks.AIR && block != Blocks.WATER) {
