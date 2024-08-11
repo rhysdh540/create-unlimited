@@ -35,14 +35,14 @@ public final class Asm {
 
 		{ // inject the thing to see if we should check for limits or not
 			/*
-			boolean [var0] = Util.orElse(CUConfigs.server.placementChecks, PlacementCheck.ON).isEnabledFor(player);
+			boolean [var0] = CUConfigs.getOrDefault(CUConfigs.server.placementChecks, PlacementCheck.ON).isEnabledFor(player);
 			compiles down to:
 
 			GETSTATIC dev/rdh/createunlimited/config/CUConfigs.server : Ldev/rdh/createunlimited/config/CUServer;
 			GETFIELD dev/rdh/createunlimited/config/CUServer.placementChecks : Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;
 			GETSTATIC com/simibubi/create/foundation/utility/PlacementCheck.ON : Lcom/simibubi/create/foundation/utility/PlacementCheck;
-			INVOKESTATIC dev/rdh/createunlimited/Util.orElse (Lcom/simibubi/create/foundation/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
-			CHECKCAST dev/rdh/createunlimited/config/PlacementCheck;
+			INVOKESTATIC dev/rdh/createunlimited/config/CUConfigs.getOrDefault (Lcom/simibubi/create/foundation/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
+			CHECKCAST dev/rdh/createunlimited/config/PlacementCheck; // because generics
 			ALOAD 1
 			INVOKEVIRTUAL dev/rdh/createunlimited/config/PlacementCheck.isEnabledFor (Lnet/minecraft/world/entity/player/Player;)Z
 			ISTORE [lvtIndex]
@@ -56,8 +56,8 @@ public final class Asm {
 				// get PlacementCheck.ON
 				new FieldInsnNode(GETSTATIC, Type.getInternalName(PlacementCheck.class), "ON", Type.getDescriptor(PlacementCheck.class)),
 
-				// call Util.orElse(CUConfigs.server.placementChecks, PlacementCheck.ON)
-				new MethodInsnNode(INVOKESTATIC, Type.getInternalName(Util.class), "orElse", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(CValue.class), Type.getType(Object.class))),
+				// call CUConfigs.getOrDefault(CUConfigs.server.placementChecks, PlacementCheck.ON)
+				new MethodInsnNode(INVOKESTATIC, Type.getInternalName(CUConfigs.class), "getOrDefault", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(CValue.class), Type.getType(Object.class))),
 
 				// cast result of orElse to PlacementCheck
 				new TypeInsnNode(CHECKCAST, Type.getInternalName(PlacementCheck.class)),

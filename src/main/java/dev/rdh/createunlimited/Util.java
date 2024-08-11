@@ -48,23 +48,4 @@ public abstract class Util {
 	public static Attribute getReachAttribute() {
 		throw new AssertionError();
 	}
-
-	public static <V, T extends ConfigValue<V>> V orElse(CValue<V, T> value, V orElse) {
-		try {
-			return value.get();
-		} catch (IllegalStateException e) {
-			if(e.getMessage().contains("config")) {
-				return orElse;
-			}
-			throw e;
-		}
-	}
-
-	public static boolean orFalse(ConfigBool config) {
-		return orElse(config, false);
-	}
-
-	public static boolean orTrue(ConfigBool config) {
-		return orElse(config, true);
-	}
 }

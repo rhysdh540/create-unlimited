@@ -29,6 +29,7 @@ public abstract class TrackPlacementMixin {
 	}
 
 	@Unique
+	@SuppressWarnings("SuspiciousNameCombination")
 	private static double[] cu$intersect(Vec3 p1, Vec3 p2, Vec3 r, Vec3 s, Axis plane) {
 		if (plane == Axis.X) {
 			p1 = new Vec3(p1.y, 0, p1.z);

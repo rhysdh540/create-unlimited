@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfigs;
 
 import com.simibubi.create.content.trains.track.TrackTargetingBlockItem;
@@ -17,6 +16,6 @@ public class TrackTargetingBlockItemMixin {
 		@At(value = "CONSTANT", args = "doubleValue=16.0"),
 	})
 	private double modifyMaxDistance(double original) {
-		return Util.orElse(CUConfigs.server.maxTrackBlockPlacingDistance, original);
+		return CUConfigs.getOrDefault(CUConfigs.server.maxTrackBlockPlacingDistance, original);
 	}
 }

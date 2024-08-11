@@ -1,5 +1,7 @@
 package dev.rdh.createunlimited.config;
 
+import com.simibubi.create.foundation.config.ConfigBase.CValue;
+import com.simibubi.create.foundation.config.ConfigBase.ConfigBool;
 import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
 
 import dev.rdh.createunlimited.Util;
@@ -10,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import dev.rdh.createunlimited.CreateUnlimited;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.fml.config.ModConfig;
 
 import org.jetbrains.annotations.Nullable;
@@ -54,5 +57,24 @@ public class CUConfigs {
 
 	public static BaseConfigScreen createConfigScreen(@Nullable @SuppressWarnings("unused") Minecraft mc, Screen parent) {
 		return createConfigScreen(parent);
+	}
+
+	public static <V, T extends ConfigValue<V>> V getOrDefault(CValue<V, T> value, V orElse) {
+		try {
+			return value.get();
+		} catch (IllegalStateException e) {
+			if(e.getMessage().contains("config")) {
+				return orElse;
+			}
+			throw e;
+		}
+	}
+
+	public static boolean getOrFalse(ConfigBool config) {
+		return getOrDefault(config, false);
+	}
+
+	public static boolean getOrTrue(ConfigBool config) {
+		return getOrDefault(config, true);
 	}
 }
