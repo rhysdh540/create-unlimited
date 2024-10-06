@@ -184,17 +184,24 @@ subprojects {
 	}
 
 	tasks.register<ShadowJar>("preShadow") {
+		archiveClassifier.set("premerge-$platform")
+		putInDevlibs()
+
+		val oldMixinConfig = "createunlimited.mixins.json"
+		val newMixinConfig = "createunlimited-$platform.mixins.json"
+
 		from(zipTree(remapPlatformJar.get().archiveFile)) {
-			rename {
-				if(it == "createunlimited.mixins.json") "createunlimited-$platform.mixins.json"
-				//else if(it.endsWith(".jar")) it + "_"
-				else it
+			eachFile {
+				if(path == "fabric.mod.json") {
+					filter { it.replace(oldMixinConfig, newMixinConfig) }
+				}
+				if(path == oldMixinConfig) {
+					filter { it.replace("dev.rdh.createunlimited.asm", "dev.rdh.createunlimited.$platform.asm") }
+					path = newMixinConfig
+				}
 			}
 			includeEmptyDirs = false
 		}
-
-		archiveClassifier.set("premerge-$platform")
-		putInDevlibs()
 
 		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${project.name}")
 	}
@@ -255,36 +262,12 @@ val mergeJars by tasks.register<Jar>("mergeJars") {
 	includeEmptyDirs = false
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-	val oldMixinConfig = "createunlimited.mixins.json"
-	fun newMixinConfig(platform: String) = "createunlimited-$platform.mixins.json"
-
-	val oldMixinPackage = "dev.rdh.createunlimited.asm"
-	fun newMixinPackage(platform: String) = "dev.rdh.createunlimited.$platform.asm"
-
-	from(zipTree(project(":fabric").tasks.get<ShadowJar>("preShadow").archiveFile)) {
+	from(subprojects.map { zipTree(it.tasks.get<ShadowJar>("preShadow").archiveFile) }) {
 		includeEmptyDirs = false
-		val newMixinConfig = newMixinConfig("fabric")
-		val newMixinPackage = newMixinPackage("fabric")
-
-		filesMatching("fabric.mod.json") {
-			filter { it.replace(oldMixinConfig, newMixinConfig) }
-		}
-		filesMatching(newMixinConfig) {
-			filter { it.replace(oldMixinPackage, newMixinPackage) }
-		}
-	}
-
-	from(zipTree(project(":forge").tasks.get<ShadowJar>("preShadow").archiveFile)) {
-		includeEmptyDirs = false
-		filesMatching(newMixinConfig("forge")) {
-			filter { it.replace(oldMixinPackage, newMixinPackage("forge")) }
-		}
-
-		//rename { if(it.endsWith(".jar_")) it.substring(0, it.length - 1) else it }
 	}
 
 	manifest {
-		attributes["MixinConfigs"] = newMixinConfig("forge")
+		attributes["MixinConfigs"] = "createunlimited-forge.mixins.json"
 		attributes["Fabric-Loom-Mixin-Remap-Type"] = "static"
 	}
 }
@@ -365,7 +348,7 @@ fun setup() {
 				changes.add("... and ${size - maxChanges} more")
 			}
 
-			println("Uncommitted changes:\n${changes.map{ "  - $it" }.joinToString("\n")}")
+			println("Uncommitted changes:\n${changes.joinToString("\n") { "  - $it" }}")
 		}
 	} else {
 		println("No git repository")
