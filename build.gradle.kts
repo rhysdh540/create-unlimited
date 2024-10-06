@@ -351,17 +351,7 @@ tasks.assemble {
 }
 
 fun setup() {
-	println("${project.name} v${"mod_version"()}")
-
 	val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
-	if(buildNumber != null) {
-		println("Build #$buildNumber")
-	}
-
-	println()
-	println("Gradle ${gradle.gradleVersion}, on ${System.getProperty("java.vm.name")} v${System.getProperty("java.version")}, by ${System.getProperty("java.vendor")}")
-	println("OS: \"${OSUtils.oSId}\", arch \"${OSUtils.osArch}\"")
-	println()
 
 	if(git.exists()) {
 		println("Current branch: ${git.currentBranch()}")
