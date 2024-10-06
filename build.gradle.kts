@@ -1,32 +1,20 @@
 @file:Suppress("UnstableApiUsage")
 
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-import org.gradle.internal.xml.XmlTransformer
-import org.gradle.plugins.ide.idea.model.IdeaProject
-import org.jetbrains.gradle.ext.Gradle
-import org.jetbrains.gradle.ext.GradleTask
-import org.jetbrains.gradle.ext.RunConfiguration
-import org.jetbrains.gradle.ext.runConfigurations
-import org.jetbrains.gradle.ext.settings
 import proguard.ConfigurationParser
 import proguard.ProGuard
+import xyz.wagyourtail.commons.gradle.shadow.ShadowJar
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
 import xyz.wagyourtail.unimined.util.OSUtils
-import xyz.wagyourtail.unimined.util.sourceSets
-import xyz.wagyourtail.gradle.shadow.ShadowJar
-import xyz.wagyourtail.unimined.util.capitalized
-import java.util.jar.JarEntry
-import java.util.jar.JarInputStream
-import java.util.jar.JarOutputStream
-import java.util.zip.Deflater
+import xyz.wagyourtail.commons.gradle.sourceSets
+import xyz.wagyourtail.commons.gradle.javaToolchains
 
 plugins {
 	id("java")
 	id("idea")
 	id("xyz.wagyourtail.unimined")
+	id("xyz.wagyourtail.commons-gradle")
 	id("org.jetbrains.gradle.plugin.idea-ext")
 	id("xyz.wagyourtail.unimined.expect-platform")
 }
@@ -38,6 +26,7 @@ allprojects {
 		plugin("java")
 		plugin("idea")
 		plugin("xyz.wagyourtail.unimined")
+		plugin("xyz.wagyourtail.commons-gradle")
 		plugin("org.jetbrains.gradle.plugin.idea-ext")
 		plugin("xyz.wagyourtail.unimined.expect-platform")
 	}
@@ -50,6 +39,12 @@ allprojects {
 		toolchain {
 			languageVersion.set(JavaLanguageVersion.of("java_version"()))
 		}
+
+		withSourcesJar()
+	}
+
+	tasks.named<Jar>("sourcesJar") {
+		println(archiveFile.get().asFile)
 	}
 
 	idea {
@@ -71,6 +66,8 @@ allprojects {
 			}
 		}
 		unimined.wagYourMaven("releases")
+
+		maven("https://maven.tterrag.com")
 	}
 
 	tasks.withType<JavaCompile> {
@@ -205,6 +202,10 @@ subprojects {
 
 tasks.jar { enabled = false }
 
+val modCompileOnly: Configuration by configurations.creating {
+	configurations["compileClasspath"].extendsFrom(this)
+}
+
 unimined.minecraft {
 	runs.off = true
 
@@ -215,12 +216,16 @@ unimined.minecraft {
 			catchAWNamespaceAssertion()
 			namespace("intermediary")
 		}
+
+		remap(modCompileOnly) {
+			catchAWNamespaceAssertion()
+			namespace("intermediary")
+		}
 	}
 }
 
 repositories {
 	maven("https://jitpack.io")
-	maven("https://maven.tterrag.com")
 	maven("https://mvn.devos.one/snapshots")
 	maven("https://maven.theillusivec4.top")
 	maven("https://maven.cafeteria.dev/releases")
@@ -229,7 +234,7 @@ repositories {
 }
 
 dependencies {
-	"modImplementation"("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
+	modCompileOnly("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
 		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
 	}
 

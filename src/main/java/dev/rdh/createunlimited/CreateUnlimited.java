@@ -2,7 +2,7 @@ package dev.rdh.createunlimited;
 
 import com.simibubi.create.Create;
 
-import dev.rdh.createunlimited.config.CUConfigs;
+import dev.rdh.createunlimited.config.CUConfig;
 
 import dev.rdh.createunlimited.command.EnumArgument;
 import dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion;
@@ -25,7 +25,7 @@ public interface CreateUnlimited {
 		LOGGER.info("Detected Minecraft version: {}", SupportedMinecraftVersion.CURRENT);
 
 		EnumArgument.init();
-		CUConfigs.register();
+		CUConfig.register();
     }
 
 	static ResourceLocation asResource(String path) {

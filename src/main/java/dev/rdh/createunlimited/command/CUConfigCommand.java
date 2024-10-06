@@ -10,8 +10,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
-import dev.rdh.createunlimited.config.CUConfigs;
-import dev.rdh.createunlimited.config.CUServer;
+import dev.rdh.createunlimited.config.CUConfig;
 import dev.rdh.createunlimited.asm.mixin.accessor.CValueAccessor;
 
 import com.simibubi.create.foundation.config.ConfigBase.CValue;
@@ -42,7 +41,7 @@ public final class CUConfigCommand extends CUCommands {
 
 		LiteralArgumentBuilder<CommandSourceStack> category = null;
 
-		for (Field field : CUServer.class.getDeclaredFields()) {
+		for (Field field : CUConfig.class.getDeclaredFields()) {
 			// skip if not config value
 			if (!CValue.class.isAssignableFrom(field.getType())) continue;
 
@@ -55,7 +54,7 @@ public final class CUConfigCommand extends CUCommands {
 
 				// add description for category
 				base.then(literal(name).executes(context -> {
-					message(context, CUServer.getComment(name));
+					message(context, CUConfig.getComment(name));
 					return Command.SINGLE_SUCCESS;
 				}));
 
@@ -66,7 +65,7 @@ public final class CUConfigCommand extends CUCommands {
 			// get config as CValue
 			CValue<?, ?> cValue;
 			try {
-				cValue = (CValue<?, ?>) field.get(CUConfigs.server);
+				cValue = (CValue<?, ?>) field.get(CUConfig.instance);
 			} catch (IllegalAccessException | ClassCastException e) {
 				//noinspection StringConcatenationArgumentToLogCall
 				CreateUnlimited.LOGGER.error("Failed to get config value for " + name, e);
@@ -91,7 +90,7 @@ public final class CUConfigCommand extends CUCommands {
 
 		category.then(literal(name)
 			.executes(context -> {
-				message(context, name + ": " + CUServer.getComment(name));
+				message(context, name + ": " + CUConfig.getComment(name));
 				message(context, "Current value: " + value.get());
 				message(context, "Default value: " + value.getDefault());
 				return Command.SINGLE_SUCCESS;

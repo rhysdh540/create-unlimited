@@ -6,6 +6,13 @@ plugins {
 	idea
 }
 
+// warning: do not move down, that breaks things
+val gradleProperties by lazy {
+	Properties().apply {
+		load(rootDir.parentFile.resolve("gradle.properties").inputStream())
+	}
+}
+
 repositories {
 	mavenLocal()
 	mavenCentral()
@@ -18,21 +25,12 @@ repositories {
 	gradlePluginPortal()
 }
 
-idea.module.setDownloadSources(true)
-
-fun DependencyHandler.plugin(id: String, version: String) =
-	implementation(group = id, name = "$id.gradle.plugin", version = version)
+idea.module.isDownloadSources = true
 
 tasks.compileKotlin {
 	compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
-	kotlinOptions.jvmTarget = "17"
+	kotlinOptions.jvmTarget = "java_version"()
 }
-
-val gradleProperties = Properties().apply {
-	load(rootDir.parentFile.resolve("gradle.properties").inputStream())
-}
-
-operator fun String.invoke(): String = gradleProperties.getProperty(this) ?: error("Property $this is not defined")
 
 dependencies {
 	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
@@ -40,7 +38,13 @@ dependencies {
 	implementation(group = "org.jetbrains", name = "annotations")
 	implementation("com.guardsquare:proguard-base:${"proguard_version"()}")
 
+	plugin(id = "xyz.wagyourtail.commons-gradle", version = "commons_gradle_version"())
 	plugin(id = "xyz.wagyourtail.unimined", version = "unimined_version"())
 	plugin(id = "org.jetbrains.gradle.plugin.idea-ext", version = "idea_ext_version"())
 	plugin(id = "xyz.wagyourtail.unimined.expect-platform", version = "expectplatform_version"())
 }
+
+operator fun String.invoke(): String = gradleProperties.getProperty(this) ?: error("Property $this is not defined")
+
+fun DependencyHandler.plugin(id: String, version: String) =
+	implementation(group = id, name = "$id.gradle.plugin", version = version)

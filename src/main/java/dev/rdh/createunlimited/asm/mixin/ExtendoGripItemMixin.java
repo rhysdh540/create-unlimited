@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import xyz.wagyourtail.unimined.expect.annotation.PlatformOnly;
 
 import dev.rdh.createunlimited.Util;
-import dev.rdh.createunlimited.config.CUConfigs;
+import dev.rdh.createunlimited.config.CUConfig;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -70,14 +70,14 @@ public abstract class ExtendoGripItemMixin {
 	@Unique
 	private static Supplier<Multimap<Attribute, AttributeModifier>> cu$singleRange() {
 		AttributeModifier am = new AttributeModifier(UUID.fromString("7f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
-			CUConfigs.getOrDefault(CUConfigs.server.singleExtendoGripRange, 3), AttributeModifier.Operation.ADDITION);
+			CUConfig.getOrDefault(CUConfig.instance.singleExtendoGripRange, 3), AttributeModifier.Operation.ADDITION);
 		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.getReachAttribute(), am));
 	}
 
 	@Unique
 	private static Supplier<Multimap<Attribute, AttributeModifier>> cu$doubleRange() {
 		AttributeModifier am = new AttributeModifier(UUID.fromString("8f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
-			CUConfigs.getOrDefault(CUConfigs.server.doubleExtendoGripRange, 5), AttributeModifier.Operation.ADDITION);
+			CUConfig.getOrDefault(CUConfig.instance.doubleExtendoGripRange, 5), AttributeModifier.Operation.ADDITION);
 		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.getReachAttribute(), am));
 	}
 }

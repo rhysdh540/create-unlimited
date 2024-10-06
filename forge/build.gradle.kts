@@ -35,10 +35,6 @@ unimined.minecraft {
 	}
 }
 
-repositories {
-	maven("https://maven.tterrag.com")
-}
-
 dependencies {
 	modImplementation("com.simibubi.create:create-${"minecraft_version"()}:${"create_forge_version"()}:slim") { isTransitive = false }
 	modImplementation("com.tterrag.registrate:Registrate:${"registrate_version"()}")

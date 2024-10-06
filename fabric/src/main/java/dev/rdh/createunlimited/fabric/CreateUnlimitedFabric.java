@@ -3,7 +3,7 @@ package dev.rdh.createunlimited.fabric;
 import dev.rdh.createunlimited.CreateUnlimited;
 
 import dev.rdh.createunlimited.command.CUCommands;
-import dev.rdh.createunlimited.config.CUConfigs;
+import dev.rdh.createunlimited.config.CUConfig;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -38,7 +38,7 @@ public class CreateUnlimitedFabric implements ModInitializer {
 
 		try {
 			Event<L> loadingEvent = (Event<L>) modConfigEventsClass.getMethod("loading", String.class).invoke(null, CreateUnlimited.ID);
-			L loading = createHandlerProxy(CUConfigs::onLoad, modConfigEventsClass, "Loading", "onModConfigLoading");
+			L loading = createHandlerProxy(CUConfig::onLoad, modConfigEventsClass, "Loading", "onModConfigLoading");
 			loadingEvent.register(loading);
 		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
 			throw unchecked(e);
@@ -46,7 +46,7 @@ public class CreateUnlimitedFabric implements ModInitializer {
 
 		try {
 			Event<R> reloadingEvent = (Event<R>) modConfigEventsClass.getMethod("reloading", String.class).invoke(null, CreateUnlimited.ID);
-			R reloading = createHandlerProxy(CUConfigs::onReload, modConfigEventsClass, "Reloading", "onModConfigReloading");
+			R reloading = createHandlerProxy(CUConfig::onReload, modConfigEventsClass, "Reloading", "onModConfigReloading");
 			reloadingEvent.register(reloading);
 		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
 			throw unchecked(e);

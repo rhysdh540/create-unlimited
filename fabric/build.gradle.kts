@@ -1,7 +1,7 @@
 import xyz.wagyourtail.unimined.api.unimined
 
 val modLocalRuntime: Configuration by configurations.creating {
-	configurations.runtimeClasspath.get().extendsFrom(this)
+	configurations["runtimeClasspath"].extendsFrom(this)
 	isCanBeConsumed = false
 	isCanBeResolved = true
 }
@@ -21,7 +21,6 @@ unimined.minecraft {
 }
 
 repositories {
-	maven("https://maven.tterrag.com")
 	maven("https://mvn.devos.one/snapshots")
 	maven("https://maven.cafeteria.dev/releases")
 	maven("https://maven.jamieswhiteshirt.com/libs-release")

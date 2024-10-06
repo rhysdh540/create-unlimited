@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 import com.simibubi.create.content.trains.entity.CarriageContraption;
 
-import dev.rdh.createunlimited.config.CUConfigs;
+import dev.rdh.createunlimited.config.CUConfig;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,6 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class CarriageContraptionMixin {
 	@ModifyExpressionValue(method = "assemble", at = @At(value = "INVOKE", target = "Ljava/util/Map;size()I", ordinal = 0))
 	private int modifyMinBlocksOnTrain(int original) {
-		return !CUConfigs.getOrTrue(CUConfigs.server.trainAssemblyChecks) ? 2 : original;
+		return !CUConfig.getOrTrue(CUConfig.instance.trainAssemblyChecks) ? 2 : original;
 	}
 }

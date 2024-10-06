@@ -2,7 +2,7 @@ package dev.rdh.createunlimited.asm.mixin.train;
 
 import com.simibubi.create.content.trains.graph.TrackEdge;
 
-import dev.rdh.createunlimited.config.CUConfigs;
+import dev.rdh.createunlimited.config.CUConfig;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class TrackEdgeMixin {
 	@ModifyExpressionValue(method = "canTravelTo", at = @At(value = "CONSTANT", args = "doubleValue=0.875"))
 	private double canTravelTo(double original) {
-		return CUConfigs.getOrDefault(CUConfigs.server.extendedDriving, original);
+		return CUConfig.getOrDefault(CUConfig.instance.extendedDriving, original);
 	}
 }

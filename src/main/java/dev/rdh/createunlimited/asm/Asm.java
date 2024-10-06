@@ -3,9 +3,7 @@ package dev.rdh.createunlimited.asm;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-import dev.rdh.createunlimited.Util;
-import dev.rdh.createunlimited.config.CUConfigs;
-import dev.rdh.createunlimited.config.CUServer;
+import dev.rdh.createunlimited.config.CUConfig;
 import dev.rdh.createunlimited.config.PlacementCheck;
 
 import com.simibubi.create.foundation.config.ConfigBase.CValue;
@@ -23,7 +21,7 @@ public final class Asm {
 
 	public static void instrumentTrackPlacement(ClassNode targetClass) {
 		if(!targetClass.name.equals("com/simibubi/create/content/trains/track/TrackPlacement")) {
-			String caller = Thread.currentThread().stackTrace[2].className;
+			String caller = Thread.currentThread().getStackTrace()[2].getClassName();
 			throw new IllegalArgumentException("instrumentTrackPlacement called from \"" + caller + "\" with wrong target class: " + targetClass.name);
 		}
 
@@ -38,10 +36,10 @@ public final class Asm {
 			boolean [var0] = CUConfigs.getOrDefault(CUConfigs.server.placementChecks, PlacementCheck.ON).isEnabledFor(player);
 			compiles down to:
 
-			GETSTATIC dev/rdh/createunlimited/config/CUConfigs.server : Ldev/rdh/createunlimited/config/CUServer;
-			GETFIELD dev/rdh/createunlimited/config/CUServer.placementChecks : Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;
+			GETSTATIC dev/rdh/createunlimited/config/CUConfig.instance : Ldev/rdh/createunlimited/config/CUConfig;
+			GETFIELD dev/rdh/createunlimited/config/CUConfig.placementChecks : Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;
 			GETSTATIC com/simibubi/create/foundation/utility/PlacementCheck.ON : Lcom/simibubi/create/foundation/utility/PlacementCheck;
-			INVOKESTATIC dev/rdh/createunlimited/config/CUConfigs.getOrDefault (Lcom/simibubi/create/foundation/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
+			INVOKESTATIC dev/rdh/createunlimited/config/CUConfig.getOrDefault (Lcom/simibubi/create/foundation/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
 			CHECKCAST dev/rdh/createunlimited/config/PlacementCheck; // because generics
 			ALOAD 1
 			INVOKEVIRTUAL dev/rdh/createunlimited/config/PlacementCheck.isEnabledFor (Lnet/minecraft/world/entity/player/Player;)Z
@@ -50,14 +48,14 @@ public final class Asm {
 
 			AbstractInsnNode[] toInject = new AbstractInsnNode[] {
 				// get CUConfigs.server.placementChecks
-				new FieldInsnNode(GETSTATIC, Type.getInternalName(CUConfigs.class), "server", Type.getDescriptor(CUServer.class)),
-				new FieldInsnNode(GETFIELD, Type.getInternalName(CUServer.class), "placementChecks", Type.getDescriptor(ConfigEnum.class)),
+				new FieldInsnNode(GETSTATIC, Type.getInternalName(CUConfig.class), "instance", Type.getDescriptor(CUConfig.class)),
+				new FieldInsnNode(GETFIELD, Type.getInternalName(CUConfig.class), "placementChecks", Type.getDescriptor(ConfigEnum.class)),
 
 				// get PlacementCheck.ON
 				new FieldInsnNode(GETSTATIC, Type.getInternalName(PlacementCheck.class), "ON", Type.getDescriptor(PlacementCheck.class)),
 
 				// call CUConfigs.getOrDefault(CUConfigs.server.placementChecks, PlacementCheck.ON)
-				new MethodInsnNode(INVOKESTATIC, Type.getInternalName(CUConfigs.class), "getOrDefault", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(CValue.class), Type.getType(Object.class))),
+				new MethodInsnNode(INVOKESTATIC, Type.getInternalName(CUConfig.class), "getOrDefault", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(CValue.class), Type.getType(Object.class))),
 
 				// cast result of orElse to PlacementCheck
 				new TypeInsnNode(CHECKCAST, Type.getInternalName(PlacementCheck.class)),
@@ -84,7 +82,7 @@ public final class Asm {
 
 		for(int i = 0; i < tryConnect.instructions.size(); i++) {
 			AbstractInsnNode areturn = tryConnect.instructions.get(i);
-			if(areturn.opcode != ARETURN) continue;
+			if(areturn.getOpcode() != ARETURN) continue;
 
 			LdcInsnNode ldc = findPreviousNode(areturn, LdcInsnNode.class);
 			if(ldc == null) continue;

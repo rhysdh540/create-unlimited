@@ -1,4 +1,2 @@
-include("fabric")
-include("forge")
-
+include("fabric", "forge")
 rootProject.name = "Create Unlimited"
