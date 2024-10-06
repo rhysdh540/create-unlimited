@@ -6,7 +6,6 @@ import xyz.wagyourtail.commons.gradle.shadow.ShadowJar
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
-import xyz.wagyourtail.unimined.util.OSUtils
 import xyz.wagyourtail.commons.gradle.sourceSets
 import xyz.wagyourtail.commons.gradle.javaToolchains
 
@@ -135,7 +134,13 @@ subprojects {
 
 		val props = mapOf(
 			"mod_version" to "modVersion"(),
-			"minecraft_version" to "minecraft_version"(),
+			"minecraft_versions" to minecraftVersions().joinToString(
+				separator = when(platform) {
+					"forge" -> "],["
+					"fabric" -> "\",\""
+					else -> error("Unknown platform $platform")
+				}
+			),
 			"fabric_version" to "fabric_version"(),
 			"create_version" to "minimum_create_version"(),
 		)
@@ -203,6 +208,7 @@ subprojects {
 			includeEmptyDirs = false
 		}
 
+		relocate("com.llamalad7.mixinextras", "dev.rdh.createunlimited.mixinextras")
 		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${project.name}")
 	}
 }
@@ -240,6 +246,8 @@ repositories {
 	maven("https://repo.spongepowered.org/repository/maven-public/")
 }
 
+val shadow: Configuration by configurations.creating
+
 dependencies {
 	modCompileOnly("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
 		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
@@ -249,14 +257,16 @@ dependencies {
 	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
 	implementation("org.ow2.asm:asm-commons:${"asm_version"()}")
 	implementation("org.spongepowered:mixin:${"mixin_version"()}")
+
+	shadow("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
 }
 
-val mergeJars by tasks.register<Jar>("mergeJars") {
+val mergeJars by tasks.register<ShadowJar>("mergeJars") {
 	group = "build"
 	description = "Merges the platform shadow jars into a single jar"
 	archiveBaseName = "archives_base_name"()
 	archiveVersion = "modVersion"()
-	archiveClassifier = "almost-done"
+	archiveClassifier = "merged"
 	putInDevlibs()
 
 	includeEmptyDirs = false
@@ -265,6 +275,13 @@ val mergeJars by tasks.register<Jar>("mergeJars") {
 	from(subprojects.map { zipTree(it.tasks.get<ShadowJar>("preShadow").archiveFile) }) {
 		includeEmptyDirs = false
 	}
+
+	from(shadow.map { zipTree(it) }) {
+		includeEmptyDirs = false
+		include("**/*.class")
+	}
+
+	relocate("com.llamalad7.mixinextras", "dev.rdh.createunlimited.mixinextras")
 
 	manifest {
 		attributes["MixinConfigs"] = "createunlimited-forge.mixins.json"

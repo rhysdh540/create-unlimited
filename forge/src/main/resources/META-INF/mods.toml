@@ -8,10 +8,8 @@ modId = "createunlimited"
 version = "${mod_version}"
 displayName = "Create Unlimited"
 authors = "rdh"
-description = '''
-Remove all the limits!
-'''
-logoFile = "icon.png"
+description = "Remove all the limits!"
+logoFile = "cu.png"
 
 [[dependencies.createunlimited]]
 modId = "forge"
@@ -23,7 +21,7 @@ side = "BOTH"
 [[dependencies.createunlimited]]
 modId = "minecraft"
 mandatory = true
-versionRange = "${minecraft_version}"
+versionRange = "[${minecraft_versions}]"
 ordering = "AFTER"
 side = "BOTH"
 
