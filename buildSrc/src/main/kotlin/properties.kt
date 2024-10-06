@@ -5,7 +5,7 @@ fun Project.findAndLoadProperties() {
 	val mcVers = minecraftVersions()
 
 	println("Setting up properties...")
-	println("Avalible Minecraft Versions: ${mcVers.joinToString(", ")}")
+	println("Available Minecraft Versions: ${mcVers.joinToString(", ")}")
 
 	val mcVersion = findProperty("mcVer") as? String ?: run {
 		println("No mcVer set!")
@@ -15,7 +15,7 @@ fun Project.findAndLoadProperties() {
 
 	if (mcVersion !in mcVers) {
 		println("Invalid Minecraft version!")
-		println("Avalible Minecraft Versions: ${mcVers.joinToString(", ")}")
+		println("Available Minecraft Versions: ${mcVers.joinToString(", ")}")
 		error("Invalid Minecraft version")
 	}
 
