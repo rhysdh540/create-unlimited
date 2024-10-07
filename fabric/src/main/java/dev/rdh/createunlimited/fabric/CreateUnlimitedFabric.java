@@ -11,8 +11,11 @@ import net.fabricmc.fabric.api.event.Event;
 
 import net.minecraftforge.fml.config.ModConfig;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandleProxies;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
 import java.util.function.Consumer;
 
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
@@ -25,7 +28,6 @@ public class CreateUnlimitedFabric implements ModInitializer {
 
 		CommandRegistrationCallback.EVENT.register(CUCommands::register);
     }
-
 
 	/**
 	 * @param <L> The type of the loading lambda
@@ -53,18 +55,16 @@ public class CreateUnlimitedFabric implements ModInitializer {
 		}
 	}
 
-	@SuppressWarnings({"unchecked", "SuspiciousInvocationHandlerImplementation"})
 	private static <T> T createHandlerProxy(Consumer<ModConfig> handler, Class<?> modConfigEventsClass, String handlerTypeName, String handlerMethodName) {
-		return (T) Proxy.newProxyInstance(
-			modConfigEventsClass.getClassLoader(),
-			new Class<?>[]{ findNestedClass(modConfigEventsClass, handlerTypeName) },
-			(proxy, method, args) -> {
-				if (method.getName().equals(handlerMethodName) && args.length == 1 && args[0] instanceof ModConfig config) {
-					handler.accept(config);
-					return null;
-				}
-				throw new UnsupportedOperationException("Unexpected method: " + method);
-			});
+		try {
+			@SuppressWarnings("unchecked")
+			Class<T> clazz = (Class<T>) findNestedClass(modConfigEventsClass, handlerTypeName);
+			MethodHandle handle = MethodHandles.publicLookup()
+				.findStatic(clazz, handlerMethodName, MethodType.methodType(void.class, ModConfig.class));
+			return MethodHandleProxies.asInterfaceInstance(clazz, handle.bindTo(handler));
+		} catch (Throwable t) {
+			throw unchecked(t);
+		}
 	}
 
 	private static Class<?> findNestedClass(Class<?> outerClass, String nestedClassName) {

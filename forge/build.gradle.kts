@@ -22,7 +22,7 @@ unimined.minecraft {
 	}
 
 
-	runs.config("client") {
+	runs.all {
 		jvmArgs(
 			"-Dmixin.env.remapRefMap=true",
 			"-Dmixin.env.refMapRemappingFile=${(mcPatcher as ForgeLikeMinecraftTransformer).srgToMCPAsSRG}"

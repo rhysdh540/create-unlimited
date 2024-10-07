@@ -11,8 +11,8 @@ val message = """
 	OS: "${System.getProperty("os.name")}", arch "${System.getProperty("os.arch")}"
 """.trimIndent()
 
-message.lines().forEachIndexed { i, l ->
-	val padding = "${if (i == 0) '-' else ' '}".repeat((messageLen - l.length) / 2)
-	println("$padding$l$padding")
+message.lines().forEachIndexed { n, it ->
+	val padding = "${if (n == 0) '-' else ' '}".repeat((messageLen - it.length) / 2)
+	println("$padding$it$padding")
 }
 println("-".repeat(messageLen))
