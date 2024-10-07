@@ -41,4 +41,4 @@ dependencies {
 	modImplementation("com.jozufozu.flywheel:flywheel-forge-${"flywheel_mc_version"()}:${"flywheel_version"()}")
 }
 
-operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("Property $this is not defined")
+operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("No property \"$this\"")

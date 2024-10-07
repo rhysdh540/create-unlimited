@@ -395,4 +395,4 @@ tasks.register("nukeGradleCaches") {
 	}
 }
 
-operator fun String.invoke(): String = rootProject.ext[this] as String
+operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("No property \"$this\"")
