@@ -44,7 +44,7 @@ dependencies {
 	plugin(id = "xyz.wagyourtail.unimined.expect-platform", version = "expectplatform_version"())
 }
 
-operator fun String.invoke(): String = gradleProperties.getProperty(this) ?: error("No property \"$this\"")
+operator fun String.invoke() = gradleProperties.getProperty(this) ?: error("No property \"$this\"")
 
 fun DependencyHandler.plugin(id: String, version: String) =
 	implementation(group = id, name = "$id.gradle.plugin", version = version)

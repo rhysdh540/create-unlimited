@@ -49,4 +49,4 @@ dependencies {
 	}
 }
 
-operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("No property \"$this\"")
+operator fun String.invoke() = rootProject.ext[this] as? String ?: error("No property \"$this\"")

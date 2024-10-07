@@ -177,7 +177,7 @@ subprojects {
 		relocate("dev.rdh.createunlimited.$platform", "dev.rdh.createunlimited")
 	}
 
-	val remapPlatformJar = tasks.register<RemapJarTaskImpl>("remapPlatformJar", unimined.minecrafts[sourceSets["main"]])
+	val remapPlatformJar = tasks.register<RemapJarTaskImpl>("remapPlatformJar", unimined.minecrafts[sourceSets["main"]]!!)
 	remapPlatformJar.configure {
 		dependsOn(shadowJar)
 		inputFile.set(shadowJar.archiveFile)
@@ -395,4 +395,4 @@ tasks.register("nukeGradleCaches") {
 	}
 }
 
-operator fun String.invoke(): String = rootProject.ext[this] as? String ?: error("No property \"$this\"")
+operator fun String.invoke() = rootProject.ext[this] as? String ?: error("No property \"$this\"")

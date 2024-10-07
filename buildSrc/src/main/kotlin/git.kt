@@ -1,10 +1,14 @@
 import org.gradle.api.Project
+import org.jetbrains.annotations.ApiStatus
 import java.io.File
 
-val Project.git
-	get() = Git(rootProject.rootDir)
+val Project.git: Git
+	get() = project.extensions.let {
+		it.findByType(Git::class.java) ?: it.create("git", Git::class.java, project.rootDir)
+	}
 
-class Git(val repository: File) {
+@ApiStatus.NonExtendable
+abstract class Git(val repository: File) {
 	fun exists() = repository.resolve(".git").isDirectory()
 
 	// does the current git repository have uncommitted changes?
@@ -13,22 +17,22 @@ class Git(val repository: File) {
 	// last commit hash
 	fun hash(long: Boolean = false) =
 		if(long)
-			git("rev-parse", "HEAD").trim()
+			git("rev-parse", "HEAD")
 		else
-			git("rev-parse", "--short", "HEAD").trim()
+			git("rev-parse", "--short", "HEAD")
 
 	// current branch
-	fun currentBranch() = git("rev-parse", "--abbrev-ref", "HEAD").trim()
+	fun currentBranch() = git("rev-parse", "--abbrev-ref", "HEAD")
 
 	// latest tag
-	fun tag() = git("describe", "--tags", "--abbrev=0").trim()
+	fun tag() = git("describe", "--tags", "--abbrev=0")
 
-	fun getUncommitedChanges() = git("diff", "--name-only").trim()
+	fun getUncommitedChanges() = git("diff", "--name-only")
 
 	private fun git(vararg args: String): String {
 		val process = ProcessBuilder("git", *args)
 			.directory(repository)
 			.start()
-		return process.inputStream.bufferedReader().readText()
+		return process.inputStream.bufferedReader().readText().trim()
 	}
 }
