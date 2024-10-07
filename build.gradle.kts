@@ -42,10 +42,6 @@ allprojects {
 		withSourcesJar()
 	}
 
-	tasks.named<Jar>("sourcesJar") {
-		println(archiveFile.get().asFile)
-	}
-
 	idea {
 		module.isDownloadSources = true
 	}
@@ -134,7 +130,7 @@ subprojects {
 
 		val props = mapOf(
 			"mod_version" to "modVersion"(),
-			"minecraft_versions" to minecraftVersions().joinToString(
+			"minecraft_versions" to multiversion.minecraftVersions.joinToString(
 				separator = when(platform) {
 					"forge" -> "],["
 					"fabric" -> "\",\""
@@ -196,16 +192,18 @@ subprojects {
 		val newMixinConfig = "createunlimited-$platform.mixins.json"
 
 		from(zipTree(remapPlatformJar.get().archiveFile)) {
+			includeEmptyDirs = false
+
 			eachFile {
 				if(path == "fabric.mod.json") {
 					filter { it.replace(oldMixinConfig, newMixinConfig) }
 				}
+
 				if(path == oldMixinConfig) {
 					filter { it.replace("dev.rdh.createunlimited.asm", "dev.rdh.createunlimited.$platform.asm") }
 					path = newMixinConfig
 				}
 			}
-			includeEmptyDirs = false
 		}
 
 		relocate("com.llamalad7.mixinextras", "dev.rdh.createunlimited.mixinextras")
@@ -222,7 +220,9 @@ val modCompileOnly: Configuration by configurations.creating {
 unimined.minecraft {
 	runs.off = true
 
-	mappings.intermediary()
+	mappings {
+		intermediary()
+	}
 
 	mods {
 		modImplementation {
@@ -380,7 +380,7 @@ fun setup() {
 		}
 	}
 
-	findAndLoadProperties()
+	multiversion.findAndLoadProperties()
 }
 
 tasks.register("nukeGradleCaches") {
