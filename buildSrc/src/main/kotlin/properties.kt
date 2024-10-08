@@ -4,7 +4,7 @@ import java.util.*
 val Project.multiversion: Multiversion
 	get() = Multiversion(this)
 
-class Multiversion(val project: Project) {
+class Multiversion(private val project: Project) {
 	fun findAndLoadProperties() {
 		project.run {
 			val mcVers = this@Multiversion.minecraftVersions

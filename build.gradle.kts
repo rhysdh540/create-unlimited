@@ -34,12 +34,8 @@ allprojects {
 	version = "modVersion"()
 	group = "maven_group"()
 
-	java {
-		toolchain {
-			languageVersion.set(JavaLanguageVersion.of("java_version"()))
-		}
-
-		withSourcesJar()
+	java.toolchain {
+		languageVersion.set(JavaLanguageVersion.of("java_version"()))
 	}
 
 	idea {
@@ -81,8 +77,12 @@ allprojects {
 		includeEmptyDirs = false
 	}
 
-	unimined.minecraft(sourceSet = sourceSets["main"], lateApply = true) {
+	unimined.minecraft(lateApply = true) {
 		version = "minecraft_version"()
+
+		sourceProvider.configRemap {
+			remapper("1.0.5-SNAPSHOT")
+		}
 
 		mappings {
 			mojmap()
@@ -156,7 +156,14 @@ subprojects {
 		putInDevlibs()
 	}
 
-	val expectPlatformJar by tasks.register<ExpectPlatformJar>("platformJar") {
+	val sourcesJar by tasks.registering<Jar> {
+		archiveClassifier = "sources"
+		from(rootProject.sourceSets["main"].allSource)
+		from(sourceSets["main"].allSource)
+		putInDevlibs()
+	}
+
+	val expectPlatformJar by tasks.registering<ExpectPlatformJar> {
 		group = "unimined"
 		platformName = platform
 		archiveClassifier = "expect-$platform"
@@ -164,7 +171,7 @@ subprojects {
 		inputFiles = files(tasks.jar.get().archiveFile)
 	}
 
-	val shadowJar by tasks.register<ShadowJar>("shadowJar") {
+	val shadowJar by tasks.registering<ShadowJar> {
 		dependsOn(expectPlatformJar)
 		archiveBaseName.set("archives_base_name"())
 		archiveVersion.set("modVersion"())
@@ -172,45 +179,46 @@ subprojects {
 		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 		putInDevlibs()
 
-		shadowContents.add(files(expectPlatformJar.archiveFile))
+		from(expectPlatformJar.get())
 
 		relocate("dev.rdh.createunlimited.$platform", "dev.rdh.createunlimited")
 	}
 
-	val remapPlatformJar = tasks.register<RemapJarTaskImpl>("remapPlatformJar", unimined.minecrafts[sourceSets["main"]]!!)
-	remapPlatformJar.configure {
+	val remapPlatformJar by tasks.registering<RemapJarTaskImpl>(unimined.minecrafts[sourceSets["main"]]!!) {
+		tasks.assemble.get().dependsOn(this)
 		dependsOn(shadowJar)
-		inputFile.set(shadowJar.archiveFile)
+		inputFile.set(shadowJar.get().archiveFile)
 		archiveClassifier = platform
 	}
 
-	tasks.register<ShadowJar>("preShadow") {
-		archiveClassifier.set("premerge-$platform")
+	val preShadow by tasks.registering<ShadowJar> {
+		archiveClassifier = "premerge-$platform"
 		putInDevlibs()
 
 		val oldMixinConfig = "createunlimited.mixins.json"
 		val newMixinConfig = "createunlimited-$platform.mixins.json"
 
-		from(zipTree(remapPlatformJar.get().archiveFile)) {
+		from(zipTree(remapPlatformJar.archiveFile)) {
 			includeEmptyDirs = false
 
 			eachFile {
-				if(path == "fabric.mod.json") {
-					filter { it.replace(oldMixinConfig, newMixinConfig) }
-				}
-
-				if(path == oldMixinConfig) {
-					filter { it.replace("dev.rdh.createunlimited.asm", "dev.rdh.createunlimited.$platform.asm") }
-					path = newMixinConfig
+				when (path) {
+					"fabric.mod.json" -> {
+						filter { it.replace(oldMixinConfig, newMixinConfig) }
+					}
+					oldMixinConfig -> {
+						filter { it.replace("dev.rdh.createunlimited.asm", "dev.rdh.createunlimited.$platform.asm") }
+						path = newMixinConfig
+					}
 				}
 			}
 		}
 
-		relocate("com.llamalad7.mixinextras", "dev.rdh.createunlimited.mixinextras")
-		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${project.name}")
+		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${platform}")
 	}
 }
 
+// disable root jar - subprojects will pull directly from compileJava
 tasks.jar { enabled = false }
 
 val modCompileOnly: Configuration by configurations.creating {
@@ -261,7 +269,7 @@ dependencies {
 	shadow("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
 }
 
-val mergeJars by tasks.register<ShadowJar>("mergeJars") {
+val mergeJars by tasks.registering<ShadowJar> {
 	group = "build"
 	description = "Merges the platform shadow jars into a single jar"
 	archiveBaseName = "archives_base_name"()
@@ -272,7 +280,7 @@ val mergeJars by tasks.register<ShadowJar>("mergeJars") {
 	includeEmptyDirs = false
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-	from(subprojects.map { zipTree(it.tasks.get<ShadowJar>("preShadow").archiveFile) }) {
+	from(subprojects.map { zipTree(it.tasks.getByName<ShadowJar>("preShadow").archiveFile) }) {
 		includeEmptyDirs = false
 	}
 
@@ -289,8 +297,8 @@ val mergeJars by tasks.register<ShadowJar>("mergeJars") {
 	}
 }
 
-val compressJar = tasks.register<ProcessJar>("compressJar") {
-	input.set(mergeJars.archiveFile)
+val compressJar = tasks.registering<ProcessJar> {
+	input.set(mergeJars.get().archiveFile)
 	description = "Compresses the merged jar"
 
 	archiveBaseName = "archives_base_name"()
@@ -383,14 +391,19 @@ fun setup() {
 	multiversion.findAndLoadProperties()
 }
 
-tasks.register("nukeGradleCaches") {
+tasks.register<CustomTask>("nukeGradleCaches") {
 	dependsOn("clean")
 	group = "build"
 	description = "Deletes all .gradle directories in the project. WARNING: causes IDEs to freeze for a while."
 	outputs.upToDateWhen { false }
-	doLast {
-		allprojects.forEach {
-			it.file(".gradle").deleteRecursively()
+
+	action {
+		project.rootProject.allprojects.forEach { p ->
+			p.projectDir.resolve(".gradle").let {
+				if(it.exists()) {
+					it.deleteRecursively()
+				}
+			}
 		}
 	}
 }

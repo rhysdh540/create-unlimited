@@ -1,4 +1,7 @@
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.annotations.ApiStatus
 import java.io.File
 

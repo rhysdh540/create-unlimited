@@ -27,9 +27,11 @@ repositories {
 
 idea.module.isDownloadSources = true
 
-tasks.compileKotlin {
-	compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
-	kotlinOptions.jvmTarget = "java_version"()
+kotlin {
+	compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_0
+	jvmToolchain {
+		languageVersion.set(JavaLanguageVersion.of(21))
+	}
 }
 
 dependencies {

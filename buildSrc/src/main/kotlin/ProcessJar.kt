@@ -31,10 +31,10 @@ abstract class ProcessJar : Jar() {
 	}
 
 	fun addFileProcessor(regex: Regex, processor: FileProcessor) {
-		processors.add {
-			it.walkTopDown().forEach { file ->
+		processors.add { dir ->
+			dir.walkTopDown().forEach { file ->
 				if (file.path.matches(regex))
-					processor(file)
+					processor(file.relativeTo(dir))
 			}
 		}
 	}
@@ -43,10 +43,10 @@ abstract class ProcessJar : Jar() {
 						 names: Set<String> = emptySet(),
 						 paths: Set<String> = emptySet(),
 						 processor: FileProcessor) {
-		processors.add {
-			it.walkTopDown().forEach { file ->
+		processors.add { dir ->
+			dir.walkTopDown().forEach { file ->
 				if (file.extension in extensions || file.name in names || file.path in paths)
-					processor(file)
+					processor(file.relativeTo(dir))
 			}
 		}
 	}
