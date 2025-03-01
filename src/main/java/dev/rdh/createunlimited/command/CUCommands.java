@@ -2,6 +2,7 @@ package dev.rdh.createunlimited.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
@@ -27,7 +28,7 @@ import net.minecraft.network.chat.MutableComponent;
 import java.util.Collections;
 import java.util.List;
 
-public class CUCommands {
+public abstract class CUCommands {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registryAccess, CommandSelection environment) {
 		List<MutableComponent> links = List.of(
 			link("https://github.com/rhysdh540/create-unlimited", "GitHub", ChatFormatting.GRAY),
@@ -38,6 +39,10 @@ public class CUCommands {
 
 		boolean includeIntegrated = environment == CommandSelection.ALL || environment == CommandSelection.INTEGRATED;
 
+		CUCommands[] commands = {
+			new CUConfigCommand(includeIntegrated),
+		};
+
 		LiteralArgumentBuilder<CommandSourceStack> base = Commands.literal(CreateUnlimited.ID)
 			.executes(context -> {
 				message(context, CreateUnlimited.NAME + " v" + CreateUnlimited.VERSION + " by rdh\nVisit us on:");
@@ -45,9 +50,11 @@ public class CUCommands {
 				links.forEach(a -> link.append(a).append(Component.literal(" ")));
 				message(context, link);
 				return 1;
-			})
-			.then(new CUConfigCommand(includeIntegrated).register())
-			;
+			});
+
+		for (CUCommands command : commands) {
+			base.then(command.register());
+		}
 
 		LiteralCommandNode<CommandSourceStack> root = dispatcher.register(base);
 
@@ -80,4 +87,6 @@ public class CUCommands {
 	protected static void error(CommandContext<CommandSourceStack> context, String message) {
 		error(context, Component.nullToEmpty(message));
 	}
+
+	public abstract ArgumentBuilder<CommandSourceStack, ?> register();
 }

@@ -36,6 +36,7 @@ public final class CUConfigCommand extends CUCommands {
 		this.integrated = integrated;
 	}
 
+	@Override
 	public ArgumentBuilder<CommandSourceStack, ?> register() {
 		LiteralArgumentBuilder<CommandSourceStack> base = literal("config");
 
