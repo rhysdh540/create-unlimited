@@ -17,7 +17,8 @@
     "train.TrackEdgeMixin",
     "train.TrackPlacementMixin",
     "train.TrackTargetingBlockItemMixin",
-    "train.TrainMixin"
+    "train.TrainMixin",
+    "chain_conveyor.ChainConveyorConnectionHandlerMixin"
   ],
   "client": [
     "glue.SuperGlueSectionHandlerMixin",

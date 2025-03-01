@@ -42,12 +42,14 @@ public class CUConfig extends ConfigBase {
 	public final ConfigInt singleExtendoGripRange = i(3, 0, "singleExtendoGripRange", Comments.singleExtendoGripRange);
 	public final ConfigInt doubleExtendoGripRange = i(5, 0, "doubleExtendoGripRange", Comments.doubleExtendoGripRange);
 
+	public final ConfigGroup chainConveyor = group(1, "chainConveyor", Comments.chainConveyor);
+	public final ConfigBool chainConveyorConnectionLimits = b(true, "chainConveyorConnectionLimits", Comments.chainConveyorConnectionLimits);
 
 	public final ConfigGroup misc = group(1, "misc", Comments.misc);
 	public final ConfigBool allowAllCopycatBlocks = b(false, "allowAllCopycatBlocks", Comments.allowAllCopycatBlocks);
 
 	private static class Comments {
-		static String trains = "Realism, what's that?",
+		static final String trains = "Realism, what's that?",
 			placementChecks = "Whether to check for valid placement when placing train tracks",
 			extendedDriving = "The minimum turn that trains can drive on. Set to 0.01 if buggy.",
 			maxTrainRelocationDistance = "Maximum distance a train can be relocated using the wrench.",
@@ -55,15 +57,18 @@ public class CUConfig extends ConfigBase {
 			trainAssemblyChecks = "Whether to check for valid assembly when placing train tracks",
 			maxTrackBlockPlacingDistance = "Maximum distance a track-targeting block can be placed away from a track.";
 
-		static String glue = "Stick anything together!",
+		static final String glue = "Stick anything together!",
 			maxGlueConnectionRange = "Maximum distance between two blocks for them to be considered for glue connections.",
 			physicalBlockConnection = "Require blocks to be connected for glue connections.";
 
-		static String extendo = "Extend even more!",
+		static final String extendo = "Extend even more!",
 			singleExtendoGripRange = "How much to extend your reach when holding an Extendo-Grip. Adds to your base reach.",
 			doubleExtendoGripRange = "How much to extend your reach when holding two Extendo-Grips. Adds to your base reach.";
 
-		static String misc = "Everything else",
+		static final String chainConveyor = "idk what these are yet lol",
+			chainConveyorConnectionLimits = "Whether to check for valid connections when connecting chain conveyors.";
+
+		static final String misc = "Everything else",
 			allowAllCopycatBlocks = "Whether or not to allow all blocks to be inserted into Copycat blocks.";
 	}
 
