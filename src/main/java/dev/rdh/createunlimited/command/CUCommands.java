@@ -8,11 +8,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-
 import dev.rdh.createunlimited.CreateUnlimited;
 
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.infrastructure.command.AllCommands;
+import net.createmod.catnip.command.CatnipCommands;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
@@ -60,7 +58,7 @@ public abstract class CUCommands {
 
 		CommandNode<CommandSourceStack> cu = dispatcher.findNode(Collections.singleton("cu"));
 		if(cu != null) return;
-		dispatcher.getRoot().addChild(AllCommands.buildRedirect("cu", root));
+		dispatcher.getRoot().addChild(CatnipCommands.buildRedirect("cu", root));
 	}
 
 	protected static MutableComponent link(String link, String display, ChatFormatting color) {
@@ -68,7 +66,7 @@ public abstract class CUCommands {
 			.withStyle(color)
 			.withStyle(style -> style
 				.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link))
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Components.literal("Click to open " + display + " page")))
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open " + display + " page")))
 				.withUnderlined(false));
 	}
 

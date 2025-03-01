@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public abstract class SuperGlueSelectionHelperMixin {
 			return null;
 		}
 
-		AABB bb = new AABB(startPos, endPos);
+		AABB bb = new AABB(Vec3.atLowerCornerOf(startPos), Vec3.atLowerCornerOf(endPos));
 		Set<BlockPos> blocks = new ObjectOpenHashSet<>();
 		for(double posx = bb.minX; posx <= bb.maxX; posx++) {
 			for(double posy = bb.minY; posy <= bb.maxY; posy++) {

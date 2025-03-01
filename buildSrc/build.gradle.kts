@@ -41,7 +41,7 @@ dependencies {
 	implementation("com.guardsquare:proguard-base:${"proguard_version"()}")
 
 	plugin(id = "xyz.wagyourtail.commons-gradle", version = "commons_gradle_version"())
-	plugin(id = "xyz.wagyourtail.unimined", version = "unimined_version"())
+	plugin(id = "net.neoforged.moddev", version = "mdg_version"())
 	plugin(id = "org.jetbrains.gradle.plugin.idea-ext", version = "idea_ext_version"())
 	plugin(id = "xyz.wagyourtail.unimined.expect-platform", version = "expectplatform_version"())
 }

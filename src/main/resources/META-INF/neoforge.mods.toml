@@ -5,14 +5,14 @@ license = "GPL-3.0-or-later"
 
 [[mods]]
 modId = "createunlimited"
-version = "${mod_version}"
+version = "0.7.0-beta.1"
 displayName = "Create Unlimited"
 authors = "rdh"
 description = "Remove all the limits!"
 logoFile = "cu.png"
 
 [[dependencies.createunlimited]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
 versionRange = "[1,)"
 ordering = "AFTER"
@@ -21,13 +21,16 @@ side = "BOTH"
 [[dependencies.createunlimited]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[${minecraft_versions}]"
+versionRange = "[1.21.1]"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.createunlimited]]
 modId="create"
 mandatory=true
-versionRange="[${create_version},)"
+versionRange="[6.0.0,)"
 ordering="AFTER"
 side="BOTH"
+
+[[mixins]]
+config="createunlimited.mixins.json"

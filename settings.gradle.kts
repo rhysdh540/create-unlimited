@@ -1,4 +1,3 @@
-include("fabric", "forge")
 rootProject.name = "Create Unlimited"
 
 val messageLen = 80

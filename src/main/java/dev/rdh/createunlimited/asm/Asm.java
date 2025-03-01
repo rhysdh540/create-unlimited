@@ -6,8 +6,8 @@ import org.objectweb.asm.tree.*;
 import dev.rdh.createunlimited.config.CUConfig;
 import dev.rdh.createunlimited.config.PlacementCheck;
 
-import com.simibubi.create.foundation.config.ConfigBase.CValue;
-import com.simibubi.create.foundation.config.ConfigBase.ConfigEnum;
+import net.createmod.catnip.config.ConfigBase.CValue;
+import net.createmod.catnip.config.ConfigBase.ConfigEnum;
 
 import net.minecraft.world.entity.player.Player;
 

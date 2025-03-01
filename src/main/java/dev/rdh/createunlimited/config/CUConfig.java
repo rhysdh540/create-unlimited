@@ -1,7 +1,7 @@
 package dev.rdh.createunlimited.config;
 
-import com.simibubi.create.foundation.config.ConfigBase;
-import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
+import net.createmod.catnip.config.ConfigBase;
+import net.createmod.catnip.config.ui.BaseConfigScreen;
 
 import dev.rdh.createunlimited.Util;
 
@@ -10,13 +10,13 @@ import net.minecraft.client.gui.screens.Screen;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
+import net.neoforged.fml.config.ModConfig;
 
 import org.jetbrains.annotations.Nullable;
 
-import static net.minecraftforge.fml.config.ModConfig.Type.*;
+import static net.neoforged.fml.config.ModConfig.Type.*;
 
 @SuppressWarnings("unused")
 public class CUConfig extends ConfigBase {
@@ -79,7 +79,7 @@ public class CUConfig extends ConfigBase {
 	public static final CUConfig instance = new CUConfig();
 
 	public static void register() {
-		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 		instance.registerAll(builder);
 		Util.registerConfig(SERVER, instance.specification = builder.build());
 	}
@@ -105,7 +105,7 @@ public class CUConfig extends ConfigBase {
 		if(done) return;
 		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, base ->
 			base.withSpecs(null, null, instance.specification)
-				.withTitles("", "", "Settings")
+				.withButtonLabels("", "", "Settings")
 		);
 		done = true;
 	}

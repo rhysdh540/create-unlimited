@@ -8,9 +8,9 @@
     "CopycatBlockMixin",
     "ExtendoGripItemMixin",
     "accessor.CValueAccessor",
-    "glue.SuperGlueSelectionHelperMixin",
+
     "glue.SuperGlueSelectionPacketMixin",
-    "glue.ContraptionMixin",
+
     "train.CarriageContraptionMixin",
     "train.CTrainsMixin",
     "train.StationBlockEntityMixin",
