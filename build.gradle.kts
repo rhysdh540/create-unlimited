@@ -33,6 +33,12 @@ neoForge {
 		minecraftVersion = "minecraft_version"()
 		mappingsVersion = "2024.11.17"
 	}
+
+	mods {
+		create("") {
+			sourceSet(sourceSets.main.get())
+		}
+	}
 }
 
 dependencies {
