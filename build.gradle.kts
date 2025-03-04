@@ -44,31 +44,18 @@ allprojects {
 
 	repositories {
 		unimined.parchmentMaven()
-		exclusiveContent {
-			forRepository { maven("https://api.modrinth.com/maven") }
-			filter {
-				includeGroup("maven.modrinth")
-			}
-		}
-		exclusiveContent {
-			forRepository { maven("https://cursemaven.com") }
-			filter {
-				includeGroup("curse.maven")
-			}
-		}
+		unimined.modrinthMaven()
+		unimined.curseMaven()
 		unimined.wagYourMaven("releases")
-
+		unimined.spongeMaven()
+		maven("https://maven.createmod.net")
 		maven("https://maven.tterrag.com")
 	}
 
 	tasks.withType<JavaCompile> {
 		options.encoding = "UTF-8"
-		options.release = "java_version"().toInt()
 		options.compilerArgs.addAll(listOf("-Xplugin:Manifold no-bootstrap", "-implicit:none"))
-
-		javaCompiler = javaToolchains.compilerFor {
-			languageVersion.set(JavaLanguageVersion.of("java_version"()))
-		}
+		options.forkOptions.memoryMaximumSize = "4g" // what did i do to make this necessary...
 	}
 
 	tasks.withType<AbstractArchiveTask> {
@@ -246,20 +233,17 @@ unimined.minecraft {
 }
 
 repositories {
-	maven("https://jitpack.io")
+	maven("https://mvn.devos.one/releases")
 	maven("https://mvn.devos.one/snapshots")
-	maven("https://maven.theillusivec4.top")
 	maven("https://maven.cafeteria.dev/releases")
 	maven("https://maven.jamieswhiteshirt.com/libs-release")
-	maven("https://repo.spongepowered.org/repository/maven-public/")
+	maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
 }
 
 val shadow: Configuration by configurations.creating
 
 dependencies {
-	modCompileOnly("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
-		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
-	}
+	modCompileOnly("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"().split("$$").joinToString("+mc${"minecraft_version"()}-build.")}")
 
 	implementation("org.ow2.asm:asm:${"asm_version"()}")
 	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")

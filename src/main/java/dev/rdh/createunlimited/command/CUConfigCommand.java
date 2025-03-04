@@ -13,8 +13,8 @@ import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfig;
 import dev.rdh.createunlimited.asm.mixin.accessor.CValueAccessor;
 
-import com.simibubi.create.foundation.config.ConfigBase.CValue;
-import com.simibubi.create.foundation.config.ConfigBase.ConfigGroup;
+import net.createmod.catnip.config.ConfigBase.CValue;
+import net.createmod.catnip.config.ConfigBase.ConfigGroup;
 
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;

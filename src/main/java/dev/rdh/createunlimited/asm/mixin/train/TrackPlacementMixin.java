@@ -18,12 +18,12 @@ import net.minecraft.world.phys.Vec3;
 @Mixin(value = TrackPlacement.class, priority = 0)
 public abstract class TrackPlacementMixin {
 
-	@Redirect(method = "tryConnect", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/VecHelper;intersect(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/Direction$Axis;)[D", ordinal = 2))
+	@Redirect(method = "tryConnect", at = @At(value = "INVOKE", target = "Lnet/createmod/catnip/math/VecHelper;intersect(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/Direction$Axis;)[D", ordinal = 2))
 	private static double[] modifyIntersect2(Vec3 p1, Vec3 p2, Vec3 r, Vec3 s, Axis plane) {
 		return cu$intersect(p1, p2, r, s, plane);
 	}
 
-	@Redirect(method = "tryConnect", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/VecHelper;intersect(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/Direction$Axis;)[D", ordinal = 3))
+	@Redirect(method = "tryConnect", at = @At(value = "INVOKE", target = "Lnet/createmod/catnip/math/VecHelper;intersect(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/Direction$Axis;)[D", ordinal = 3))
 	private static double[] modifyIntersect3(Vec3 p1, Vec3 p2, Vec3 r, Vec3 s, Axis plane) {
 		return cu$intersect(p1, p2, r, s, plane);
 	}

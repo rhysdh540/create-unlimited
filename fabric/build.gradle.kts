@@ -21,20 +21,18 @@ unimined.minecraft {
 }
 
 repositories {
+	maven("https://maven.terraformersmc.com")
+	maven("https://mvn.devos.one/releases")
 	maven("https://mvn.devos.one/snapshots")
 	maven("https://maven.cafeteria.dev/releases")
 	maven("https://maven.jamieswhiteshirt.com/libs-release")
-	maven("https://maven.theillusivec4.top")
-	maven("https://jitpack.io")
-	maven("https://maven.terraformersmc.com")
+	maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
 }
 
 dependencies {
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${"fabric_api_version"()}+${"minecraft_version"()}")
 
-	modImplementation("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"()}+mc${"minecraft_version"()}") {
-		exclude(group = "com.github.llamalad7.mixinextras", module = "mixinextras-fabric")
-	}
+	modImplementation("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"().split("$$").joinToString("+mc${"minecraft_version"()}-build.")}")
 
 	modImplementation("com.terraformersmc:modmenu:${"modmenu_version"()}")
 

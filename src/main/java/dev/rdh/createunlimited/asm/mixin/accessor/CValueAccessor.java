@@ -2,7 +2,7 @@ package dev.rdh.createunlimited.asm.mixin.accessor;
 
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 
-import com.simibubi.create.foundation.config.ConfigBase.CValue;
+import net.createmod.catnip.config.ConfigBase.CValue;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;

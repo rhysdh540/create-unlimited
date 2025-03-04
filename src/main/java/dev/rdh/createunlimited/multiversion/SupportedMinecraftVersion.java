@@ -3,8 +3,8 @@ package dev.rdh.createunlimited.multiversion;
 import dev.rdh.createunlimited.Util;
 
 public enum SupportedMinecraftVersion {
-	v1_19_2,
 	v1_20_1,
+	v1_21_1,
 	;
 
 	public static final SupportedMinecraftVersion CURRENT = current();

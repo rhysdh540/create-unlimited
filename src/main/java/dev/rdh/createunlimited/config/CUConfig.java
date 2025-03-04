@@ -1,7 +1,7 @@
 package dev.rdh.createunlimited.config;
 
-import com.simibubi.create.foundation.config.ConfigBase;
-import com.simibubi.create.foundation.config.ui.BaseConfigScreen;
+import net.createmod.catnip.config.ConfigBase;
+import net.createmod.catnip.config.ui.BaseConfigScreen;
 
 import dev.rdh.createunlimited.Util;
 
@@ -105,7 +105,7 @@ public class CUConfig extends ConfigBase {
 		if(done) return;
 		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, base ->
 			base.withSpecs(null, null, instance.specification)
-				.withTitles("", "", "Settings")
+				.withButtonLabels("", "", "Settings")
 		);
 		done = true;
 	}

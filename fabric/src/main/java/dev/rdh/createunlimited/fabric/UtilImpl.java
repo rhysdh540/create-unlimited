@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
+import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -26,47 +27,8 @@ import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
 public class UtilImpl {
 
-	private static MethodHandle modLoadingContextRegisterConfig;
-	private static MethodHandle forgeConfigRegistryRegister;
-	private static Object forgeConfigRegistryInstance;
-
-	private static void setupConfigRegistry() {
-		MethodHandles.Lookup lookup = MethodHandles.lookup();
-		try {
-			if(v1_19_2 >= CURRENT) {
-				Class<?> modLoadingContextClass = Class.forName("net.minecraftforge.api.ModLoadingContext");
-				modLoadingContextRegisterConfig = lookup.findStatic(modLoadingContextClass, "registerConfig",
-					MethodType.methodType(ModConfig.class, String.class, Type.class, IConfigSpec.class));
-			}
-
-			if(v1_20_1 <= CURRENT) {
-				Class<?> forgeConfigRegistryClass = Class.forName("fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry");
-				forgeConfigRegistryRegister = lookup.findVirtual(forgeConfigRegistryClass, "register",
-					MethodType.methodType(ModConfig.class, String.class, Type.class, IConfigSpec.class));
-				forgeConfigRegistryInstance = forgeConfigRegistryClass.getField("INSTANCE").get(null);
-			}
-		} catch (Throwable e) {
-			throw unchecked(e);
-		}
-	}
-
-	@SuppressWarnings("DataFlowIssue")
 	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
-		if(modLoadingContextRegisterConfig == null && forgeConfigRegistryRegister == null) {
-			setupConfigRegistry();
-		}
-		try {
-			if(v1_19_2 >= CURRENT) {
-				ModConfig ignore = (ModConfig) modLoadingContextRegisterConfig.invokeExact(CreateUnlimited.ID, type, spec);
-			}
-
-			if(v1_20_1 <= CURRENT) {
-				//cannot use invokeExact because the instance class only exists in 1.20.1
-				forgeConfigRegistryRegister.invoke(forgeConfigRegistryInstance, CreateUnlimited.ID, type, spec);
-			}
-		} catch (Throwable e) {
-			throw unchecked(e);
-		}
+		ForgeConfigRegistry.INSTANCE.register(CreateUnlimited.ID, type, spec);
 	}
 
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>

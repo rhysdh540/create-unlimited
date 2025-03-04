@@ -63,8 +63,6 @@ public class UtilImpl {
 		try {
 			if(v1_20_1 <= CURRENT) {
 				return (RegistryObject<Attribute>) ForgeMod.class.getField("BLOCK_REACH").get(null);
-			} else if(v1_19_2 <= CURRENT) {
-				return (RegistryObject<Attribute>) ForgeMod.class.getField("REACH_DISTANCE").get(null);
 			}
 			throw new IllegalStateException("Unsupported minecraft version: " + CURRENT);
 		} catch (NoSuchFieldException | IllegalAccessException e) {

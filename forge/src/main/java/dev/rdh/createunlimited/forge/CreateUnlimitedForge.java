@@ -11,14 +11,15 @@ import net.minecraftforge.registries.DeferredRegister;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
 @Mod(CreateUnlimited.ID)
-public final class CreateUnlimitedForge {
+public final class CreateUnlimitedForge implements CreateUnlimited {
 
-	static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENTS = DeferredRegister.create(getCommandArgumentTypeRegistry(), CreateUnlimited.ID);
+	static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENTS = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, CreateUnlimited.ID);
 
     public CreateUnlimitedForge() {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get()
@@ -29,24 +30,6 @@ public final class CreateUnlimitedForge {
 		forgeEventBus.register(Events.ClientModBusEvents.class);
 		forgeEventBus.register(Events.class);
 		modEventBus.addListener(Events.ClientModBusEvents::onLoadComplete);
-		CreateUnlimited.init();
+		this.init();
     }
-
-	@SuppressWarnings({"unchecked", "JavaReflectionMemberAccess", "RedundantSuppression"})
-	private static ResourceKey<Registry<ArgumentTypeInfo<?, ?>>> getCommandArgumentTypeRegistry() {
-		try {
-			if(v1_19_2 >= CURRENT) {
-				return (ResourceKey<Registry<ArgumentTypeInfo<?, ?>>>)
-					Registry.class.getDeclaredField(Util.isDevEnv() ? "COMMAND_ARGUMENT_TYPE_REGISTRY" : "f_235724_").get(null);
-			} else if(v1_20_1 <= CURRENT) {
-				return (ResourceKey<Registry<ArgumentTypeInfo<?, ?>>>)
-					Class.forName("net.minecraft.core.registries.Registries")
-						.getDeclaredField(Util.isDevEnv() ? "COMMAND_ARGUMENT_TYPE" : "f_256982_").get(null);
-			} else {
-				throw new IllegalStateException("Unsupported Minecraft version: " + CURRENT);
-			}
-		} catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
-			throw unchecked(e);
-		}
-	}
 }

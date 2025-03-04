@@ -22,7 +22,7 @@
     "minecraft": ["${minecraft_versions}"],
     "fabricloader": ">=${fabric_version}",
     "fabric-api": "*",
-    "create": ">=${create_version}-a"
+    "create": ">=${create_version}"
   },
   "custom": {
     "modmenu": {

@@ -6,8 +6,8 @@ import org.objectweb.asm.tree.*;
 import dev.rdh.createunlimited.config.CUConfig;
 import dev.rdh.createunlimited.config.PlacementCheck;
 
-import com.simibubi.create.foundation.config.ConfigBase.CValue;
-import com.simibubi.create.foundation.config.ConfigBase.ConfigEnum;
+import net.createmod.catnip.config.ConfigBase.CValue;
+import net.createmod.catnip.config.ConfigBase.ConfigEnum;
 
 import net.minecraft.world.entity.player.Player;
 
@@ -37,9 +37,9 @@ public final class Asm {
 			compiles down to:
 
 			GETSTATIC dev/rdh/createunlimited/config/CUConfig.instance : Ldev/rdh/createunlimited/config/CUConfig;
-			GETFIELD dev/rdh/createunlimited/config/CUConfig.placementChecks : Lcom/simibubi/create/foundation/config/ConfigBase$ConfigEnum;
-			GETSTATIC com/simibubi/create/foundation/utility/PlacementCheck.ON : Lcom/simibubi/create/foundation/utility/PlacementCheck;
-			INVOKESTATIC dev/rdh/createunlimited/config/CUConfig.getOrDefault (Lcom/simibubi/create/foundation/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
+			GETFIELD dev/rdh/createunlimited/config/CUConfig.placementChecks : Lnet/createmod/catnip/config/ConfigBase$ConfigEnum;
+			GETSTATIC dev/rdh/createunlimited/config/PlacementCheck.ON : Ldev/rdh/createunlimited/config/PlacementCheck;
+			INVOKESTATIC dev/rdh/createunlimited/config/CUConfig.getOrDefault (Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
 			CHECKCAST dev/rdh/createunlimited/config/PlacementCheck; // because generics
 			ALOAD 1
 			INVOKEVIRTUAL dev/rdh/createunlimited/config/PlacementCheck.isEnabledFor (Lnet/minecraft/world/entity/player/Player;)Z
