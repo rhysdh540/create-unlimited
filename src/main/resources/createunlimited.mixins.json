@@ -7,6 +7,7 @@
   "mixins": [
     "CopycatBlockMixin",
     "ExtendoGripItemMixin",
+    "ChainConveyorConnectionHandlerMixin",
     "accessor.CValueAccessor",
     "glue.SuperGlueSelectionPacketMixin",
     "train.CarriageContraptionMixin",
