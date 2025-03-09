@@ -10,7 +10,7 @@
     "sources": "https://github.com/rhysdh540/createunlimited",
     "issues": "https://github.com/rhysdh540/createunlimited/issues"
   },
-  "license": "GPL-3.0-or-later",
+  "license": "Unlicense",
   "icon": "cu.png",
   "environment": "*",
   "entrypoints": {
