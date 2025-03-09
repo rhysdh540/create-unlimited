@@ -10,38 +10,34 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 
-import xyz.wagyourtail.unimined.expect.annotation.ExpectPlatform;
+public interface Util {
+	String getVersion(String modid);
 
-public abstract class Util {
+	boolean isDevEnv();
 
-	@ExpectPlatform
-	public static String getVersion(String modid) {
-		throw new AssertionError();
-	}
+	String platformName();
 
-	@ExpectPlatform
-	public static boolean isDevEnv() {
-		throw new AssertionError();
-	}
+	void registerConfig(ModConfig.Type type, IConfigSpec<?> spec);
 
-	@ExpectPlatform
-	public static String platformName() {
-		throw new AssertionError();
-	}
+	<A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
+	void registerArgument(Class<A> clazz, I info, ResourceLocation id);
 
-	@ExpectPlatform
-	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
-		throw new AssertionError();
-	}
+	Attribute getReachAttribute();
 
-	@ExpectPlatform
-	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
-	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
-		throw new AssertionError();
-	}
+	Util INSTANCE = getInstance();
 
-	@ExpectPlatform
-	public static Attribute getReachAttribute() {
-		throw new AssertionError();
+	@Deprecated(forRemoval = true)
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	static Util getInstance() {
+		try {
+			String cn = System.getProperty("createunlimited.util.classname");
+			if (cn != null) {
+				return (Util) Class.forName(cn).getDeclaredConstructor().newInstance();
+			} else {
+				throw new IllegalStateException("No Util implementation found");
+			}
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -93,7 +93,7 @@ public class CUConfig extends ConfigBase {
 	public static void register() {
 		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 		instance.registerAll(builder);
-		Util.registerConfig(SERVER, instance.specification = builder.build());
+		Util.INSTANCE.registerConfig(SERVER, instance.specification = builder.build());
 	}
 
 	public static void onLoad(ModConfig modConfig) {

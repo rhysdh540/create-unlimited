@@ -4,7 +4,6 @@ import proguard.ConfigurationParser
 import proguard.ProGuard
 import xyz.wagyourtail.commons.gradle.shadow.ShadowJar
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
-import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
 import xyz.wagyourtail.commons.gradle.sourceSets
 import xyz.wagyourtail.commons.gradle.javaToolchains
@@ -15,7 +14,6 @@ plugins {
 	id("xyz.wagyourtail.unimined")
 	id("xyz.wagyourtail.commons-gradle")
 	id("org.jetbrains.gradle.plugin.idea-ext")
-	id("xyz.wagyourtail.unimined.expect-platform")
 }
 
 setup()
@@ -27,7 +25,6 @@ allprojects {
 		plugin("xyz.wagyourtail.unimined")
 		plugin("xyz.wagyourtail.commons-gradle")
 		plugin("org.jetbrains.gradle.plugin.idea-ext")
-		plugin("xyz.wagyourtail.unimined.expect-platform")
 	}
 
 	base.archivesName.set("archives_base_name"())
@@ -81,7 +78,6 @@ allprojects {
 		runs {
 			config("client") {
 				jvmArgs("-Xms4G", "-Xmx4G")
-				expectPlatform.insertAgent(spec = this, platformName = project.name)
 			}
 		}
 
@@ -100,8 +96,6 @@ allprojects {
 			annotationProcessor(this)
 		}
 		compileOnly("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
-
-		compileOnly(expectPlatform.annotationsDep)
 	}
 }
 
@@ -137,38 +131,23 @@ subprojects {
 
 	tasks.jar {
 		archiveClassifier = "$platform-dev-unmapped"
-		from(rootProject.sourceSets["main"].output) {
-			include("**/*.class")
-		}
 		putInDevlibs()
 	}
 
 	val sourcesJar by tasks.registering<Jar> {
 		archiveClassifier = "sources"
-		from(rootProject.sourceSets["main"].allSource)
 		from(sourceSets["main"].allSource)
 		putInDevlibs()
 	}
 
-	val expectPlatformJar by tasks.registering<ExpectPlatformJar> {
-		group = "unimined"
-		platformName = platform
-		archiveClassifier = "expect-$platform"
-		putInDevlibs()
-		inputFiles = files(tasks.jar.get().archiveFile)
-	}
-
 	val shadowJar by tasks.registering<ShadowJar> {
-		dependsOn(expectPlatformJar)
 		archiveBaseName.set("archives_base_name"())
 		archiveVersion.set("modVersion"())
 		archiveClassifier.set("$platform-shadowJar")
 		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 		putInDevlibs()
 
-		from(expectPlatformJar.get())
-
-		relocate("dev.rdh.createunlimited.$platform", "dev.rdh.createunlimited")
+		from(tasks.jar.get())
 	}
 
 	val remapPlatformJar by tasks.registering<RemapJarTaskImpl>(unimined.minecrafts[sourceSets["main"]]!!) {
@@ -176,32 +155,6 @@ subprojects {
 		dependsOn(shadowJar)
 		inputFile.set(shadowJar.get().archiveFile)
 		archiveClassifier = platform
-	}
-
-	val preShadow by tasks.registering<ShadowJar> {
-		archiveClassifier = "premerge-$platform"
-		putInDevlibs()
-
-		val oldMixinConfig = "createunlimited.mixins.json"
-		val newMixinConfig = "createunlimited-$platform.mixins.json"
-
-		from(zipTree(remapPlatformJar.archiveFile)) {
-			includeEmptyDirs = false
-
-			eachFile {
-				when (path) {
-					"fabric.mod.json" -> {
-						filter { it.replace(oldMixinConfig, newMixinConfig) }
-					}
-					oldMixinConfig -> {
-						filter { it.replace("dev.rdh.createunlimited.asm", "dev.rdh.createunlimited.$platform.asm") }
-						path = newMixinConfig
-					}
-				}
-			}
-		}
-
-		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${platform}")
 	}
 }
 
@@ -264,7 +217,7 @@ val mergeJars by tasks.registering<ShadowJar> {
 	includeEmptyDirs = false
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-	from(subprojects.map { zipTree(it.tasks.getByName<ShadowJar>("preShadow").archiveFile) }) {
+	from(subprojects.map { zipTree(it.tasks.getByName<RemapJarTask>("remapPlatformJar").asJar.archiveFile) }) {
 		includeEmptyDirs = false
 	}
 
@@ -281,7 +234,7 @@ val mergeJars by tasks.registering<ShadowJar> {
 	}
 }
 
-val compressJar = tasks.registering<ProcessJar> {
+val compressJar by tasks.registering<ProcessJar> {
 	input.set(mergeJars.get().archiveFile)
 	description = "Compresses the merged jar"
 

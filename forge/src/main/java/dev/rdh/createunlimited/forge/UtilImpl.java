@@ -3,6 +3,7 @@ package dev.rdh.createunlimited.forge;
 import com.mojang.brigadier.arguments.ArgumentType;
 
 import dev.rdh.createunlimited.CreateUnlimited;
+import dev.rdh.createunlimited.Util;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 
@@ -18,25 +19,23 @@ import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.forgespi.language.IModInfo;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 
-import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
-
 @SuppressWarnings({"UnstableApiUsage", "RedundantSuppression"})
-public class UtilImpl {
+public class UtilImpl implements Util {
 
-	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
+	public void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		ModLoadingContext.get().registerConfig(type, spec);
 	}
 
-	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
+	public <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
 	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
 		CreateUnlimitedForge.ARGUMENTS.register(id.getPath(), () -> ArgumentTypeInfos.registerByClass(clazz, info));
 	}
 
-	public static String getVersion(String modid) {
+	@Override
+	public String getVersion(String modid) {
 		String versionString = "UNKNOWN";
 
 		List<IModInfo> infoList = ModList.get().getModFileById(modid).getMods();
@@ -52,32 +51,18 @@ public class UtilImpl {
 		return versionString;
 	}
 
-	public static boolean isDevEnv() {
+	@Override
+	public boolean isDevEnv() {
 		return !FMLLoader.isProduction();
 	}
 
-	private static RegistryObject<Attribute> reachAttribute = null;
-
-	@SuppressWarnings({"unchecked", "JavaReflectionMemberAccess"})
-	private static RegistryObject<Attribute> makeReachAttribute() {
-		try {
-			if(v1_20_1 <= CURRENT) {
-				return (RegistryObject<Attribute>) ForgeMod.class.getField("BLOCK_REACH").get(null);
-			}
-			throw new IllegalStateException("Unsupported minecraft version: " + CURRENT);
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			throw new RuntimeException("Failed to get reach attribute for minecraft version " + CURRENT, e);
-		}
+	@Override
+	public Attribute getReachAttribute() {
+		return ForgeMod.BLOCK_REACH.get();
 	}
 
-	public static Attribute getReachAttribute() {
-		if(reachAttribute == null) {
-			reachAttribute = makeReachAttribute();
-		}
-		return reachAttribute.get();
-	}
-
-	public static String platformName() {
+	@Override
+	public String platformName() {
 		return "Forge";
 	}
 }

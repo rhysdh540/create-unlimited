@@ -16,8 +16,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
-import xyz.wagyourtail.unimined.expect.annotation.PlatformOnly;
-
 import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfig;
 
@@ -28,42 +26,24 @@ import java.util.function.Supplier;
 public abstract class ExtendoGripItemMixin {
 
 	@Dynamic
-	@PlatformOnly(PlatformOnly.FABRIC)
 	@ModifyExpressionValue(method = {
 		"holdingExtendoGripIncreasesRange(Lnet/minecraft/world/entity/LivingEntity;)V",
 		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/nbt/CompoundTag;)V",
+		"holdingExtendoGripIncreasesRange(Lnet/minecraftforge/event/entity/living/LivingEvent$LivingTickEvent;)V",
+		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraftforge/event/entity/player/PlayerEvent$PlayerLoggedInEvent;)V"
 	}, at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;rangeModifier:Ljava/util/function/Supplier;"))
 	private static Supplier<Multimap<Attribute, AttributeModifier>> modifySingleFabric(Supplier<?> original) {
 		return cu$singleRange();
 	}
 
 	@Dynamic
-	@PlatformOnly(PlatformOnly.FORGE)
-	@ModifyExpressionValue(method = {
-		"holdingExtendoGripIncreasesRange(Lnet/minecraftforge/event/entity/living/LivingEvent$LivingTickEvent;)V",
-		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraftforge/event/entity/player/PlayerEvent$PlayerLoggedInEvent;)V"
-	}, at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;rangeModifier:Ljava/util/function/Supplier;"))
-	private static Supplier<Multimap<Attribute, AttributeModifier>> modifySingleForge(Supplier<?> original) {
-		return cu$singleRange();
-	}
-
-	@Dynamic
-	@PlatformOnly(PlatformOnly.FABRIC)
 	@ModifyExpressionValue(method = {
 		"holdingExtendoGripIncreasesRange(Lnet/minecraft/world/entity/LivingEntity;)V",
 		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/nbt/CompoundTag;)V",
-	}, at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;doubleRangeModifier:Ljava/util/function/Supplier;"))
-	private static Supplier<Multimap<Attribute, AttributeModifier>> modifyDoubleFabric(Supplier<?> original) {
-		return cu$doubleRange();
-	}
-
-	@Dynamic
-	@PlatformOnly(PlatformOnly.FORGE)
-	@ModifyExpressionValue(method = {
 		"holdingExtendoGripIncreasesRange(Lnet/minecraftforge/event/entity/living/LivingEvent$LivingTickEvent;)V",
 		"addReachToJoiningPlayersHoldingExtendo(Lnet/minecraftforge/event/entity/player/PlayerEvent$PlayerLoggedInEvent;)V"
 	}, at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;doubleRangeModifier:Ljava/util/function/Supplier;"))
-	private static Supplier<Multimap<Attribute, AttributeModifier>> modifyDoubleForge(Supplier<?> original) {
+	private static Supplier<Multimap<Attribute, AttributeModifier>> modifyDoubleFabric(Supplier<?> original) {
 		return cu$doubleRange();
 	}
 
@@ -71,13 +51,13 @@ public abstract class ExtendoGripItemMixin {
 	private static Supplier<Multimap<Attribute, AttributeModifier>> cu$singleRange() {
 		AttributeModifier am = new AttributeModifier(UUID.fromString("7f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
 			CUConfig.getOrDefault(CUConfig.instance.singleExtendoGripRange, 3), AttributeModifier.Operation.ADDITION);
-		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.getReachAttribute(), am));
+		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.INSTANCE.getReachAttribute(), am));
 	}
 
 	@Unique
 	private static Supplier<Multimap<Attribute, AttributeModifier>> cu$doubleRange() {
 		AttributeModifier am = new AttributeModifier(UUID.fromString("8f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier",
 			CUConfig.getOrDefault(CUConfig.instance.doubleExtendoGripRange, 5), AttributeModifier.Operation.ADDITION);
-		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.getReachAttribute(), am));
+		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.INSTANCE.getReachAttribute(), am));
 	}
 }

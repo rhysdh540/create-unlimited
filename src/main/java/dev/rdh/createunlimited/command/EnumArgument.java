@@ -45,7 +45,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static void init() {
-		Util.registerArgument(EnumArgument.class, new EnumArgument.Info(), CreateUnlimited.asResource("enumargument"));
+		Util.INSTANCE.registerArgument(EnumArgument.class, new EnumArgument.Info(), CreateUnlimited.asResource("enumargument"));
 	}
 
 	public static <R extends Enum<R>> EnumArgument<R> enumArg(Class<R> enumClass, boolean lowercase) {

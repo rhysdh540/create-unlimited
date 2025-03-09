@@ -10,7 +10,7 @@ public enum SupportedMinecraftVersion {
 	public static final SupportedMinecraftVersion CURRENT = current();
 
 	private static SupportedMinecraftVersion current() {
-		String mcVersion = Util.getVersion("minecraft");
+		String mcVersion = Util.INSTANCE.getVersion("minecraft");
 		for(SupportedMinecraftVersion version : values()) {
 			if(version.toString().equals(mcVersion)) {
 				return version;

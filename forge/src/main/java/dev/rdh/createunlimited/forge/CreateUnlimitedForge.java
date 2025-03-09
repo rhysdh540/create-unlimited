@@ -14,6 +14,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 
+import java.lang.reflect.Field;
+
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
 @Mod(CreateUnlimited.ID)
@@ -25,6 +27,8 @@ public final class CreateUnlimitedForge implements CreateUnlimited {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get()
 			.getModEventBus();
 		IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
+
+		System.setProperty("createunlimited.util.classname", UtilImpl.class.getName());
 
 		ARGUMENTS.register(modEventBus);
 		forgeEventBus.register(Events.ClientModBusEvents.class);

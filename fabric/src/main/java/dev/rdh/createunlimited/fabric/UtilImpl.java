@@ -5,6 +5,7 @@ import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import com.mojang.brigadier.arguments.ArgumentType;
 
 import dev.rdh.createunlimited.CreateUnlimited;
+import dev.rdh.createunlimited.Util;
 
 import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
@@ -25,18 +26,21 @@ import java.lang.invoke.MethodType;
 
 import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
-public class UtilImpl {
+public class UtilImpl implements Util {
 
-	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
+	@Override
+	public void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
 		ForgeConfigRegistry.INSTANCE.register(CreateUnlimited.ID, type, spec);
 	}
 
-	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
+	@Override
+	public <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
 	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
 		ArgumentTypeRegistry.registerArgumentType(id, clazz, info);
 	}
 
-	public static String getVersion(String modid) {
+	@Override
+	public String getVersion(String modid) {
 		return FabricLoader.getInstance()
 			.getModContainer(modid)
 			.orElseThrow(() -> new IllegalArgumentException("Mod container for \"" + modid + "\" not found"))
@@ -45,15 +49,18 @@ public class UtilImpl {
 			.getFriendlyString();
 	}
 
-	public static boolean isDevEnv() {
+	@Override
+	public boolean isDevEnv() {
 		return FabricLoader.getInstance().isDevelopmentEnvironment();
 	}
 
-	public static Attribute getReachAttribute() {
+	@Override
+	public Attribute getReachAttribute() {
 		return ReachEntityAttributes.REACH;
 	}
 
-	public static String platformName() {
+	@Override
+	public String platformName() {
 		return FabricLoader.getInstance().isModLoaded("quilt_loader") ? "Quilt" : "Fabric";
 	}
 }
