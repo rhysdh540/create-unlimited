@@ -31,6 +31,7 @@ repositories {
 
 dependencies {
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${"fabric_api_version"()}+${"minecraft_version"()}")
+	runtimeOnly("ca.weblite:java-objc-bridge:1.1")
 
 	modImplementation("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"().split("$$").joinToString("+mc${"minecraft_version"()}-build.")}")
 

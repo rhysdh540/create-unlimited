@@ -1,8 +1,5 @@
 package dev.rdh.createunlimited;
 
-import com.simibubi.create.Create;
-import com.simibubi.create.CreateBuildInfo;
-
 import dev.rdh.createunlimited.config.CUConfig;
 
 import dev.rdh.createunlimited.command.EnumArgument;
@@ -20,8 +17,8 @@ public interface CreateUnlimited {
 	Logger LOGGER = LoggerFactory.getLogger(NAME);
 
     default void init() {
-		LOGGER.info("{} v{} initializing! Create version: {} on platform: {}",
-				NAME, VERSION, CreateBuildInfo.VERSION, Util.platformName());
+		LOGGER.info("{} v{} initializing on platform: {}!",
+			NAME, VERSION, Util.platformName());
 
 		LOGGER.info("Detected Minecraft version: {}", SupportedMinecraftVersion.CURRENT);
 

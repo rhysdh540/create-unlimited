@@ -81,6 +81,7 @@ allprojects {
 		runs {
 			config("client") {
 				jvmArgs("-Xms4G", "-Xmx4G")
+				systemProperty("mixin.debug.export", "true")
 				expectPlatform.insertAgent(spec = this, platformName = project.name)
 			}
 		}
@@ -281,7 +282,7 @@ val mergeJars by tasks.registering<ShadowJar> {
 	}
 }
 
-val compressJar = tasks.registering<ProcessJar> {
+val compressJar by tasks.registering<ProcessJar> {
 	input.set(mergeJars.get().archiveFile)
 	description = "Compresses the merged jar"
 
@@ -290,7 +291,7 @@ val compressJar = tasks.registering<ProcessJar> {
 	archiveClassifier = ""
 
 	addFileProcessor(extensions = setOf("json", "mcmeta"), processor = Compressors.json)
-	addFileProcessor(extensions = setOf("jar"), processor = Compressors.storeJars)
+	//addFileProcessor(extensions = setOf("jar"), processor = Compressors.storeJars)
 
 	addDirProcessor { dir -> // proguard
 		val temp = temporaryDir.resolve("proguard")
