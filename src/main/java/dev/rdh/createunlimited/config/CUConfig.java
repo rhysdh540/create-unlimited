@@ -44,9 +44,8 @@ public class CUConfig extends ConfigBase {
 //	public final ConfigBool physicalBlockConnection = b(true, "physicalBlockConnection", Comments.physicalBlockConnection);
 
 	public final ConfigGroup extendo = group(1, "extendo", Comments.extendo);
-	public final ConfigFloat singleExtendoGripRange = f(3, 0, "singleExtendoGripRange", Comments.singleExtendoGripRange);
-	public final ConfigFloat doubleExtendoGripRange = f(5, 0, "doubleExtendoGripRange", Comments.doubleExtendoGripRange);
-
+	public final ConfigFloat singleExtendoGripRange = extendo(3, 0, "singleExtendoGripRange", Comments.singleExtendoGripRange);
+	public final ConfigFloat doubleExtendoGripRange = extendo(5, 0, "doubleExtendoGripRange", Comments.doubleExtendoGripRange);
 
 	public final ConfigGroup misc = group(1, "misc", Comments.misc);
 	public final ConfigBool chainConveyorConnectionLimits = b(true, "chainConveyorConnectionLimits", Comments.chainConveyorConnectionLimits);
@@ -82,6 +81,22 @@ public class CUConfig extends ConfigBase {
 					CreateUnlimited.LOGGER.error("Failed to get comment for " + field.getName(), e);
 				}
 			}
+		}
+	}
+
+	private ExtendoRange extendo(float current, float min, String name, String... comment) {
+		return new ExtendoRange(name, current, min, Float.MAX_VALUE, comment);
+	}
+
+	private class ExtendoRange extends ConfigFloat {
+		public ExtendoRange(String name, float current, float min, float max, String... comment) {
+			super(name, current, min, max, comment);
+		}
+
+		@Override
+		public void set(Double value) {
+			// TODO: notify players holding extendos that this got changed
+			super.set(value);
 		}
 	}
 
