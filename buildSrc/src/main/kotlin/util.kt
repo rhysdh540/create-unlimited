@@ -1,15 +1,11 @@
+import org.gradle.api.Task
 import org.gradle.api.internal.file.copy.DefaultCopySpec
 import org.gradle.api.tasks.AbstractCopyTask
-import org.gradle.api.tasks.bundling.AbstractArchiveTask
-import org.gradle.jvm.tasks.Jar
-import org.gradle.api.Task
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.RegisteringDomainObjectDelegateProviderWithTypeAndAction
-import org.gradle.kotlin.dsl.get
-import xyz.wagyourtail.commons.gradle.sourceSets
-import xyz.wagyourtail.unimined.api.UniminedExtension
 
 val JAVA_HOME = System.getProperty("java.home") ?: error("JAVA_HOME not set")
 

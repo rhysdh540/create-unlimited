@@ -1,23 +1,21 @@
-import xyz.wagyourtail.unimined.api.unimined
+import xyz.wagyourtail.commons.gradle.shadow.ShadowJar
+import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 
-val modLocalRuntime: Configuration by configurations.creating {
-	configurations["runtimeClasspath"].extendsFrom(this)
-	isCanBeConsumed = false
-	isCanBeResolved = true
+plugins {
+	id("fabric-loom")
 }
 
-unimined.minecraft {
-	fabric {
-		loader("fabric_version"())
-	}
+val shadowJar by tasks.registering<ShadowJar> {
+	dependsOn(tasks.named("expectPlatformJar"))
+	group = "build"
+	archiveClassifier.set("shadow")
+	from(zipTree(tasks.getByName<ExpectPlatformJar>("expectPlatformJar").archiveFile.get()))
 
-	mods {
-		remap(modLocalRuntime)
+	relocate("dev.rdh.createunlimited.fabric", "dev.rdh.createunlimited")
+}
 
-		modImplementation {
-			catchAWNamespaceAssertion()
-		}
-	}
+tasks.remapJar {
+
 }
 
 repositories {
@@ -30,6 +28,13 @@ repositories {
 }
 
 dependencies {
+	minecraft("com.mojang:minecraft:${"minecraft_version"()}")
+	mappings(loom.layered {
+		officialMojangMappings()
+		parchment("org.parchmentmc.data:parchment-${"minecraft_version"()}:${"parchment_version"()}@zip")
+	})
+	modImplementation("net.fabricmc:fabric-loader:${"fabric_version"()}")
+
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${"fabric_api_version"()}+${"minecraft_version"()}")
 	runtimeOnly("ca.weblite:java-objc-bridge:1.1")
 

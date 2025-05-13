@@ -3,16 +3,13 @@
 import proguard.ConfigurationParser
 import proguard.ProGuard
 import xyz.wagyourtail.commons.gradle.shadow.ShadowJar
-import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
-import xyz.wagyourtail.unimined.internal.minecraft.task.RemapJarTaskImpl
 import xyz.wagyourtail.commons.gradle.sourceSets
-import xyz.wagyourtail.commons.gradle.javaToolchains
 
 plugins {
 	id("java")
 	id("idea")
-	id("xyz.wagyourtail.unimined")
+	id("fabric-loom")
 	id("xyz.wagyourtail.commons-gradle")
 	id("org.jetbrains.gradle.plugin.idea-ext")
 	id("xyz.wagyourtail.unimined.expect-platform")
@@ -24,7 +21,6 @@ allprojects {
 	apply {
 		plugin("java")
 		plugin("idea")
-		plugin("xyz.wagyourtail.unimined")
 		plugin("xyz.wagyourtail.commons-gradle")
 		plugin("org.jetbrains.gradle.plugin.idea-ext")
 		plugin("xyz.wagyourtail.unimined.expect-platform")
@@ -43,11 +39,17 @@ allprojects {
 	}
 
 	repositories {
-		unimined.parchmentMaven()
-		unimined.modrinthMaven()
-		unimined.curseMaven()
-		unimined.wagYourMaven("releases")
-		unimined.spongeMaven()
+		maven("https://maven.parchmentmc.org")
+		exclusiveContent {
+			forRepository { maven("https://api.modrinth.com/maven") }
+			filter { includeGroup("maven.modrinth") }
+		}
+		exclusiveContent {
+			forRepository { maven("https://cursemaven.com") }
+			filter { includeGroup("curse.maven") }
+		}
+		maven("https://repo.spongepowered.org/maven")
+		maven("https://maven.wagyourtail.xyz/releases")
 		maven("https://maven.createmod.net")
 		maven("https://maven.tterrag.com")
 	}
@@ -62,38 +64,6 @@ allprojects {
 		isPreserveFileTimestamps = false
 		isReproducibleFileOrder = true
 		includeEmptyDirs = false
-	}
-
-	unimined.minecraft(lateApply = true) {
-		version = "minecraft_version"()
-
-		sourceProvider.configRemap {
-			remapper("1.0.5-SNAPSHOT")
-		}
-
-		mappings {
-			mojmap()
-			parchment(version = "parchment_version"())
-
-			devFallbackNamespace("official")
-		}
-
-		runs {
-			config("client") {
-				jvmArgs("-Xms4G", "-Xmx4G")
-				systemProperty("mixin.debug.export", "true")
-				expectPlatform.insertAgent(spec = this, platformName = project.name)
-			}
-		}
-
-		defaultRemapJar = false
-	}
-
-	tasks.withType<RemapJarTask> {
-		mixinRemap {
-			enableMixinExtra()
-			disableRefmap()
-		}
 	}
 
 	dependencies {
@@ -152,196 +122,39 @@ subprojects {
 	}
 
 	val expectPlatformJar by tasks.registering<ExpectPlatformJar> {
-		group = "unimined"
+		notCompatibleWithConfigurationCache("oopsies!")
+		group = "build"
 		platformName = platform
 		archiveClassifier = "expect-$platform"
 		putInDevlibs()
 		inputFiles = files(tasks.jar.get().archiveFile)
-	}
-
-	val shadowJar by tasks.registering<ShadowJar> {
-		dependsOn(expectPlatformJar)
-		archiveBaseName.set("archives_base_name"())
-		archiveVersion.set("modVersion"())
-		archiveClassifier.set("$platform-shadowJar")
-		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-		putInDevlibs()
-
-		from(expectPlatformJar.get())
-
-		relocate("dev.rdh.createunlimited.$platform", "dev.rdh.createunlimited")
-	}
-
-	val remapPlatformJar by tasks.registering<RemapJarTaskImpl>(unimined.minecrafts[sourceSets["main"]]!!) {
-		tasks.assemble.get().dependsOn(this)
-		dependsOn(shadowJar)
-		inputFile.set(shadowJar.get().archiveFile)
-		archiveClassifier = platform
-	}
-
-	val preShadow by tasks.registering<ShadowJar> {
-		archiveClassifier = "premerge-$platform"
-		putInDevlibs()
-
-		val oldMixinConfig = "createunlimited.mixins.json"
-		val newMixinConfig = "createunlimited-$platform.mixins.json"
-
-		from(zipTree(remapPlatformJar.archiveFile)) {
-			includeEmptyDirs = false
-
-			eachFile {
-				when (path) {
-					"fabric.mod.json" -> {
-						filter { it.replace(oldMixinConfig, newMixinConfig) }
-					}
-					oldMixinConfig -> {
-						filter { it.replace("dev.rdh.createunlimited.asm", "dev.rdh.createunlimited.$platform.asm") }
-						path = newMixinConfig
-					}
-				}
-			}
-		}
-
-		relocate("dev.rdh.createunlimited", "dev.rdh.createunlimited.${platform}")
 	}
 }
 
 // disable root jar - subprojects will pull directly from compileJava
 tasks.jar { enabled = false }
 
-val modCompileOnly: Configuration by configurations.creating {
-	configurations["compileClasspath"].extendsFrom(this)
-}
-
-unimined.minecraft {
-	runs.off = true
-
-	mappings {
-		intermediary()
-	}
-
-	mods {
-		modImplementation {
-			catchAWNamespaceAssertion()
-			namespace("intermediary")
-		}
-
-		remap(modCompileOnly) {
-			catchAWNamespaceAssertion()
-			namespace("intermediary")
-		}
-	}
-}
-
 repositories {
 	maven("https://mvn.devos.one/releases")
 	maven("https://mvn.devos.one/snapshots")
 	maven("https://maven.cafeteria.dev/releases")
 	maven("https://maven.jamieswhiteshirt.com/libs-release")
-	maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
+	maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven")
 }
 
 val shadow: Configuration by configurations.creating
 
 dependencies {
+	minecraft("com.mojang:minecraft:${"minecraft_version"()}")
+	mappings(loom.layered {
+		officialMojangMappings()
+		parchment("org.parchmentmc.data:parchment-${"minecraft_version"()}:${"parchment_version"()}@zip")
+	})
 	modCompileOnly("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"().split("$$").joinToString("+mc${"minecraft_version"()}-build.")}")
-
-	implementation("org.ow2.asm:asm:${"asm_version"()}")
-	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
-	implementation("org.ow2.asm:asm-commons:${"asm_version"()}")
-	implementation("org.spongepowered:mixin:${"mixin_version"()}")
 
 	shadow("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
 }
 
-val mergeJars by tasks.registering<ShadowJar> {
-	group = "build"
-	description = "Merges the platform shadow jars into a single jar"
-	archiveBaseName = "archives_base_name"()
-	archiveVersion = "modVersion"()
-	archiveClassifier = "merged"
-	putInDevlibs()
-
-	includeEmptyDirs = false
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-	from(subprojects.map { zipTree(it.tasks.getByName<ShadowJar>("preShadow").archiveFile) }) {
-		includeEmptyDirs = false
-	}
-
-	from(shadow.map { zipTree(it) }) {
-		includeEmptyDirs = false
-		include("**/*.class")
-	}
-
-	relocate("com.llamalad7.mixinextras", "dev.rdh.createunlimited.mixinextras")
-
-	manifest {
-		attributes["MixinConfigs"] = "createunlimited-forge.mixins.json"
-		attributes["Fabric-Loom-Mixin-Remap-Type"] = "static"
-	}
-}
-
-val compressJar by tasks.registering<ProcessJar> {
-	input.set(mergeJars.get().archiveFile)
-	description = "Compresses the merged jar"
-
-	archiveBaseName = "archives_base_name"()
-	archiveVersion = "modVersion"()
-	archiveClassifier = ""
-
-	addFileProcessor(extensions = setOf("json", "mcmeta"), processor = Compressors.json)
-	//addFileProcessor(extensions = setOf("jar"), processor = Compressors.storeJars)
-
-	addDirProcessor { dir -> // proguard
-		val temp = temporaryDir.resolve("proguard")
-		temp.mkdirs()
-		dir.copyRecursively(temp, overwrite = true)
-		dir.deleteRecursively()
-		val args = mutableListOf(
-			"@${file("proguard.pro").absolutePath}",
-			"-injars", temp.absolutePath,
-			"-outjars", dir.absolutePath,
-		)
-
-		val libraries = mutableSetOf<String>()
-		libraries.add("${JAVA_HOME}/jmods/java.base.jmod")
-
-		for (minecraftConfig in subprojects.flatMap { it.unimined.minecrafts.values }) {
-			val prodNamespace = minecraftConfig.mcPatcher.prodNamespace
-
-			libraries.add(minecraftConfig.getMinecraft(prodNamespace, prodNamespace).toFile().absolutePath)
-
-			val minecrafts = listOf(
-				minecraftConfig.sourceSet.compileClasspath.files,
-				minecraftConfig.sourceSet.runtimeClasspath.files
-			).flatten()
-				.filter { !minecraftConfig.isMinecraftJar(it.toPath()) }
-				.toHashSet()
-
-			libraries += minecraftConfig.mods.getClasspathAs(prodNamespace, prodNamespace, minecrafts)
-				.filter { it.extension == "jar" && !it.name.startsWith("createunlimited") }
-				.map { it.absolutePath }
-		}
-
-		args.addAll(listOf("-libraryjars", libraries.joinToString(separator = File.pathSeparator) { "\"$it\"" }))
-
-		try {
-			ProGuard(proguard.Configuration().also {
-				ConfigurationParser(args.toTypedArray(), null)
-					.parse(it)
-			}).execute()
-		} catch (ex: Exception) {
-			throw IllegalStateException("ProGuard failed for $temp", ex)
-		} finally {
-			temp.deleteRecursively()
-		}
-	}
-}
-
-tasks.assemble {
-	dependsOn(mergeJars, compressJar)
-}
 
 fun setup() {
 	val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")

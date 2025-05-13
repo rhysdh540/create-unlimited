@@ -8,9 +8,11 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 
 @SuppressWarnings("unused")
+@Pseudo
 @Mixin(value = CopycatBlock.class, targets = "com.copycatsplus.copycats.foundation.copycat.ICopycatBlock")
 public abstract class CopycatBlockMixin {
 	@Dynamic("copycats plus compat")

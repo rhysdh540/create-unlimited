@@ -1,62 +1,36 @@
-import xyz.wagyourtail.unimined.api.unimined
-import xyz.wagyourtail.unimined.internal.minecraft.patch.forge.ForgeLikeMinecraftTransformer
-import xyz.wagyourtail.unimined.util.OSUtils
+import org.gradle.kotlin.dsl.getByName
+import xyz.wagyourtail.commons.gradle.shadow.ShadowJar
+import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 
-val modRuntimeOnly: Configuration by configurations.creating {
-	configurations["runtimeClasspath"].extendsFrom(this)
-	isCanBeConsumed = false
-	isCanBeResolved = true
+plugins {
+	id("net.neoforged.moddev.legacyforge")
 }
 
-unimined.minecraft {
-	minecraftForge {
-		loader("forge_version"())
-		mixinConfig("createunlimited.mixins.json")
-		accessTransformer(file("run/accesstransformer.cfg"))
-	}
+legacyForge {
+	version = "${"minecraft_version"()}-${"forge_version"()}"
 
-	mappings {
-		stub.withMappings("searge", "mojmap") {
-			c(when (minecraft.version) {
-				"1.20.1" -> "fho"
-				else -> error("no ParticleEngine mapping for ${minecraft.version}")
-			}, listOf("net/minecraft/client/particle/ParticleEngine")) {
-				f("[nothing]", "Ljava/util/Map;", "f_107293_", "providers")
-			}
-		}
+	parchment {
+		minecraftVersion.set("minecraft_version"())
+		mappingsVersion.set("parchment_version"())
 	}
+}
 
-	mods {
-		modImplementation {
-			catchAWNamespaceAssertion()
-		}
-		remap(modRuntimeOnly)
-	}
+val shadowJar by tasks.registering<ShadowJar> {
+	dependsOn(tasks.named("expectPlatformJar"))
+	group = "build"
+	archiveClassifier.set("shadow")
+	from(zipTree(tasks.getByName<ExpectPlatformJar>("expectPlatformJar").archiveFile.get()))
 
-	runs.all {
-		jvmArgs(
-			"-Dmixin.env.remapRefMap=true",
-			"-Dmixin.env.refMapRemappingFile=${(mcPatcher as ForgeLikeMinecraftTransformer).srgToMCPAsSRG}"
-		)
-
-		if(OSUtils.oSId == OSUtils.OSX) {
-			// for some reason this doesn't get inserted automatically on forge?
-			jvmArgs("-XstartOnFirstThread")
-		}
-	}
-
-	runs.config("client") {
-		args("-mixin.config=create.mixins.json")
-	}
+	relocate("dev.rdh.createunlimited.forge", "dev.rdh.createunlimited")
 }
 
 dependencies {
-	modImplementation("com.simibubi.create:create-${"minecraft_version"()}:${"create_forge_version"()}:slim") { isTransitive = false }
-	modImplementation("net.createmod.ponder:Ponder-Forge-${"minecraft_version"()}:${"ponder_version"()}")
-	modImplementation("com.tterrag.registrate:Registrate:${"registrate_version"()}")
-	modImplementation("dev.engine-room.flywheel:flywheel-forge-api-${"minecraft_version"()}:${"flywheel_version"()}")
-	modImplementation("io.github.llamalad7:mixinextras-forge:${"mixin_extras_version"()}")
-	modRuntimeOnly("dev.engine-room.flywheel:flywheel-forge-${"minecraft_version"()}:${"flywheel_version"()}")
+	implementation("com.simibubi.create:create-${"minecraft_version"()}:${"create_forge_version"()}:slim") { isTransitive = false }
+	implementation("net.createmod.ponder:Ponder-Forge-${"minecraft_version"()}:${"ponder_version"()}")
+	implementation("com.tterrag.registrate:Registrate:${"registrate_version"()}")
+	implementation("dev.engine-room.flywheel:flywheel-forge-api-${"minecraft_version"()}:${"flywheel_version"()}")
+	implementation("io.github.llamalad7:mixinextras-forge:${"mixin_extras_version"()}")
+	runtimeOnly("dev.engine-room.flywheel:flywheel-forge-${"minecraft_version"()}:${"flywheel_version"()}")
 }
 
 operator fun String.invoke() = rootProject.ext[this] as? String ?: error("No property \"$this\"")

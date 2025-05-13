@@ -1,9 +1,9 @@
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.tasks.TaskContainer
-import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.provider.ProviderFactory
+import org.gradle.api.tasks.Nested
 import org.jetbrains.annotations.ApiStatus
 import java.io.File
+import javax.inject.Inject
 
 val Project.git: Git
 	get() = project.extensions.let {
@@ -32,10 +32,14 @@ abstract class Git(val repository: File) {
 
 	fun getUncommitedChanges() = git("diff", "--name-only")
 
+	@get:ApiStatus.Internal
+	@get:Inject
+	abstract val providers: ProviderFactory
+
 	private fun git(vararg args: String): String {
-		val process = ProcessBuilder("git", *args)
-			.directory(repository)
-			.start()
-		return process.inputStream.bufferedReader().readText().trim()
+		return providers.exec {
+			commandLine("git", *args)
+			workingDir(repository)
+		}.standardOutput.asText.get()
 	}
 }

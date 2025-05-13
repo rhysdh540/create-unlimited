@@ -47,7 +47,7 @@ public abstract class ExtendoGripItemMixin {
 	}
 
 	// don't memoize
-	@Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/google/common/base/Suppliers;memoize(Lcom/google/common/base/Supplier;)Lcom/google/common/base/Supplier;"))
+	@Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/google/common/base/Suppliers;memoize(Lcom/google/common/base/Supplier;)Lcom/google/common/base/Supplier;", remap = false))
 	private static Supplier<?> modifySingleRangeAttributeModifier(Supplier<?> original) {
 		return original;
 	}
