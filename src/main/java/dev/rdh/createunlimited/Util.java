@@ -7,9 +7,6 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.IConfigSpec;
 import net.neoforged.fml.config.ModConfig;
@@ -54,9 +51,5 @@ public abstract class Util {
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
 	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
 		ARGUMENTS.register(id.getPath(), () -> ArgumentTypeInfos.registerByClass(clazz, info));
-	}
-
-	public static Attribute getReachAttribute() {
-		return Attributes.BLOCK_INTERACTION_RANGE.value();
 	}
 }

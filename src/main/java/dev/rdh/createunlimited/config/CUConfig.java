@@ -16,6 +16,8 @@ import net.neoforged.fml.config.ModConfig;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+
 import static net.neoforged.fml.config.ModConfig.Type.*;
 
 @SuppressWarnings("unused")
@@ -39,8 +41,8 @@ public class CUConfig extends ConfigBase {
 //	public final ConfigBool physicalBlockConnection = b(true, "physicalBlockConnection", Comments.physicalBlockConnection);
 
 	public final ConfigGroup extendo = group(1, "extendo", Comments.extendo);
-	public final ConfigInt singleExtendoGripRange = i(3, 0, "singleExtendoGripRange", Comments.singleExtendoGripRange);
-	public final ConfigInt doubleExtendoGripRange = i(5, 0, "doubleExtendoGripRange", Comments.doubleExtendoGripRange);
+	public final ConfigFloat singleExtendoGripRange = f(3, 0, "singleExtendoGripRange", Comments.singleExtendoGripRange);
+	public final ConfigFloat doubleExtendoGripRange = f(5, 0, "doubleExtendoGripRange", Comments.doubleExtendoGripRange);
 
 	public final ConfigGroup chainConveyor = group(1, "chainConveyor", Comments.chainConveyor);
 	public final ConfigBool chainConveyorConnectionLimits = b(true, "chainConveyorConnectionLimits", Comments.chainConveyorConnectionLimits);
@@ -122,8 +124,8 @@ public class CUConfig extends ConfigBase {
 	public static <V, T extends ConfigValue<V>> V getOrDefault(CValue<V, T> value, V orElse) {
 		try {
 			return value.get();
-		} catch (IllegalStateException e) {
-			if(e.getMessage().contains("config")) {
+		} catch (IllegalStateException | AssertionError e) {
+			if(e.getMessage().toLowerCase(Locale.ROOT).contains("config")) {
 				return orElse;
 			}
 			throw e;

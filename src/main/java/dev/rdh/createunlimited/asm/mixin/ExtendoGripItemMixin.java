@@ -1,58 +1,54 @@
 package dev.rdh.createunlimited.asm.mixin;
 
-import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.base.Supplier;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
-import com.simibubi.create.Create;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
 
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 
-import org.spongepowered.asm.mixin.Dynamic;
+import it.unimi.dsi.fastutil.doubles.Double2ObjectMap;
+import it.unimi.dsi.fastutil.doubles.Double2ObjectOpenHashMap;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.config.CUConfig;
 
-import java.util.function.Supplier;
-
-@Mixin(value = ExtendoGripItem.class)
+@Mixin(ExtendoGripItem.class)
 public abstract class ExtendoGripItemMixin {
 
-	@ModifyExpressionValue(method = {
-		"holdingExtendoGripIncreasesRange",
-		"addReachToJoiningPlayersHoldingExtendo"
-	}, at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;rangeModifier:Ljava/util/function/Supplier;"))
-	private static Supplier<Multimap<Attribute, AttributeModifier>> modifySingleForge(Supplier<?> original) {
-		return cu$singleRange();
+	// keys <0 for double, >0 for single
+	@Unique private static final Double2ObjectMap<AttributeModifier> cu$cachedModifiers = new Double2ObjectOpenHashMap<>();
+
+	@ModifyExpressionValue(method = "lambda$static$0", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;singleRangeAttributeModifier:Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;"))
+	private static AttributeModifier modifySingleRangeAttributeModifier(AttributeModifier original) {
+		double newAmount = CUConfig.getOrDefault(CUConfig.instance.singleExtendoGripRange, original.amount());
+		AttributeModifier modifier = cu$cachedModifiers.get(newAmount);
+		if (modifier == null) {
+			modifier = new AttributeModifier(original.id(), newAmount, original.operation());
+			cu$cachedModifiers.put(newAmount, modifier);
+		}
+		return modifier;
 	}
 
-	@ModifyExpressionValue(method = {
-		"holdingExtendoGripIncreasesRange",
-		"addReachToJoiningPlayersHoldingExtendo"
-	}, at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;doubleRangeModifier:Ljava/util/function/Supplier;"))
-	private static Supplier<Multimap<Attribute, AttributeModifier>> modifyDoubleForge(Supplier<?> original) {
-		return cu$doubleRange();
+	@ModifyExpressionValue(method = "lambda$static$1", at = @At(value = "FIELD", target = "Lcom/simibubi/create/content/equipment/extendoGrip/ExtendoGripItem;doubleRangeAttributeModifier:Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;"))
+	private static AttributeModifier modifyDoubleRangeAttributeModifier(AttributeModifier original) {
+		double newAmount = CUConfig.getOrDefault(CUConfig.instance.doubleExtendoGripRange, original.amount());
+		AttributeModifier modifier = cu$cachedModifiers.get(-newAmount);
+		if (modifier == null) {
+			modifier = new AttributeModifier(original.id(), newAmount, original.operation());
+			cu$cachedModifiers.put(-newAmount, modifier);
+		}
+		return modifier;
 	}
 
-	@Unique
-	private static Supplier<Multimap<Attribute, AttributeModifier>> cu$singleRange() {
-		AttributeModifier am = new AttributeModifier(Create.asResource("double_range_attribute_modifier"),
-			CUConfig.getOrDefault(CUConfig.instance.singleExtendoGripRange, 3), Operation.ADD_VALUE);
-		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.getReachAttribute(), am));
-	}
-
-	@Unique
-	private static Supplier<Multimap<Attribute, AttributeModifier>> cu$doubleRange() {
-		AttributeModifier am = new AttributeModifier(Create.asResource("single_range_attribute_modifier"),
-			CUConfig.getOrDefault(CUConfig.instance.doubleExtendoGripRange, 5), AttributeModifier.Operation.ADD_VALUE);
-		return Suppliers.memoize(() -> ImmutableMultimap.of(Util.getReachAttribute(), am));
+	// don't memoize
+	@Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Lcom/google/common/base/Suppliers;memoize(Lcom/google/common/base/Supplier;)Lcom/google/common/base/Supplier;"))
+	private static Supplier<?> modifySingleRangeAttributeModifier(Supplier<?> original) {
+		return original;
 	}
 }
