@@ -49,22 +49,6 @@ dependencies {
 	implementation("com.tterrag.registrate:Registrate:${"registrate_version"()}")
 }
 
-val compressJar by tasks.registering<ProcessJar> {
-	input.set(tasks.jar.get().archiveFile)
-	description = "Compresses the merged jar"
-
-	archiveBaseName = "archives_base_name"()
-	archiveVersion = "modVersion"()
-	archiveClassifier = ""
-
-//	addFileProcessor(extensions = setOf("json", "mcmeta"), processor = Compressors.json)
-//	addFileProcessor(extensions = setOf("jar"), processor = Compressors.storeJars)
-}
-
-tasks.assemble {
-	dependsOn(compressJar)
-}
-
 fun setup() {
 	val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
 
@@ -87,7 +71,9 @@ fun setup() {
 	}
 	println()
 
-	ext["modVersion"] = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
+	version = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
+	group = "maven_group"()
+	base.archivesName = "archives_base_name"()
 }
 
 tasks.register<CustomTask>("nukeGradleCaches") {
