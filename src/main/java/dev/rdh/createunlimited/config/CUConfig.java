@@ -1,20 +1,14 @@
 package dev.rdh.createunlimited.config;
 
 import net.createmod.catnip.config.ConfigBase;
-import net.createmod.catnip.config.ui.BaseConfigScreen;
 
 import dev.rdh.createunlimited.Util;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import net.neoforged.fml.config.ModConfig;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -99,26 +93,6 @@ public class CUConfig extends ConfigBase {
 	public static void onReload(ModConfig modConfig) {
 		if(instance.specification == modConfig.getSpec())
 			instance.onReload();
-	}
-
-	public static BaseConfigScreen createConfigScreen(Screen parent) {
-		initBCS();
-		return new BaseConfigScreen(parent, CreateUnlimited.ID);
-	}
-
-	private static boolean done = false;
-
-	private static void initBCS() {
-		if(done) return;
-		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, base ->
-			base.withSpecs(null, null, instance.specification)
-				.withButtonLabels("", "", "Settings")
-		);
-		done = true;
-	}
-
-	public static BaseConfigScreen createConfigScreen(@Nullable @SuppressWarnings("unused") Minecraft mc, Screen parent) {
-		return createConfigScreen(parent);
 	}
 
 	public static <V, T extends ConfigValue<V>> V getOrDefault(CValue<V, T> value, V orElse) {

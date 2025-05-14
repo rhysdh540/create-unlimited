@@ -1,8 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-import proguard.ConfigurationParser
-import proguard.ProGuard
-
 plugins {
 	id("java")
 	id("idea")
@@ -26,6 +23,9 @@ neoForge {
 	runs {
 		create("client") {
 			client()
+		}
+		create("server") {
+			server()
 		}
 	}
 
