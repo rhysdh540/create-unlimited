@@ -1,4 +1,8 @@
+import com.github.jengelman.gradle.plugins.shadow.relocation.SimpleRelocator
+import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
+import org.gradle.kotlin.dsl.provideDelegate
+import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 
 plugins {
 	id("fabric-loom")
@@ -32,6 +36,56 @@ dependencies {
 
 	modImplementation("com.terraformersmc:modmenu:${"modmenu_version"()}")
 	modLocalRuntime("net.fabricmc.fabric-api:fabric-api-deprecated:${"fabric_api_version"()}+${"minecraft_version"()}")
+}
+
+tasks.jar {
+	putInDevlibs()
+	from(rootProject.sourceSets["main"].output)
+}
+
+val expectPlatformJar by tasks.registering<ExpectPlatformJar> {
+	putInDevlibs()
+	group = "build"
+	inputFiles = files(tasks.getByName<RemapJarTask>("remapJar").archiveFile)
+	platformName = "fabric"
+	archiveClassifier.set("expect")
+}
+
+tasks.shadowJar {
+	clearSourcePaths()
+	archiveClassifier = null
+
+	configurations.empty()
+	from(zipTree(expectPlatformJar.get().archiveFile))
+
+	relocate(SimpleRelocator(
+		pattern = "dev.rdh.createunlimited",
+		shadedPattern = "dev.rdh.createunlimited.fabric",
+		includes = listOf("dev.rdh.createunlimited.**"),
+		excludes = listOf("dev.rdh.createunlimited.fabric.**")
+	))
+
+	eachFile {
+		val oldMixinPackage = "dev.rdh.createunlimited.asm.mixin"
+		val newMixinPackage = "dev.rdh.createunlimited.fabric.asm.mixin"
+		if (name.endsWith("mixins.json")) {
+			filter {
+				it.replace(oldMixinPackage, newMixinPackage)
+			}
+		}
+		if (name.endsWith("refmap.json")) {
+			filter {
+				it.replace(
+					oldMixinPackage.replace('.', '/'),
+					newMixinPackage.replace('.', '/')
+				)
+			}
+		}
+	}
+}
+
+tasks.assemble {
+	dependsOn(tasks.shadowJar)
 }
 
 tasks.processResources {

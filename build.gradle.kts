@@ -39,7 +39,11 @@ allprojects {
 		parchment()
 		modrinth()
 		curseMaven()
-		wagYourMaven("releases")
+		wagYourMaven("snapshots").apply {
+			content {
+				includeGroupAndSubgroups("xyz.wagyourtail")
+			}
+		}
 		createMod()
 		tterrag()
 	}
@@ -65,8 +69,19 @@ allprojects {
 	}
 }
 
+subprojects {
+	base.archivesName = "${rootProject.base.archivesName.get()}-${project.name}"
+	group = rootProject.group
+	version = rootProject.version
+
+	expectPlatform {
+		stripAnnotations = false
+	}
+}
+
 // disable root jar - subprojects will pull directly from compileJava
 tasks.jar { enabled = false }
+tasks.remapJar { enabled = false }
 
 repositories {
 	devOS("releases")
