@@ -82,6 +82,7 @@ subprojects {
 // disable root jar - subprojects will pull directly from compileJava
 tasks.jar { enabled = false }
 tasks.remapJar { enabled = false }
+loom.mixin.useLegacyMixinAp = false
 
 repositories {
 	devOS("releases")
@@ -107,6 +108,14 @@ dependencies {
 	implementation("org.spongepowered:mixin:${"mixin_version"()}")
 
 	shadow("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
+}
+
+tasks.shadowJar {
+	archiveClassifier = null
+	clearSourcePaths()
+	configurations.empty()
+
+	from(subprojects.map { it.tasks.shadowJar.map { zipTree(it.archiveFile) } })
 }
 
 fun setup() {

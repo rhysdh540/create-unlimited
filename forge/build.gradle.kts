@@ -75,14 +75,16 @@ tasks.shadowJar {
 	))
 
 	eachFile {
-		val oldMixinPackage = "dev.rdh.createunlimited.asm.mixin"
-		val newMixinPackage = "dev.rdh.createunlimited.forge.asm.mixin"
+		val oldMixinPackage = "dev.rdh.createunlimited"
+		val newMixinPackage = "dev.rdh.createunlimited.forge"
 		if (name.endsWith(".mixins.json")) {
+			name = "${name.removeSuffix(".mixins.json")}-forge.mixins.json"
 			filter {
 				it.replace(oldMixinPackage, newMixinPackage)
 			}
 		}
 		if (name.endsWith(".refmap.json")) {
+			name = "${name.removeSuffix("-refmap.json")}-forge-refmap.json"
 			filter {
 				it.replace(
 					oldMixinPackage.replace('.', '/'),
@@ -93,7 +95,7 @@ tasks.shadowJar {
 	}
 
 	manifest.attributes(
-		"MixinConfigs" to mixin.configs.get().joinToString(",")
+		"MixinConfigs" to "createunlimited-forge.mixins.json",
 	)
 }
 

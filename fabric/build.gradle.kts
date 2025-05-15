@@ -1,6 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.relocation.SimpleRelocator
+import com.github.jengelman.gradle.plugins.shadow.transformers.CacheableTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.ResourceTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.TransformerContext
+import groovy.json.JsonSlurper
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
+import org.apache.tools.zip.ZipEntry
+import org.apache.tools.zip.ZipOutputStream
 import org.gradle.kotlin.dsl.provideDelegate
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 
@@ -21,6 +27,8 @@ loom {
 	runs.all {
 		property("mixin.debug.export", "true")
 	}
+
+	mixin.useLegacyMixinAp = false
 }
 
 dependencies {
@@ -46,14 +54,15 @@ tasks.jar {
 val expectPlatformJar by tasks.registering<ExpectPlatformJar> {
 	putInDevlibs()
 	group = "build"
-	inputFiles = files(tasks.getByName<RemapJarTask>("remapJar").archiveFile)
+	inputFiles = files(tasks.jar.get().archiveFile)
 	platformName = "fabric"
 	archiveClassifier.set("expect")
 }
 
 tasks.shadowJar {
 	clearSourcePaths()
-	archiveClassifier = null
+	putInDevlibs()
+	archiveClassifier = "shadow"
 
 	configurations.empty()
 	from(zipTree(expectPlatformJar.get().archiveFile))
@@ -66,26 +75,32 @@ tasks.shadowJar {
 	))
 
 	eachFile {
-		val oldMixinPackage = "dev.rdh.createunlimited.asm.mixin"
-		val newMixinPackage = "dev.rdh.createunlimited.fabric.asm.mixin"
+		val oldMixinPackage = "dev.rdh.createunlimited"
+		val newMixinPackage = "dev.rdh.createunlimited.fabric"
 		if (name.endsWith("mixins.json")) {
+			name = "${name.removeSuffix(".mixins.json")}-fabric.mixins.json"
 			filter {
 				it.replace(oldMixinPackage, newMixinPackage)
 			}
 		}
-		if (name.endsWith("refmap.json")) {
+
+		if (name.equals("fabric.mod.json")) {
 			filter {
 				it.replace(
-					oldMixinPackage.replace('.', '/'),
-					newMixinPackage.replace('.', '/')
+					"createunlimited.mixins.json",
+					"createunlimited-fabric.mixins.json"
 				)
 			}
 		}
 	}
 }
 
+tasks.remapJar {
+	inputFile.set(tasks.shadowJar.map { it.archiveFile.get() })
+}
+
 tasks.assemble {
-	dependsOn(tasks.shadowJar)
+	dependsOn(tasks.remapJar)
 }
 
 tasks.processResources {
