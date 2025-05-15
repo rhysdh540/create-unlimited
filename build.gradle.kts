@@ -29,11 +29,17 @@ allprojects {
 	}
 
 	repositories {
+		mavenCentral {
+			content {
+				excludeGroup("org.lwjgl")
+				excludeGroup("com.mojang")
+			}
+		}
+
 		parchment()
 		modrinth()
 		curseMaven()
 		wagYourMaven("releases")
-		sponge()
 		createMod()
 		tterrag()
 	}
@@ -68,11 +74,15 @@ repositories {
 	maven("Cafeteria", "https://maven.cafeteria.dev/releases")
 	maven("JamiesWhiteShirt", "https://maven.jamieswhiteshirt.com/libs-release")
 	fuzs()
+	sponge()
 }
 
 dependencies {
 	minecraft("com.mojang:minecraft:${"minecraft_version"()}")
-	mappings(loom.officialMojangMappings())
+	mappings(loom.layered {
+		officialMojangMappings()
+		parchment("org.parchmentmc.data:parchment-${"minecraft_version"()}:${"parchment_version"()}@zip")
+	})
 
 	modCompileOnly("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"().split("$$").joinToString("+mc${"minecraft_version"()}-build.")}")
 

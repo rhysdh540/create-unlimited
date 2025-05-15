@@ -8,7 +8,7 @@ import org.gradle.kotlin.dsl.maven
 
 fun RepositoryHandler.parchment() = maven(
 	name = "ParchmentMC",
-	url = "https://repo.parchmentmc.org/snapshots"
+	url = "https://maven.parchmentmc.org"
 ) {
 	includeGroupAndSubgroups("org.parchmentmc")
 }
