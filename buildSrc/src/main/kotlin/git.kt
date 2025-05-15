@@ -1,6 +1,5 @@
 import org.gradle.api.Project
 import org.gradle.api.provider.ProviderFactory
-import org.gradle.api.tasks.Nested
 import org.jetbrains.annotations.ApiStatus
 import java.io.File
 import javax.inject.Inject
@@ -32,14 +31,14 @@ abstract class Git(val repository: File) {
 
 	fun getUncommitedChanges() = git("diff", "--name-only")
 
-	@get:ApiStatus.Internal
 	@get:Inject
+	@get:ApiStatus.Internal
 	abstract val providers: ProviderFactory
 
 	private fun git(vararg args: String): String {
 		return providers.exec {
 			commandLine("git", *args)
 			workingDir(repository)
-		}.standardOutput.asText.get()
+		}.standardOutput.asText.get().trim()
 	}
 }

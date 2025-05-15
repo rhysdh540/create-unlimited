@@ -1,18 +1,12 @@
-@file:Suppress("UnstableApiUsage")
-
-import proguard.ConfigurationParser
-import proguard.ProGuard
-import xyz.wagyourtail.commons.gradle.shadow.ShadowJar
-import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
-import xyz.wagyourtail.commons.gradle.sourceSets
-
 plugins {
 	id("java")
 	id("idea")
-	id("fabric-loom")
-	id("xyz.wagyourtail.commons-gradle")
+	id("com.gradleup.shadow")
 	id("org.jetbrains.gradle.plugin.idea-ext")
 	id("xyz.wagyourtail.unimined.expect-platform")
+
+	id("fabric-loom")
+	id("net.neoforged.moddev.legacyforge") apply(false)
 }
 
 setup()
@@ -21,43 +15,32 @@ allprojects {
 	apply {
 		plugin("java")
 		plugin("idea")
-		plugin("xyz.wagyourtail.commons-gradle")
+		plugin("com.gradleup.shadow")
 		plugin("org.jetbrains.gradle.plugin.idea-ext")
 		plugin("xyz.wagyourtail.unimined.expect-platform")
 	}
-
-	base.archivesName.set("archives_base_name"())
-	version = "modVersion"()
-	group = "maven_group"()
 
 	java.toolchain {
 		languageVersion.set(JavaLanguageVersion.of("java_version"()))
 	}
 
-	idea {
-		module.isDownloadSources = true
+	idea.module {
+		isDownloadSources = true
 	}
 
 	repositories {
-		maven("https://maven.parchmentmc.org")
-		exclusiveContent {
-			forRepository { maven("https://api.modrinth.com/maven") }
-			filter { includeGroup("maven.modrinth") }
-		}
-		exclusiveContent {
-			forRepository { maven("https://cursemaven.com") }
-			filter { includeGroup("curse.maven") }
-		}
-		maven("https://repo.spongepowered.org/maven")
-		maven("https://maven.wagyourtail.xyz/releases")
-		maven("https://maven.createmod.net")
-		maven("https://maven.tterrag.com")
+		parchment()
+		modrinth()
+		curseMaven()
+		wagYourMaven("releases")
+		sponge()
+		createMod()
+		tterrag()
 	}
 
 	tasks.withType<JavaCompile> {
 		options.encoding = "UTF-8"
 		options.compilerArgs.addAll(listOf("-Xplugin:Manifold no-bootstrap", "-implicit:none"))
-		options.forkOptions.memoryMaximumSize = "4g" // what did i do to make this necessary...
 	}
 
 	tasks.withType<AbstractArchiveTask> {
@@ -76,85 +59,30 @@ allprojects {
 	}
 }
 
-subprojects {
-	val platform = project.name.lowercase()
-
-	dependencies {
-		implementation(rootProject.sourceSets["main"].output)
-	}
-
-	tasks.processResources {
-		from(rootProject.sourceSets["main"].resources)
-
-		val props = mapOf(
-			"mod_version" to "modVersion"(),
-			"minecraft_versions" to multiversion.minecraftVersions.joinToString(
-				separator = when(platform) {
-					"forge" -> "],["
-					"fabric" -> "\",\""
-					else -> error("Unknown platform $platform")
-				}
-			),
-			"fabric_version" to "fabric_version"(),
-			"create_version" to "minimum_create_version"(),
-		)
-
-		inputs.properties(props)
-
-		filesMatching(listOf("fabric.mod.json", "META-INF/mods.toml")) {
-			expand(props)
-		}
-	}
-
-	tasks.jar {
-		archiveClassifier = "$platform-dev-unmapped"
-		from(rootProject.sourceSets["main"].output) {
-			include("**/*.class")
-		}
-		putInDevlibs()
-	}
-
-	val sourcesJar by tasks.registering<Jar> {
-		archiveClassifier = "sources"
-		from(rootProject.sourceSets["main"].allSource)
-		from(sourceSets["main"].allSource)
-		putInDevlibs()
-	}
-
-	val expectPlatformJar by tasks.registering<ExpectPlatformJar> {
-		notCompatibleWithConfigurationCache("oopsies!")
-		group = "build"
-		platformName = platform
-		archiveClassifier = "expect-$platform"
-		putInDevlibs()
-		inputFiles = files(tasks.jar.get().archiveFile)
-	}
-}
-
 // disable root jar - subprojects will pull directly from compileJava
 tasks.jar { enabled = false }
 
 repositories {
-	maven("https://mvn.devos.one/releases")
-	maven("https://mvn.devos.one/snapshots")
-	maven("https://maven.cafeteria.dev/releases")
-	maven("https://maven.jamieswhiteshirt.com/libs-release")
-	maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven")
+	devOS("releases")
+	devOS("snapshots")
+	maven("Cafeteria", "https://maven.cafeteria.dev/releases")
+	maven("JamiesWhiteShirt", "https://maven.jamieswhiteshirt.com/libs-release")
+	fuzs()
 }
-
-val shadow: Configuration by configurations.creating
 
 dependencies {
 	minecraft("com.mojang:minecraft:${"minecraft_version"()}")
-	mappings(loom.layered {
-		officialMojangMappings()
-		parchment("org.parchmentmc.data:parchment-${"minecraft_version"()}:${"parchment_version"()}@zip")
-	})
+	mappings(loom.officialMojangMappings())
+
 	modCompileOnly("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_fabric_version"().split("$$").joinToString("+mc${"minecraft_version"()}-build.")}")
+
+	implementation("org.ow2.asm:asm:${"asm_version"()}")
+	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
+	implementation("org.ow2.asm:asm-commons:${"asm_version"()}")
+	implementation("org.spongepowered:mixin:${"mixin_version"()}")
 
 	shadow("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
 }
-
 
 fun setup() {
 	val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
@@ -178,7 +106,9 @@ fun setup() {
 	}
 	println()
 
-	ext["modVersion"] = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
+	group = "maven_group"()
+	base.archivesName = "archives_base_name"()
+	version = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
 
 	tasks.assemble {
 		subprojects.forEach {
@@ -189,21 +119,19 @@ fun setup() {
 	multiversion.findAndLoadProperties()
 }
 
-tasks.register<CustomTask>("nukeGradleCaches") {
+val nukeGradleCaches by tasks.registering<CustomTask> {
 	dependsOn("clean")
 	group = "build"
 	description = "Deletes all .gradle directories in the project. WARNING: causes IDEs to freeze for a while."
 	outputs.upToDateWhen { false }
 
+	val dirsToDelete = project.rootProject.allprojects.map { it.projectDir.resolve(".gradle") }
+
 	action {
-		project.rootProject.allprojects.forEach { p ->
-			p.projectDir.resolve(".gradle").let {
-				if(it.exists()) {
-					it.deleteRecursively()
-				}
-			}
+		dirsToDelete.filter { it.exists() }.forEach {
+			it.deleteRecursively()
 		}
 	}
 }
 
-operator fun String.invoke() = rootProject.ext[this] as? String ?: error("No property \"$this\"")
+operator fun String.invoke() = prop(this)

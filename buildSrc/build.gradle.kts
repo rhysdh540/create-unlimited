@@ -40,7 +40,7 @@ dependencies {
 	implementation(group = "org.jetbrains", name = "annotations")
 	implementation("com.guardsquare:proguard-base:${"proguard_version"()}")
 
-	plugin(id = "xyz.wagyourtail.commons-gradle", version = "commons_gradle_version"())
+	plugin(id = "com.gradleup.shadow", version = "shadow_version"())
 	plugin(id = "fabric-loom", version = "loom_version"())
 	plugin(id = "net.neoforged.moddev", version = "mdg_version"())
 	plugin(id = "org.jetbrains.gradle.plugin.idea-ext", version = "idea_ext_version"())

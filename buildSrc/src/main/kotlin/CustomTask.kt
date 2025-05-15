@@ -1,9 +1,9 @@
 import org.gradle.api.DefaultTask
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.TaskAction
-import xyz.wagyourtail.commonskt.properties.FinalizeOnRead
 
 abstract class CustomTask : DefaultTask() {
-	private var toRun by FinalizeOnRead(mutableListOf<CustomTask.() -> Unit>())
+	abstract val toRun: ListProperty<CustomTask.() -> Unit>
 
 	fun action(action: CustomTask.() -> Unit) {
 		toRun.add(action)
@@ -11,6 +11,6 @@ abstract class CustomTask : DefaultTask() {
 
 	@TaskAction
 	fun run() {
-		toRun.forEach { it() }
+		toRun.get().forEach { it() }
 	}
 }

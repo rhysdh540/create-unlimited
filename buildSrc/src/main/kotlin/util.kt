@@ -1,3 +1,4 @@
+import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.file.copy.DefaultCopySpec
 import org.gradle.api.tasks.AbstractCopyTask
@@ -16,6 +17,10 @@ fun Jar.clearSourcePaths() {
 		spec.sourcePaths.clear()
 		it.isAccessible = false
 	}
+}
+
+fun Project.prop(name: String): String {
+	return rootProject.properties[name] as? String ?: error("Property $this not found")
 }
 
 fun AbstractArchiveTask.putInDevlibs() {
