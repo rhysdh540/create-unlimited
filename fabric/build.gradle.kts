@@ -13,6 +13,12 @@ repositories {
 	fuzs()
 }
 
+loom {
+	runs.all {
+		property("mixin.debug.export", "true")
+	}
+}
+
 dependencies {
 	implementation(rootProject.sourceSets["main"].output)
 	minecraft("com.mojang:minecraft:${"minecraft_version"()}")

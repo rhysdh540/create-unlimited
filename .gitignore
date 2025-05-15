@@ -1,12 +1,12 @@
 build/
 !**/src/**/build/
 **/run/
-*.iml
+!**/src/**/run/
 .gradle/
+*.iml
 .idea/
 .DS_Store
-artifacts/
-.architectury-transformer/
+**/.kotlin/
 
 ## eclipse bad ##
 .classpath

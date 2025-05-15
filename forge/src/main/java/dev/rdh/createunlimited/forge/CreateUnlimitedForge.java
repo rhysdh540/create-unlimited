@@ -1,7 +1,6 @@
 package dev.rdh.createunlimited.forge;
 
 import dev.rdh.createunlimited.CreateUnlimited;
-import dev.rdh.createunlimited.Util;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -10,11 +9,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-
-import static dev.rdh.createunlimited.multiversion.SupportedMinecraftVersion.*;
 
 @Mod(CreateUnlimited.ID)
 public final class CreateUnlimitedForge implements CreateUnlimited {
