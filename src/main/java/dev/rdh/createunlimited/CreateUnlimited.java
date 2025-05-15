@@ -10,6 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.simibubi.create.api.contraption.BlockMovementChecks;
+import com.simibubi.create.api.contraption.BlockMovementChecks.CheckResult;
+
 public interface CreateUnlimited {
 	String ID = "createunlimited";
 	String NAME = "Create Unlimited";
@@ -24,6 +27,14 @@ public interface CreateUnlimited {
 
 		EnumArgument.init();
 		CUConfig.register();
+
+		BlockMovementChecks.registerMovementAllowedCheck((state, level, pos) -> {
+			if (CUConfig.getOrFalse(CUConfig.instance.allowContraptionMoveAllow)) {
+				return CheckResult.SUCCESS;
+			} else {
+				return CheckResult.PASS;
+			}
+		});
     }
 
 	static ResourceLocation asResource(String path) {

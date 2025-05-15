@@ -50,6 +50,7 @@ public class CUConfig extends ConfigBase {
 	public final ConfigGroup misc = group(1, "misc", Comments.misc);
 	public final ConfigBool chainConveyorConnectionLimits = b(true, "chainConveyorConnectionLimits", Comments.chainConveyorConnectionLimits);
 	public final ConfigBool allowAllCopycatBlocks = b(false, "allowAllCopycatBlocks", Comments.allowAllCopycatBlocks);
+	public final ConfigBool allowContraptionMoveAllow = b(false, "allowContraptionMoveAllow", Comments.allowContraptionMoveAllow);
 
 	private static class Comments {
 		static final String trains = "Realism, what's that?",
@@ -70,7 +71,8 @@ public class CUConfig extends ConfigBase {
 
 		static final String misc = "Everything else",
 			allowAllCopycatBlocks = "Whether or not to allow all blocks to be inserted into Copycat blocks.",
-			chainConveyorConnectionLimits = "Whether to check for valid connections when connecting chain conveyors.";
+			chainConveyorConnectionLimits = "Whether to check for valid connections when connecting chain conveyors.",
+			allowContraptionMoveAllow = "Whether to allow contraptions to move any block.";
 
 		private static final Map<String, String> comments = new HashMap<>();
 		static {
