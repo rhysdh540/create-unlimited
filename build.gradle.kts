@@ -22,6 +22,7 @@ allprojects {
 
 	java.toolchain {
 		languageVersion.set(JavaLanguageVersion.of("java_version"()))
+		vendor.set(JvmVendorSpec.AZUL)
 	}
 
 	idea.module {
@@ -51,6 +52,7 @@ allprojects {
 	tasks.withType<JavaCompile> {
 		options.encoding = "UTF-8"
 		options.compilerArgs.addAll(listOf("-Xplugin:Manifold no-bootstrap", "-implicit:none"))
+		options.forkOptions.memoryMaximumSize = "4G" // I still do not know why this is necessary
 	}
 
 	tasks.withType<AbstractArchiveTask> {

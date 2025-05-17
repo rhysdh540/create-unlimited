@@ -37,6 +37,12 @@ legacyForge {
 			systemProperty("mixin.env.refMapRemappingFile", project.layout.buildDirectory.map { it.file("moddev/artifacts/intermediateToNamed.srg") }.get().asFile.absolutePath)
 		}
 	}
+
+	// tell forge that the se should be in the same module
+	mods.maybeCreate("main").apply {
+		sourceSet(sourceSets["main"])
+		sourceSet(rootProject.sourceSets["main"])
+	}
 }
 
 mixin {
@@ -110,7 +116,7 @@ tasks.assemble {
 	dependsOn(tasks["remapJar"])
 }
 
-// we d a little trolling
+// we do a little trolling
 @CacheableTask
 abstract class BetterRemapJar : Jar() {
 	@get:InputFile
@@ -145,6 +151,7 @@ abstract class BetterRemapJar : Jar() {
 		val mapper = TinyRemapper.newRemapper(TinyRemapperLoggerAdapter.INSTANCE)
 			.withMappings(TinyRemapperHelper.create(
 				mappings.toPath(),
+				// these *are* important
 				"source", "target",
 				true
 			))

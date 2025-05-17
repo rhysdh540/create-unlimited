@@ -1,13 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.relocation.SimpleRelocator
-import com.github.jengelman.gradle.plugins.shadow.transformers.CacheableTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.ResourceTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.TransformerContext
-import groovy.json.JsonSlurper
-import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RunGameTask
-import org.apache.tools.zip.ZipEntry
-import org.apache.tools.zip.ZipOutputStream
-import org.gradle.kotlin.dsl.provideDelegate
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 
 plugins {
