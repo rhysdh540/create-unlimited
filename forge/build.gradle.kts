@@ -5,6 +5,7 @@ import net.fabricmc.tinyremapper.TinyRemapper
 import net.fabricmc.tinyremapper.extension.mixin.MixinExtension
 import net.neoforged.moddevgradle.internal.RunGameTask
 import net.neoforged.moddevgradle.legacyforge.tasks.RemapJar
+import net.neoforged.moddevgradle.legacyforge.tasks.RemapOperation
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
@@ -97,10 +98,8 @@ tasks.named<RemapJar>("reobfJar") {
 }
 
 tasks.register<BetterRemapJar>("remapJar") {
-	val oldRemapJar = tasks.getByName<RemapJar>("reobfJar")
-	inputFile = tasks.shadowJar.map { it.archiveFile.get() }
-	mappings = oldRemapJar.remapOperation.mappings.files.single()
-	libraries = oldRemapJar.libraries
+	config(tasks.named<RemapJar>("reobfJar"))
+	input.set(tasks.shadowJar.map { it.archiveFile.get() })
 
 	manifest.attributes(
 		"MixinConfigs" to "createunlimited-forge.mixins.json",
@@ -112,14 +111,18 @@ tasks.assemble {
 }
 
 // we d a little trolling
+@CacheableTask
 abstract class BetterRemapJar : Jar() {
 	@get:InputFile
-	abstract val inputFile: RegularFileProperty
+	@get:PathSensitive(PathSensitivity.NONE)
+	abstract val input: RegularFileProperty
 
-	@get:InputFile
-	abstract val mappings: RegularFileProperty
+	@get:Nested
+	abstract val remapOperation: RemapOperation
 
+	@get:Optional
 	@get:InputFiles
+	@get:PathSensitive(PathSensitivity.NONE)
 	abstract val libraries: ConfigurableFileCollection
 
 	@get:Inject
@@ -129,11 +132,19 @@ abstract class BetterRemapJar : Jar() {
 		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	}
 
+	fun config(task: TaskProvider<RemapJar>) {
+		this.libraries.from(task.map { it.libraries })
+		this.remapOperation.mappings.from(task.map { it.remapOperation.mappings })
+		this.remapOperation.toolType.set(task.flatMap { it.remapOperation.toolType })
+	}
+
 	@TaskAction
 	fun execute() {
+		val mappings = remapOperation.mappings.files.single()
+		val input = input.get().asFile
 		val mapper = TinyRemapper.newRemapper(TinyRemapperLoggerAdapter.INSTANCE)
 			.withMappings(TinyRemapperHelper.create(
-				mappings.get().asFile.toPath(),
+				mappings.toPath(),
 				"source", "target",
 				true
 			))
@@ -142,7 +153,7 @@ abstract class BetterRemapJar : Jar() {
 			.build()
 
 		mapper.readClassPath(*libraries.map { it.toPath() }.toTypedArray())
-		mapper.readInputs(inputFile.get().asFile.toPath())
+		mapper.readInputs(input.toPath())
 
 		val output = temporaryDir.resolve("output")
 		output.mkdirs()
@@ -159,7 +170,7 @@ abstract class BetterRemapJar : Jar() {
 		mapper.finish()
 
 		from(output)
-		from(archiveOps.zipTree(inputFile.get().asFile)) {
+		from(archiveOps.zipTree(input)) {
 			exclude { it.name in names }
 		}
 

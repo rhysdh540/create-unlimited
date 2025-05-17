@@ -37,19 +37,9 @@ public class UtilImpl {
 	}
 
 	public static String getVersion(String modid) {
-		String versionString = "UNKNOWN";
-
-		List<IModInfo> infoList = ModList.get().getModFileById(modid).getMods();
-		if (infoList.size() > 1) {
-			CreateUnlimited.LOGGER.error("Multiple mods for ID: " + modid);
-		}
-		for (IModInfo info : infoList) {
-			if (info.getModId().equals(modid)) {
-				versionString = info.getVersion().toString();
-				break;
-			}
-		}
-		return versionString;
+		return ModList.get().getModContainerById(modid)
+			.map(c -> c.getModInfo().getVersion().toString())
+			.orElseThrow(() -> new IllegalStateException("Mod " + modid + " not found"));
 	}
 
 	public static boolean isDevEnv() {
