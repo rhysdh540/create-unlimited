@@ -108,8 +108,6 @@ dependencies {
 	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
 	implementation("org.ow2.asm:asm-commons:${"asm_version"()}")
 	implementation("org.spongepowered:mixin:${"mixin_version"()}")
-
-	shadow("io.github.llamalad7:mixinextras-common:${"mixin_extras_version"()}")
 }
 
 tasks.shadowJar {
@@ -117,7 +115,21 @@ tasks.shadowJar {
 	clearSourcePaths()
 	configurations.empty()
 
-	from(subprojects.map { it.tasks.shadowJar.map { zipTree(it.archiveFile) } })
+	manifest.attributes(
+		"MixinConfigs" to "createunlimited-forge.mixins.json",
+	)
+}
+
+subprojects.forEach { p ->
+	p.afterEvaluate {
+		rootProject.tasks.shadowJar {
+			from(zipTree(p.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").flatMap { it.archiveFile }))
+		}
+	}
+}
+
+tasks.assemble {
+	dependsOn(tasks.shadowJar)
 }
 
 fun setup() {
@@ -145,12 +157,6 @@ fun setup() {
 	group = "maven_group"()
 	base.archivesName = "archives_base_name"()
 	version = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
-
-	tasks.assemble {
-		subprojects.forEach {
-			this.dependsOn(it.tasks.named("assemble"))
-		}
-	}
 
 	multiversion.findAndLoadProperties()
 }

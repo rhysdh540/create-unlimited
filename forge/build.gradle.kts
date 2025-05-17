@@ -56,7 +56,7 @@ dependencies {
 	modImplementation("com.tterrag.registrate:Registrate:${"registrate_version"()}")
 	modCompileOnly("dev.engine-room.flywheel:flywheel-forge-api-${"minecraft_version"()}:${"flywheel_version"()}")
 	modRuntimeOnly("dev.engine-room.flywheel:flywheel-forge-${"minecraft_version"()}:${"flywheel_version"()}")
-	modImplementation("io.github.llamalad7:mixinextras-forge:${"mixin_extras_version"()}")
+	modRuntimeOnly("io.github.llamalad7:mixinextras-forge:${"mixin_extras_version"()}")
 }
 
 tasks.jar {
