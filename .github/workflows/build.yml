@@ -19,6 +19,7 @@ jobs:
                 uses: gradle/actions/setup-gradle@v4
                 with:
                     cache-read-only: false
+                    cache-encryption-key: ${{ SECRETS.GRADLE_ENCRYPTION_KEY }}
 
             -   name: do the build
                 run: ./gradlew assemble
