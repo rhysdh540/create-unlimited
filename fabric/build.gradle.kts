@@ -1,5 +1,7 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.github.jengelman.gradle.plugins.shadow.relocation.SimpleRelocator
-import net.fabricmc.loom.task.RunGameTask
+import org.gradle.internal.extensions.stdlib.capitalized
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 
 plugins {
@@ -18,9 +20,14 @@ repositories {
 loom {
 	runs.all {
 		property("mixin.debug.export", "true")
+		vmArgs(expectPlatform.getAgentArgs(project.name))
+		ideConfigGenerated(true)
+		appendProjectPathToConfigName = false
+
+		configName = "${project.name.capitalized()} ${name.capitalized()}"
 	}
 
-	mixin.useLegacyMixinAp = false
+	mixin.useLegacyMixinAp.set(false)
 }
 
 dependencies {
@@ -57,7 +64,7 @@ tasks.shadowJar {
 	archiveClassifier = "shadow"
 
 	configurations.empty()
-	from(zipTree(expectPlatformJar.get().archiveFile))
+	from(zipTree(expectPlatformJar.flatMap { it.archiveFile }))
 
 	relocate(SimpleRelocator(
 		pattern = "dev.rdh.createunlimited",
@@ -89,6 +96,10 @@ tasks.shadowJar {
 
 tasks.remapJar {
 	inputFile.set(tasks.shadowJar.map { it.archiveFile.get() })
+
+	if (System.getenv("CI")?.toBoolean() == true) {
+		destinationDirectory.set(rootProject.file("artifacts"))
+	}
 }
 
 tasks.assemble {
@@ -107,12 +118,6 @@ tasks.processResources {
 
 	filesMatching("fabric.mod.json") {
 		expand(props)
-	}
-}
-
-afterEvaluate {
-	tasks.withType<RunGameTask>().configureEach {
-		expectPlatform.insertAgent(this, "fabric")
 	}
 }
 

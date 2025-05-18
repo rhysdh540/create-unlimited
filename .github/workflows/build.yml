@@ -28,6 +28,4 @@ jobs:
                 with:
                     name: unlimited-artifacts-v${{ github.run_number }}
                     path: |
-                        fabric/build/libs/*.jar
-                        forge/build/libs/*.jar
-                        build/libs/*.jar
+                        artifacts/*

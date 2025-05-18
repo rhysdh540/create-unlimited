@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
 	id("java")
 	id("idea")
@@ -31,6 +33,7 @@ allprojects {
 
 	repositories {
 		mavenCentral {
+			name = "MavenCentralLWJGL" // loom does something funny, this turns it off
 			content {
 				excludeGroup("org.lwjgl")
 				excludeGroup("com.mojang")
@@ -72,7 +75,7 @@ allprojects {
 }
 
 subprojects {
-	base.archivesName = "${rootProject.base.archivesName.get()}-${project.name}"
+	base.archivesName.set(rootProject.base.archivesName.map { "$it-${project.name}" })
 	group = rootProject.group
 	version = rootProject.version
 
@@ -84,7 +87,10 @@ subprojects {
 // disable root jar - subprojects will pull directly from compileJava
 tasks.jar { enabled = false }
 tasks.remapJar { enabled = false }
-loom.mixin.useLegacyMixinAp = false
+loom {
+	mixin.useLegacyMixinAp.set(false)
+	runs.clear()
+}
 
 repositories {
 	devOS("releases")
@@ -117,7 +123,12 @@ tasks.shadowJar {
 
 	manifest.attributes(
 		"MixinConfigs" to "createunlimited-forge.mixins.json",
+		"Git-Commit" to git.hash(long = true),
 	)
+
+	if (System.getenv("CI")?.toBoolean() == true) {
+		destinationDirectory.set(rootProject.file("artifacts"))
+	}
 }
 
 subprojects.forEach { p ->
@@ -155,7 +166,7 @@ fun setup() {
 	println()
 
 	group = "maven_group"()
-	base.archivesName = "archives_base_name"()
+	base.archivesName.set("archives_base_name"())
 	version = "mod_version"() + (buildNumber?.let { "-build.$it" } ?: "")
 
 	multiversion.findAndLoadProperties()

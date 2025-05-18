@@ -3,11 +3,10 @@ import net.fabricmc.loom.util.TinyRemapperHelper
 import net.fabricmc.loom.util.TinyRemapperLoggerAdapter
 import net.fabricmc.tinyremapper.TinyRemapper
 import net.fabricmc.tinyremapper.extension.mixin.MixinExtension
-import net.neoforged.moddevgradle.internal.RunGameTask
 import net.neoforged.moddevgradle.legacyforge.tasks.RemapJar
 import net.neoforged.moddevgradle.legacyforge.tasks.RemapOperation
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.withType
 import xyz.wagyourtail.unimined.expect.task.ExpectPlatformJar
 
 plugins {
@@ -18,8 +17,8 @@ legacyForge {
 	version = "${"minecraft_version"()}-${"forge_version"()}"
 
 	parchment {
-		minecraftVersion = "minecraft_version"()
-		mappingsVersion = "parchment_version"()
+		minecraftVersion.set("minecraft_version"())
+		mappingsVersion.set("parchment_version"())
 	}
 
 	runs {
@@ -33,8 +32,9 @@ legacyForge {
 
 		all {
 			systemProperty("mixin.debug.export", "true")
-			systemProperty("mixin.env.remapRefMap", "true")
-			systemProperty("mixin.env.refMapRemappingFile", project.layout.buildDirectory.map { it.file("moddev/artifacts/intermediateToNamed.srg") }.get().asFile.absolutePath)
+			jvmArguments.addAll(expectPlatform.getAgentArgs(project.name))
+
+			ideName.set("${project.name.capitalized()} ${name.capitalized()}")
 		}
 	}
 
@@ -78,7 +78,7 @@ tasks.shadowJar {
 	archiveClassifier = "shadow"
 
 	configurations.empty()
-	from(zipTree(expectPlatformJar.get().archiveFile))
+	from(zipTree(expectPlatformJar.flatMap { it.archiveFile }))
 
 	relocate(SimpleRelocator(
 		pattern = "dev.rdh.createunlimited",
@@ -110,6 +110,10 @@ tasks.register<BetterRemapJar>("remapJar") {
 	manifest.attributes(
 		"MixinConfigs" to "createunlimited-forge.mixins.json",
 	)
+
+	if (System.getenv("CI")?.toBoolean() == true) {
+		destinationDirectory.set(rootProject.file("artifacts"))
+	}
 }
 
 tasks.assemble {
@@ -196,12 +200,6 @@ tasks.processResources {
 
 	filesMatching("META-INF/mods.toml") {
 		expand(props)
-	}
-}
-
-afterEvaluate {
-	tasks.withType<RunGameTask>().configureEach {
-		expectPlatform.insertAgent(this, "forge")
 	}
 }
 
