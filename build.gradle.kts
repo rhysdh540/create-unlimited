@@ -93,6 +93,7 @@ loom {
 }
 
 repositories {
+	mavenLocal()
 	devOS("releases")
 	devOS("snapshots")
 	maven("Cafeteria", "https://maven.cafeteria.dev/releases")
@@ -102,6 +103,8 @@ repositories {
 }
 
 dependencies {
+	val shade by configurations.creating
+
 	minecraft("com.mojang:minecraft:${"minecraft_version"()}")
 	mappings(loom.layered {
 		officialMojangMappings()
@@ -114,27 +117,56 @@ dependencies {
 	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
 	implementation("org.ow2.asm:asm-commons:${"asm_version"()}")
 	implementation("org.spongepowered:mixin:${"mixin_version"()}")
+
+	implementation("net.fabricmc:sponge-mixin:0.15.5+mixin.0.8.7")
+	implementation("org.ow2.asm:asm-tree:9.8")
+	"io.github.prcraftmc:class-diff:1.0-SNAPSHOT".let {
+		implementation(it)
+		shade(it) {
+			exclude(group = "org.ow2.asm")
+		}
+	}
 }
 
 tasks.shadowJar {
-	archiveClassifier = null
-	clearSourcePaths()
-	configurations.empty()
+	archiveClassifier = "common"
+	//clearSourcePaths()
+	configurations = listOf(project.configurations["shade"])
+	putInDevlibs()
+	minimize()
 
 	manifest.attributes(
-		"MixinConfigs" to "createunlimited-forge.mixins.json",
+		//"MixinConfigs" to "createunlimited-forge.mixins.json",
 		"Git-Commit" to git.hash(long = true),
 	)
 
 	if (System.getenv("CI")?.toBoolean() == true) {
 		destinationDirectory.set(rootProject.file("artifacts"))
 	}
+
+	exclude("**/module-info.class")
+	exclude("META-INF/maven/**")
+
+	relocate("com.github.difflib", "dev.rdh.createunlimited.lib.difflib")
+	relocate("io.github.prcraftmc.classdiff", "dev.rdh.createunlimited.lib.classdiff")
+	relocate("com.nothome.delta", "dev.rdh.createunlimited.lib.delta")
+}
+
+tasks.register<MergedJar>("mergeJars") {
+	group = "build"
+
+	mainJar.set(tasks.shadowJar.flatMap { it.archiveFile })
+
+	archiveClassifier.set("merged")
 }
 
 subprojects.forEach { p ->
 	p.afterEvaluate {
-		rootProject.tasks.shadowJar {
-			from(zipTree(p.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").flatMap { it.archiveFile }))
+		//rootProject.tasks.shadowJar {
+		rootProject.tasks.named<MergedJar>("mergeJars") {
+			val task = p.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar")
+			//from(zipTree(task.flatMap { it.archiveFile }))
+			add(p.name, task)
 		}
 	}
 }

@@ -11,7 +11,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfig;
-import dev.rdh.createunlimited.asm.mixin.accessor.CValueAccessor;
 
 import net.createmod.catnip.config.ConfigBase.CValue;
 import net.createmod.catnip.config.ConfigBase.ConfigGroup;
@@ -24,12 +23,24 @@ import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 
 import net.minecraft.commands.CommandSourceStack;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
 public final class CUConfigCommand extends CUCommands {
+	private static final MethodHandle getValue;
+	static {
+		try {
+			MethodHandles.Lookup L = MethodHandles.privateLookupIn(CValue.class, MethodHandles.lookup());
+			getValue = L.findGetter(CValue.class, "value", ConfigValue.class);
+		} catch (Throwable t) {
+			throw new RuntimeException("Failed to get CValue value field", t);
+		}
+	}
+
 	private final boolean integrated;
 
 	public CUConfigCommand(boolean integrated) {
@@ -73,7 +84,11 @@ public final class CUConfigCommand extends CUCommands {
 				continue;
 			}
 
-			configure(category, name, ((CValueAccessor) cValue).getValue());
+			try {
+				configure(category, name, (ConfigValue<?>) getValue.invoke(cValue));
+			} catch (Throwable t) {
+				throw new RuntimeException(t);
+			}
 		}
 
 		if (category != null)

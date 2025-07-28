@@ -72,6 +72,7 @@ val expectPlatformJar by tasks.registering<ExpectPlatformJar> {
 	archiveClassifier.set("expect")
 }
 
+/*
 tasks.shadowJar {
 	clearSourcePaths()
 	putInDevlibs()
@@ -98,6 +99,7 @@ tasks.shadowJar {
 		}
 	}
 }
+ */
 
 tasks.named<RemapJar>("reobfJar") {
 	enabled = false
@@ -105,10 +107,11 @@ tasks.named<RemapJar>("reobfJar") {
 
 tasks.register<BetterRemapJar>("remapJar") {
 	config(tasks.named<RemapJar>("reobfJar"))
-	input.set(tasks.shadowJar.map { it.archiveFile.get() })
+	//input.set(tasks.shadowJar.flatMap { it.archiveFile })
+	input.set(expectPlatformJar.flatMap { it.archiveFile })
 
 	manifest.attributes(
-		"MixinConfigs" to "createunlimited-forge.mixins.json",
+		"MixinConfigs" to "createunlimited.mixins.json",
 	)
 
 	if (System.getenv("CI")?.toBoolean() == true) {

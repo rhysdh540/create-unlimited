@@ -35,6 +35,7 @@ kotlin {
 dependencies {
 	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
 	implementation("org.ow2.asm:asm-commons:${"asm_version"()}")
+	implementation("io.github.prcraftmc:class-diff:1.0-SNAPSHOT")
 	implementation(group = "org.jetbrains", name = "annotations")
 	implementation("com.guardsquare:proguard-base:${"proguard_version"()}")
 

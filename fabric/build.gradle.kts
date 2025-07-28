@@ -58,6 +58,7 @@ val expectPlatformJar by tasks.registering<ExpectPlatformJar> {
 	archiveClassifier.set("expect")
 }
 
+/*
 tasks.shadowJar {
 	clearSourcePaths()
 	putInDevlibs()
@@ -93,9 +94,11 @@ tasks.shadowJar {
 		}
 	}
 }
+*/
 
 tasks.remapJar {
-	inputFile.set(tasks.shadowJar.map { it.archiveFile.get() })
+	//inputFile.set(tasks.shadowJar.flatMap { it.archiveFile })
+	inputFile.set(expectPlatformJar.flatMap { it.archiveFile })
 
 	if (System.getenv("CI")?.toBoolean() == true) {
 		destinationDirectory.set(rootProject.file("artifacts"))
