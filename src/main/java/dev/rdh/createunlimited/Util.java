@@ -5,43 +5,88 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraft.world.entity.ai.attributes.Attribute;
-
+#if MC < 21
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
+#else
+import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.fml.config.ModConfig;
+#endif
 
-import xyz.wagyourtail.unimined.expect.annotation.ExpectPlatform;
+#if forge
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.fml.ModList;
+#elif neoforge
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.fml.ModList;
+#endif
 
-public abstract class Util {
+public final class Util {
 
-	@ExpectPlatform
 	public static String getVersion(String modid) {
-		throw new AssertionError();
+		return
+		#if forgelike
+			ModList.get().getModContainerById(modid)
+				.map(c -> c.getModInfo().getVersion().toString())
+		#elif fabric
+			net.fabricmc.loader.api.FabricLoader.getInstance()
+				.getModContainer(modid)
+				.map(c -> c.getMetadata().getVersion().getFriendlyString())
+		#else
+			#error "Unsupported platform"
+		#endif
+				.orElseThrow(() -> new IllegalStateException("Mod " + modid + " not found"));
 	}
 
-	@ExpectPlatform
 	public static boolean isDevEnv() {
-		throw new AssertionError();
+		return
+		#if fabric
+			net.fabricmc.loader.api.FabricLoader.getInstance().isDevelopmentEnvironment();
+		#elif neoforge
+			!net.neoforged.fml.loading.FMLLoader.isProduction();
+		#elif forge
+			!net.minecraftforge.fml.loading.FMLLoader.isProduction();
+		#else
+			net.minecraft.SharedConstants.IS_RUNNING_IN_IDE;
+		#endif
 	}
 
-	@ExpectPlatform
 	public static String platformName() {
-		throw new AssertionError();
+		return
+		#if fabric
+			net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("quilt_loader") ? "Quilt" : "Fabric";
+		#elif neoforge
+			"NeoForge";
+		#elif forge
+			"Forge";
+		#else
+			#error "Unsupported platform"
+		#endif
 	}
 
-	@ExpectPlatform
-	public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec) {
-		throw new AssertionError();
+	public static void registerConfig(ModConfig.Type type, IConfigSpec spec) {
+		#if forge
+		CreateUnlimited.getInstance().forgeContext.registerConfig(type, spec);
+		#elif neoforge
+		net.neoforged.fml.ModLoadingContext.get().getActiveContainer().registerConfig(type, spec);
+		#elif fabric
+		fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry.INSTANCE
+			.register(CreateUnlimited.ID, type, spec);
+		#endif
 	}
 
-	@ExpectPlatform
+	#if forgelike
+	static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENTS =
+		DeferredRegister.create(net.minecraft.core.registries.Registries.COMMAND_ARGUMENT_TYPE, CreateUnlimited.ID);
+	#endif
+
 	public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
 	void registerArgument(Class<A> clazz, I info, ResourceLocation id) {
-		throw new AssertionError();
-	}
-
-	@ExpectPlatform
-	public static Attribute getReachAttribute() {
-		throw new AssertionError();
+		#if forgelike
+		ARGUMENTS.register(id.getPath(),
+			() -> net.minecraft.commands.synchronization.ArgumentTypeInfos.registerByClass(clazz, info));
+		#elif fabric
+		net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry.registerArgumentType(id, clazz, info);
+		#endif
 	}
 }

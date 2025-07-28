@@ -1,6 +1,5 @@
 package dev.rdh.createunlimited.config;
 
-import net.createmod.catnip.config.ConfigBase;
 import net.createmod.catnip.config.ui.BaseConfigScreen;
 
 import dev.rdh.createunlimited.Util;
@@ -10,10 +9,6 @@ import net.minecraft.client.gui.screens.Screen;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import net.minecraftforge.fml.config.ModConfig;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -21,7 +16,19 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static net.minecraftforge.fml.config.ModConfig.Type.*;
+import net.createmod.catnip.config.ConfigBase;
+
+#if MC >= 21
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfig.Type;
+import net.neoforged.neoforge.common.ModConfigSpec.Builder;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
+#else
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.common.ForgeConfigSpec.Builder;
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+#endif
 
 @SuppressWarnings("unused")
 public class CUConfig extends ConfigBase {
@@ -109,9 +116,9 @@ public class CUConfig extends ConfigBase {
 	public static final CUConfig instance = new CUConfig();
 
 	public static void register() {
-		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+		Builder builder = new Builder();
 		instance.registerAll(builder);
-		Util.registerConfig(SERVER, instance.specification = builder.build());
+		Util.registerConfig(Type.SERVER, instance.specification = builder.build());
 	}
 
 	public static void onLoad(ModConfig modConfig) {
@@ -138,10 +145,6 @@ public class CUConfig extends ConfigBase {
 				.withButtonLabels("", "", "Settings")
 		);
 		done = true;
-	}
-
-	public static BaseConfigScreen createConfigScreen(@Nullable @SuppressWarnings("unused") Minecraft mc, Screen parent) {
-		return createConfigScreen(parent);
 	}
 
 	public static <V, T extends ConfigValue<V>> V getOrDefault(CValue<V, T> value, V orElse) {

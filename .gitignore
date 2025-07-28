@@ -1,15 +1,11 @@
-build/
-!**/src/**/build/
-**/run/
-!**/src/**/run/
 .gradle/
-*.iml
+build/
+versions/*/.gradle/
+versions/*/build/
+versions/*/run/
 .idea/
+!.idea/icon.png
+*.iml
 .DS_Store
-**/.kotlin/
-
-## eclipse bad ##
-.classpath
-.project
-.settings/
-**/module-info.java
+.kotlin/
+src/main/java/build.properties

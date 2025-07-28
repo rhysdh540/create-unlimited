@@ -1,0 +1,22 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+issueTrackerURL = "https://github.com/rhysdh540/createunlimited/issues"
+license = "Unlicense"
+
+[[mods]]
+modId = "createunlimited"
+version = "${mod_version}"
+displayName = "Create Unlimited"
+authors = "rdh"
+description = "Remove all the limits!"
+logoFile = "cu.png"
+
+[[dependencies.createunlimited]]
+modId="create"
+mandatory=true
+versionRange="[6,)"
+ordering="AFTER"
+side="BOTH"
+
+[[mixins]]
+config = "createunlimited.mixins.json"

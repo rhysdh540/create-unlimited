@@ -1,52 +1,57 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import java.util.Properties
 
 plugins {
 	`kotlin-dsl`
-	idea
-}
-
-// warning: do not move down, that breaks things
-val gradleProperties by lazy {
-	Properties().apply {
-		load(rootDir.parentFile.resolve("gradle.properties").inputStream())
-	}
 }
 
 repositories {
-	mavenLocal()
-	mavenCentral()
 	gradlePluginPortal()
-	maven("https://maven.fabricmc.net")
-	maven("https://maven.neoforged.net/releases")
-	maven("https://maven.wagyourtail.xyz/releases")
-	maven("https://maven.wagyourtail.xyz/snapshots")
-}
+	mavenCentral()
+	maven("https://maven.neoforged.net/releases") {
+		content {
+			includeGroupAndSubgroups("net.neoforged")
+		}
+	}
+	maven("https://maven.fabricmc.net/") {
+		content {
+			includeGroupAndSubgroups("net.fabricmc")
+			includeGroup("fabric-loom")
+		}
+	}
 
-idea.module.isDownloadSources = true
+	maven("https://maven.kikugie.dev/releases") {
+		content {
+			includeGroupAndSubgroups("dev.kikugie")
+		}
+	}
 
-kotlin {
-	compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_0
-	jvmToolchain {
-		languageVersion.set(JavaLanguageVersion.of(21))
+	maven("https://maven.wagyourtail.xyz/snapshots") {
+		content {
+			includeGroupAndSubgroups("xyz.wagyourtail")
+		}
+	}
+
+	maven("https://maven.wagyourtail.xyz/releases") {
+		content {
+			includeGroupAndSubgroups("xyz.wagyourtail")
+		}
 	}
 }
 
-dependencies {
-	implementation("org.ow2.asm:asm-tree:${"asm_version"()}")
-	implementation("org.ow2.asm:asm-commons:${"asm_version"()}")
-	implementation("io.github.prcraftmc:class-diff:1.0-SNAPSHOT")
-	implementation(group = "org.jetbrains", name = "annotations")
-	implementation("com.guardsquare:proguard-base:${"proguard_version"()}")
-
-	plugin(id = "com.gradleup.shadow", version = "shadow_version"())
-	plugin(id = "fabric-loom", version = "loom_version"())
-	plugin(id = "net.neoforged.moddev", version = "mdg_version"())
-	plugin(id = "org.jetbrains.gradle.plugin.idea-ext", version = "idea_ext_version"())
-	plugin(id = "xyz.wagyourtail.unimined.expect-platform", version = "expectplatform_version"())
+kotlin {
+	jvmToolchain(21)
+	compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_2
+	compilerOptions.apiVersion = KotlinVersion.KOTLIN_2_2
+	compilerOptions.freeCompilerArgs.addAll(
+		"-Xcontext-receivers" // todo: change to context parameters when they actually work
+	)
 }
 
-operator fun String.invoke() = gradleProperties.getProperty(this) ?: error("No property \"$this\"")
-
-fun DependencyHandler.plugin(id: String, version: String) =
-	implementation(group = id, name = "$id.gradle.plugin", version = version)
+dependencies {
+	implementation("xyz.wagyourtail.manifold:xyz.wagyourtail.manifold.gradle.plugin:1.1.0-SNAPSHOT")
+	implementation("net.neoforged:moddev-gradle:2.0.105")
+	implementation("net.fabricmc:fabric-loom:1.11.4")
+	implementation("net.fabricmc:tiny-remapper:0.11.1")
+}
