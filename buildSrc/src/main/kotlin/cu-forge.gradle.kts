@@ -18,10 +18,6 @@ dependencies {
 	compileOnly("io.github.llamalad7:mixinextras-common:${"mixinextras_version"()}")
 }
 
-tasks.named<RemapJar>("reobfJar") {
-	enabled = false
-}
-
 tasks.register<BetterRemapJar>("remapJar") {
 	config(tasks.named<RemapJar>("reobfJar"))
 	input.set(tasks.jar.map { it.archiveFile.get() })
@@ -29,7 +25,11 @@ tasks.register<BetterRemapJar>("remapJar") {
 	manifest.attributes(
 		"MixinConfigs" to "createunlimited.mixins.json",
 	)
+}
 
+tasks.named<RemapJar>("reobfJar") {
+	enabled = false
+	finalizedBy(tasks.named("remapJar"))
 }
 
 apply(plugin = "cu-forge-common")

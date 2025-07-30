@@ -40,7 +40,8 @@ run {
     project.version = rootProject.version
 
 	java {
-		toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+		val javaVersion = if (stonecutter.eval(stonecutter.current.version, ">=1.20.6")) 21 else 17
+		toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
 	}
 
 	apply(plugin = "cu-${platform}")
