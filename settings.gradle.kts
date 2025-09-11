@@ -3,8 +3,8 @@ import org.gradle.api.internal.FeaturePreviews.Feature
 enableFeaturePreview(Feature.STABLE_CONFIGURATION_CACHE.name)
 
 plugins {
-	id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
-	id("dev.kikugie.stonecutter") version "0.7.6"
+	id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+	id("dev.kikugie.stonecutter") version "0.7.9"
 }
 
 stonecutter {
@@ -13,7 +13,7 @@ stonecutter {
 
 	create(rootProject) {
 		fun add(mcVersion: String, vararg loaders: String) =
-			loaders.forEach { vers("$mcVersion-$it", mcVersion) }
+			loaders.forEach { version("$mcVersion-$it", mcVersion) }
 
 		add("1.20.1", "forge", "fabric")
 		add("1.21.1", "neoforge")

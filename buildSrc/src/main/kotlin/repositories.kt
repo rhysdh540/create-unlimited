@@ -1,7 +1,6 @@
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.InclusiveRepositoryContentDescriptor
 import org.gradle.api.artifacts.repositories.RepositoryContentDescriptor
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.maven
 
 fun RepositoryHandler.maven(

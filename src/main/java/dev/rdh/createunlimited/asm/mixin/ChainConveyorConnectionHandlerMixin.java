@@ -11,7 +11,7 @@ import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorConnectio
 
 // TODO: make the first and third not look buggy
 @Mixin(ChainConveyorConnectionHandler.class)
-public class ChainConveyorConnectionHandlerMixin {
+public abstract class ChainConveyorConnectionHandlerMixin {
 
 	// cannot_connect_vertically
 	@ModifyExpressionValue(method = "validateAndConnect", at = @At(value = "CONSTANT", args = "doubleValue=0.0", ordinal = 1))

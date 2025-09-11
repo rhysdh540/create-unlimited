@@ -45,13 +45,13 @@ kotlin {
 	compilerOptions.languageVersion = KotlinVersion.KOTLIN_2_2
 	compilerOptions.apiVersion = KotlinVersion.KOTLIN_2_2
 	compilerOptions.freeCompilerArgs.addAll(
-		"-Xcontext-receivers" // todo: change to context parameters when they actually work
+		"-Xcontext-parameters"
 	)
 }
 
 dependencies {
 	implementation("xyz.wagyourtail.manifold:xyz.wagyourtail.manifold.gradle.plugin:1.1.0-SNAPSHOT")
-	implementation("net.neoforged:moddev-gradle:2.0.105")
-	implementation("net.fabricmc:fabric-loom:1.11.4")
+	implementation("net.neoforged:moddev-gradle:2.0.107")
+	implementation("net.fabricmc:fabric-loom:1.11.8")
 	implementation("net.fabricmc:tiny-remapper:0.11.1")
 }
