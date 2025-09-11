@@ -1,0 +1,26 @@
+name: Suggestion
+description: Submit your ideas and suggestions for consideration.
+title: "[Suggestion] "
+labels: ["enhancement"]
+body:
+  -   type: textarea
+      attributes:
+        label: Describe the Suggestion
+        description: What should I add or change to make Create Unlimited better?
+      validations:
+        required: true
+  -   type: textarea
+      attributes:
+        label: Screenshots and Videos
+        description: If applicable, add screenshots or videos to help explain your suggestion.
+      validations:
+        required: false
+  -   type: textarea
+      attributes:
+        label: Additional Context
+        description: Add any extra context about the suggestion here.
+      validations:
+        required: false
+  -   type: markdown
+      attributes:
+        value: "Thank you for taking the time to make this suggestion and help improve Create Unlimited!"
