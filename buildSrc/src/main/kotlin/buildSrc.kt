@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE", "CONTEXT_RECEIVERS_DEPRECATED")
+@file:Suppress("NOTHING_TO_INLINE")
 
 import org.gradle.api.Project
 import org.gradle.api.NamedDomainObjectContainer
@@ -7,7 +7,7 @@ import org.gradle.api.NamedDomainObjectProvider
 /**
  * note that this can't be used in buildscripts and must be copied:
  * `operator fun String.invoke() = prop(this)`
- * because you can't enable context receivers in buildscripts :(
+ * because you can't enable context parameters in buildscripts :(
  */
 context(p: Project)
 inline operator fun String.invoke() = p.prop(this)

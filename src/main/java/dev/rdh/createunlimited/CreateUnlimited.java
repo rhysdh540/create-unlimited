@@ -7,8 +7,6 @@ import dev.rdh.createunlimited.command.EnumArgument;
 
 import net.minecraft.resources.ResourceLocation;
 
-import net.createmod.catnip.config.ui.BaseConfigScreen;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,13 +76,18 @@ public final class CreateUnlimited #if fabric implements net.fabricmc.api.ModIni
 		modBus.addListener(this::onConfigReload);
 		modBus.addListener(this::onClientSetup);
 		#endif
+
+		#if fabric
+		net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register(CUCommands::register);
+		#endif
+
 		LOGGER.info("{} v{} initializing on platform: {}!", NAME, VERSION, Util.platformName());
 
 		EnumArgument.init();
 		CUConfig.register();
 
 		BlockMovementChecks.registerMovementAllowedCheck((s, l, p) -> {
-			if (CUConfig.getOrFalse(CUConfig.instance.allowContraptionMoveAllow)) {
+			if (CUConfig.getOrFalse(CUConfig.instance.allowContraptionMoveAll)) {
 				return CheckResult.SUCCESS;
 			} else {
 				return CheckResult.PASS;
@@ -99,16 +102,13 @@ public final class CreateUnlimited #if fabric implements net.fabricmc.api.ModIni
 
 	void onClientSetup(FMLClientSetupEvent event) {
 		event.enqueueWork(() -> {
-			BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, base ->
-				base.withSpecs(null, null, CUConfig.instance.specification)
-					.withButtonLabels("", "", "Settings")
-			);
 			#if neoforge
+				// TODO: make this not crash the game on dedicated server
 			modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
-				(container, parent) -> new BaseConfigScreen(parent, CreateUnlimited.ID));
+				(container, parent) -> CUConfig.ScreenManager.createConfigScreen(parent));
 			#elif forge
 			modContainer.registerExtensionPoint(net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class,
-				() -> new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory(CUConfig::createConfigScreen));
+				() -> new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory(CUConfig.ScreenManager::createConfigScreen));
 			#endif
 		});
 	}

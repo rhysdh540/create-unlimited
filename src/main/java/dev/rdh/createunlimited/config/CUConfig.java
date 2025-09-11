@@ -4,12 +4,9 @@ import net.createmod.catnip.config.ui.BaseConfigScreen;
 
 import dev.rdh.createunlimited.Util;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
 import dev.rdh.createunlimited.CreateUnlimited;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -24,10 +21,6 @@ import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.neoforge.common.ModConfigSpec.Builder;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 #else
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.config.ModConfig.Type;
-import net.minecraftforge.common.ForgeConfigSpec.Builder;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 #endif
 
 @SuppressWarnings("unused")
@@ -57,7 +50,7 @@ public class CUConfig extends ConfigBase {
 	public final ConfigGroup misc = group(1, "misc", Comments.misc);
 	public final ConfigBool chainConveyorConnectionLimits = b(true, "chainConveyorConnectionLimits", Comments.chainConveyorConnectionLimits);
 	public final ConfigBool allowAllCopycatBlocks = b(false, "allowAllCopycatBlocks", Comments.allowAllCopycatBlocks);
-	public final ConfigBool allowContraptionMoveAllow = b(false, "allowContraptionMoveAllow", Comments.allowContraptionMoveAllow);
+	public final ConfigBool allowContraptionMoveAll = b(false, "allowContraptionMoveAllow", Comments.allowContraptionMoveAll);
 
 	private static class Comments {
 		static final String trains = "Realism, what's that?",
@@ -79,7 +72,7 @@ public class CUConfig extends ConfigBase {
 		static final String misc = "Everything else",
 			allowAllCopycatBlocks = "Whether or not to allow all blocks to be inserted into Copycat blocks.",
 			chainConveyorConnectionLimits = "Whether to check for valid connections when connecting chain conveyors.",
-			allowContraptionMoveAllow = "Whether to allow contraptions to move any block.";
+			allowContraptionMoveAll = "Whether to allow contraptions to move any block.";
 
 		private static final Map<String, String> comments = new HashMap<>();
 		static {
@@ -131,22 +124,6 @@ public class CUConfig extends ConfigBase {
 			instance.onReload();
 	}
 
-	public static BaseConfigScreen createConfigScreen(Screen parent) {
-		initBCS();
-		return new BaseConfigScreen(parent, CreateUnlimited.ID);
-	}
-
-	private static boolean done = false;
-
-	private static void initBCS() {
-		if(done) return;
-		BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, base ->
-			base.withSpecs(null, null, instance.specification)
-				.withButtonLabels("", "", "Settings")
-		);
-		done = true;
-	}
-
 	public static <V, T extends ConfigValue<V>> V getOrDefault(CValue<V, T> value, V orElse) {
 		try {
 			return value.get();
@@ -164,5 +141,20 @@ public class CUConfig extends ConfigBase {
 
 	public static boolean getOrTrue(ConfigBool config) {
 		return getOrDefault(config, true);
+	}
+
+	public static class ScreenManager {
+		private static boolean done = false;
+
+		public static BaseConfigScreen createConfigScreen(Screen parent) {
+			if (!done) {
+				BaseConfigScreen.setDefaultActionFor(CreateUnlimited.ID, base ->
+					base.withSpecs(null, null, instance.specification)
+						.withButtonLabels("", "", "Settings")
+				);
+				done = true;
+			}
+			return new BaseConfigScreen(parent, CreateUnlimited.ID);
+		}
 	}
 }
