@@ -89,4 +89,4 @@ tasks.named<AbstractArchiveTask>(if ("platform"() == "neoforge") "jar" else "rem
 	destinationDirectory = rootProject.layout.buildDirectory.dir("libs")
 }
 
-operator fun String.invoke() = findProperty(this)?.toString() ?: error("No property \"$this\"")
+operator fun String.invoke() = prop(this)
