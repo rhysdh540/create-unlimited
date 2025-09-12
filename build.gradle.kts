@@ -1,6 +1,6 @@
 plugins {
 	id("idea")
-    id("dev.rdh.manifold")
+    id("xyz.wagyourtail.manifold")
 }
 
 idea {

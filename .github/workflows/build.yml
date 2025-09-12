@@ -18,9 +18,6 @@ jobs:
             -   name: setup gradle
                 uses: gradle/actions/setup-gradle@v4
                 with:
-                    build-scan-publish: true
-                    build-scan-terms-of-use-agree: 'yes'
-                    build-scan-terms-of-use-url: 'https://gradle.com/terms-of-service'
                     cache-encryption-key: ${{ SECRETS.GRADLE_ENCRYPTION_KEY }}
 
             -   name: do the build
