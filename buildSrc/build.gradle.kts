@@ -38,6 +38,12 @@ repositories {
 			includeGroupAndSubgroups("xyz.wagyourtail")
 		}
 	}
+
+	maven("https://maven.taumc.org/releases") {
+		content {
+			includeGroupAndSubgroups("dev.rdh")
+		}
+	}
 }
 
 kotlin {
@@ -50,7 +56,8 @@ kotlin {
 }
 
 dependencies {
-	implementation("xyz.wagyourtail.manifold:xyz.wagyourtail.manifold.gradle.plugin:1.1.0-SNAPSHOT")
+//	implementation("xyz.wagyourtail.manifold:xyz.wagyourtail.manifold.gradle.plugin:1.1.0-SNAPSHOT")
+	implementation("dev.rdh.manifold:dev.rdh.manifold.gradle.plugin:1.1.1")
 	implementation("net.neoforged:moddev-gradle:2.0.107")
 	implementation("net.fabricmc:fabric-loom:1.11.8")
 	implementation("net.fabricmc:tiny-remapper:0.11.1")
