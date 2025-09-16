@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class StationBlockEntityMixin {
 	@ModifyExpressionValue(method = "assemble", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/bogey/AbstractBogeyBlock;allowsSingleBogeyCarriage()Z", ordinal = 0))
 	private boolean forceAllowSingleBogeyCarriage(boolean original) {
-		return !CUConfig.getOrTrue(CUConfig.instance.trainAssemblyChecks) || original;
+		return original || !CUConfig.getOrTrue(CUConfig.instance.trainAssemblyChecks);
 	}
 
 	@ModifyExpressionValue(method = "assemble", at = @At(value = "CONSTANT", args = "intValue=3", ordinal = 0))

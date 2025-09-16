@@ -28,6 +28,6 @@ public abstract class ChainConveyorConnectionHandlerMixin {
 	// too_close
 	@ModifyExpressionValue(method = "validateAndConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/BlockPos;closerThan(Lnet/minecraft/core/Vec3i;D)Z", ordinal = 1))
 	private static boolean modifyChainConveyorConnectionHandler3(boolean value) {
-		return CUConfig.getOrTrue(CUConfig.instance.chainConveyorConnectionLimits) && value;
+		return value && CUConfig.getOrTrue(CUConfig.instance.chainConveyorConnectionLimits);
 	}
 }

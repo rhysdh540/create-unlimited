@@ -9,15 +9,21 @@ import dev.rdh.createunlimited.config.PlacementCheck;
 import net.createmod.catnip.config.ConfigBase.CValue;
 import net.createmod.catnip.config.ConfigBase.ConfigEnum;
 
+import org.objectweb.asm.util.*;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
-import static org.objectweb.asm.Opcodes.*;
 
-public final class Asm {
+public final class Asm implements Opcodes {
 
 	public static void instrumentTrackPlacement(ClassNode targetClass) {
 		if(!targetClass.name.equals("com/simibubi/create/content/trains/track/TrackPlacement")) {
@@ -101,11 +107,85 @@ public final class Asm {
 		}
 	}
 
+	// com.copycatsplus.copycats.foundation.copycat.ICopycatBlock
+	public static void instrumentICopycatBlock(ClassNode targetClass) {
+		if (!targetClass.name.equals("com/copycatsplus/copycats/foundation/copycat/ICopycatBlock")) {
+			String caller = Thread.currentThread().getStackTrace()[2].getClassName();
+			throw new IllegalArgumentException("instrumentICopycatBlock called from \"" + caller + "\" with wrong target class: " + targetClass.name);
+		}
+
+		// this is an interface, we want to modify a default method:
+		// default BlockState getAcceptedBlockState(Level, BlockPos, ItemStack, Direction)
+		MethodNode method = targetClass.methods.stream()
+			.filter(m -> m.name.equals("getAcceptedBlockState")
+				&& m.desc.equals(Type.getMethodDescriptor(
+					Type.getType(BlockState.class),
+					Type.getType(Level.class),
+					Type.getType(BlockPos.class),
+					Type.getType(ItemStack.class),
+					Type.getType(Direction.class)
+			)))
+			.findFirst()
+			.orElseThrow(() -> new NoSuchMethodError("Could not find getAcceptedBlockState method in ICopycatBlock"));
+
+		// modify call to this.isAcceptedRegardless(BlockState)Z, add:
+		//   || CUConfig.getOrDefault(CUConfig.instance.allowAllCopycatBlocks, false)
+		for(int i = 0; i < method.instructions.size(); i++) {
+			AbstractInsnNode insn = method.instructions.get(i);
+			if(insn.getOpcode() != INVOKEINTERFACE) continue;
+			MethodInsnNode m = (MethodInsnNode)insn;
+			if(!m.name.equals("isAcceptedRegardless")) continue;
+			if(!m.desc.equals(Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(BlockState.class)))) continue;
+			if(!m.owner.equals(targetClass.name)) continue;
+			if(!m.itf) continue;
+
+			// found the call we want to modify
+			/* compiles down to:
+			GETSTATIC dev/rdh/createunlimited/config/CUConfig.instance : Ldev/rdh/createunlimited/config/CUConfig;
+			GETFIELD dev/rdh/createunlimited/config/CUConfig.allowAllCopycatBlocks : Lnet/createmod/catnip/config/ConfigBase$CValue;
+			ICONST_0
+			INVOKESTATIC dev/rdh/createunlimited/config/CUConfig.getOrDefault (Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
+			CHECKCAST java/lang/Boolean
+			INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z
+			IOR
+			*/
+			AbstractInsnNode[] toInject = new AbstractInsnNode[] {
+				// get CUConfig.instance
+				new FieldInsnNode(GETSTATIC, Type.getInternalName(CUConfig.class), "instance", Type.getDescriptor(CUConfig.class)),
+				// get CUConfig.instance.allowAllCopycatBlocks
+				new FieldInsnNode(GETFIELD, Type.getInternalName(CUConfig.class), "allowAllCopycatBlocks", /*Type.getDescriptor(ConfigBool.class)*/ "Lnet/createmod/catnip/config/ConfigBase$ConfigBool;"),
+				new TypeInsnNode(CHECKCAST,/*Type.getInternalName(CValue.class)*/ "net/createmod/catnip/config/ConfigBase$CValue"),
+				// push Boolean.FALSE onto stack
+				new FieldInsnNode(GETSTATIC, Type.getInternalName(Boolean.class), "FALSE", Type.getDescriptor(Boolean.class)),
+				// call CUConfig.getOrDefault(allowAllCopycatBlocks, false)
+				new MethodInsnNode(INVOKESTATIC, Type.getInternalName(CUConfig.class), "getOrDefault", Type.getMethodDescriptor(
+					Type.getType(Object.class), Type.getType(/*CValue.class*/"Lnet/createmod/catnip/config/ConfigBase$CValue;"), Type.getType(Object.class)
+				)),
+				// cast result to Boolean
+				new TypeInsnNode(CHECKCAST, Type.getInternalName(Boolean.class)),
+				// call booleanValue() on the Boolean
+				new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(Boolean.class), "booleanValue", Type.getMethodDescriptor(Type.BOOLEAN_TYPE)),
+				// OR the result of booleanValue() with the result of isAcceptedRegardless()
+				new InsnNode(IOR),
+			};
+
+			for (int j = toInject.length - 1; j >= 0; j--) {
+				method.instructions.insert(insn, toInject[j]);
+			}
+			i += toInject.length;
+		}
+
+		dumpClass(targetClass);
+	}
+
 	private static void dumpClass(ClassNode classNode) {
 		ClassWriter writer = new ClassWriter(0);
 		classNode.accept(writer);
 		byte[] bytes = writer.toByteArray();
-		Path path = Path.of(classNode.name + ".class");
+
+		// just have name.class, not package/name.class
+		int i = classNode.name.lastIndexOf('/');
+		Path path = Path.of(classNode.name.substring(i + 1) + ".class");
 		try {
 			Files.write(path, bytes);
 		} catch(Exception e) {
