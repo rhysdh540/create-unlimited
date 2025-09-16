@@ -142,12 +142,15 @@ public final class Asm implements Opcodes {
 			// found the call we want to modify
 			/* compiles down to:
 			GETSTATIC dev/rdh/createunlimited/config/CUConfig.instance : Ldev/rdh/createunlimited/config/CUConfig;
-			GETFIELD dev/rdh/createunlimited/config/CUConfig.allowAllCopycatBlocks : Lnet/createmod/catnip/config/ConfigBase$CValue;
-			ICONST_0
+			GETFIELD dev/rdh/createunlimited/config/CUConfig.allowAllCopycatBlocks : Lnet/createmod/catnip/config/ConfigBase$ConfigBool;
+			CHECKCAST net/createmod/catnip/config/ConfigBase$CValue;
+			GETSTATIC java/lang/Boolean.FALSE : Ljava/lang/Boolean; (must be Boolean, not boolean)
 			INVOKESTATIC dev/rdh/createunlimited/config/CUConfig.getOrDefault (Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
 			CHECKCAST java/lang/Boolean
 			INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z
 			IOR
+
+			this isn't a logical or, but i'm too lazy to mess with jump instructions
 			*/
 			AbstractInsnNode[] toInject = new AbstractInsnNode[] {
 				// get CUConfig.instance
