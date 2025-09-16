@@ -4,7 +4,7 @@ enableFeaturePreview(Feature.STABLE_CONFIGURATION_CACHE.name)
 
 plugins {
 	id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-	id("dev.kikugie.stonecutter") version "0.7.9"
+	id("dev.kikugie.stonecutter") version "0.7.10"
 }
 
 stonecutter {

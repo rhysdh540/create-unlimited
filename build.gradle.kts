@@ -1,6 +1,5 @@
 plugins {
 	id("idea")
-    id("xyz.wagyourtail.manifold")
 }
 
 idea {
@@ -55,17 +54,15 @@ stonecutter {
 }
 
 manifold {
-    version = "manifold_version"()
-    pluginArgs.add("--no-bootstrap")
+	preprocessor {
+		sourceSet("main")
+	}
+}
 
-    preprocessor {
-        config {
-            property("MC", stonecutter.current.version.removePrefix("1."))
-            stonecutter.constants.forEach {
-                if (it.value) { property(it.key) }
-            }
-        }
-    }
+tasks.withType<Sync>().configureEach {
+	if (this.name.startsWith("stonecutterGenerate")) {
+		exclude("**/build.properties")
+	}
 }
 
 tasks.withType<JavaCompile>().configureEach {
