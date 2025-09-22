@@ -38,6 +38,8 @@ repositories {
 			includeGroupAndSubgroups("xyz.wagyourtail")
 		}
 	}
+
+	mavenLocal() // for class-diff, for now
 }
 
 kotlin {
@@ -54,4 +56,5 @@ dependencies {
 	implementation("net.neoforged:moddev-gradle:2.0.107")
 	implementation("net.fabricmc:fabric-loom:1.11.8")
 	implementation("net.fabricmc:tiny-remapper:0.11.1")
+	implementation("io.github.prcraftmc:class-diff:1.0-SNAPSHOT")
 }

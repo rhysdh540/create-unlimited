@@ -108,6 +108,7 @@ public final class Asm implements Opcodes {
 	}
 
 	// com.copycatsplus.copycats.foundation.copycat.ICopycatBlock
+	// this is only necessary because non-fabric mixin can't inject into default interface methods
 	public static void instrumentICopycatBlock(ClassNode targetClass) {
 		if (!targetClass.name.equals("com/copycatsplus/copycats/foundation/copycat/ICopycatBlock")) {
 			String caller = Thread.currentThread().getStackTrace()[2].getClassName();

@@ -59,6 +59,27 @@ manifold {
 	}
 }
 
+repositories {
+	mavenLocal()
+}
+
+dependencies {
+	val include = if ("platform"() == "fabric") "include" else "jarJar"
+
+	"io.github.prcraftmc:class-diff:1.0-SNAPSHOT".let {
+		implementation(it) { exclude(group = "org.ow2.asm") }
+		include(it) { exclude(group = "org.ow2.asm") }
+	}
+}
+
+configurations.all {
+	resolutionStrategy.eachDependency {
+		if (requested.group == "org.spongepowered" && requested.name == "mixin") {
+			useVersion("0.8.7")
+		}
+	}
+}
+
 tasks.withType<Sync>().configureEach {
 	if (this.name.startsWith("stonecutterGenerate")) {
 		exclude("**/build.properties")
