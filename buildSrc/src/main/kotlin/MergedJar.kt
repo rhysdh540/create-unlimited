@@ -4,8 +4,11 @@ import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.jvm.tasks.Jar
@@ -20,9 +23,11 @@ import java.util.zip.ZipOutputStream
 import javax.inject.Inject
 import kotlin.math.min
 
+@CacheableTask
 abstract class MergedJar : Jar() {
 
 	@get:InputFile
+	@get:PathSensitive(PathSensitivity.NONE)
 	abstract val mainJar: RegularFileProperty
 
 	@get:Internal
@@ -127,6 +132,7 @@ abstract class MergedJar : Jar() {
 			it.flush()
 		}
 
+		// slightly sketchy but it does work
 		from(archiveOps.zipTree(gradleBruh))
 		copy()
 	}

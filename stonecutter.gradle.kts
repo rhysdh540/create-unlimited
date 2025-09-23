@@ -9,7 +9,7 @@ plugins {
 stonecutter active "1.20.1-forge"
 
 rootProject.group = "dev.rdh"
-rootProject.base.archivesName.set("createunlimited")
+rootProject.base.archivesName = "createunlimited"
 rootProject.version = prop("mod_version")
 
 manifold {
@@ -36,9 +36,13 @@ manifold {
 tasks.register<MergedJar>("mergeJars") {
 	group = "build"
 
-	main(project("1.21.1-neoforge").tasks.named<Jar>("jar"))
-	add("1.20.1-forge", project("1.20.1-forge").tasks.named<BetterRemapJar>("remapJar"))
-	add("1.20.1-fabric", project("1.20.1-fabric").tasks.named<RemapJarTask>("remapJar"))
+	for (p in rootProject.subprojects) {
+		if (p.name == "1.21.1-neoforge") {
+			main(p.tasks.named<Jar>("jar"))
+		} else {
+			add(p.name, p.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar"))
+		}
+	}
 
-	archiveClassifier.set("merged")
+	archiveClassifier = null
 }
