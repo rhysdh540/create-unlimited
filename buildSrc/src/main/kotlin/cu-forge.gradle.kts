@@ -1,4 +1,3 @@
-import net.fabricmc.loom.util.TinyRemapperHelper
 import net.neoforged.moddevgradle.legacyforge.tasks.RemapJar
 
 plugins {

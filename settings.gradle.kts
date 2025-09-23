@@ -7,6 +7,8 @@ plugins {
 	id("dev.kikugie.stonecutter") version "0.7.10"
 }
 
+include("boot")
+
 stonecutter {
 	kotlinController = true
 	centralScript = "build.gradle.kts"
@@ -15,8 +17,8 @@ stonecutter {
 		fun add(mcVersion: String, vararg loaders: String) =
 			loaders.forEach { version("$mcVersion-$it", mcVersion) }
 
-		add("1.20.1", "forge", "fabric")
 		add("1.21.1", "neoforge")
+		add("1.20.1", "forge", "fabric")
 
 		vcsVersion = "1.20.1-forge"
 	}

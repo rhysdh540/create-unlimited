@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@SuppressWarnings("ALL")
 public abstract class Transformer implements IMixinService, IClassBytecodeProvider, IExtension, IMixinConfigPlugin {
 	private static final ILogger LOGGER = MixinService.getService().getLogger("CreateUnlimited/Boot");
 	private final ClassLoader CL = getClass().getClassLoader();
@@ -275,7 +276,7 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 				sb.append('\n');
 			}
 
-			throw unchecked(new NoSuchFieldException(sb.toString()));
+			throw new NoSuchFieldException(sb.toString());
 		}
 
 		for (String className : getTransformedClasses()) {
@@ -285,31 +286,27 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 	}
 
 	private void injectService() {
-		try {
-			MixinService service = (MixinService) L.unreflect(MixinService.class.getDeclaredMethod("getInstance")).invokeExact();
+		MixinService service = (MixinService) L.unreflect(MixinService.class.getDeclaredMethod("getInstance")).invokeExact();
 
-			// set the global service
-			Field f = MixinService.class.getDeclaredField("service");
-			this.serviceDelegate = getField(f, service);
-			setField(f, service, this);
+		// set the global service
+		Field f = MixinService.class.getDeclaredField("service");
+		this.serviceDelegate = getField(f, service);
+		setField(f, service, this);
 
-			Object transformer = MixinEnvironment.getCurrentEnvironment().getActiveTransformer();
-			Object processor = getField(transformer.getClass().getDeclaredField("processor"), transformer);
+		Object transformer = MixinEnvironment.getCurrentEnvironment().getActiveTransformer();
+		Object processor = getField(transformer.getClass().getDeclaredField("processor"), transformer);
 
-			// set the service on the processor
-			setField(processor.getClass().getDeclaredField("service"), processor, this);
+		// set the service on the processor
+		setField(processor.getClass().getDeclaredField("service"), processor, this);
 
-			List<IMixinConfig> configs = getField(processor.getClass().getDeclaredField("pendingConfigs"), processor);
+		List<IMixinConfig> configs = getField(processor.getClass().getDeclaredField("pendingConfigs"), processor);
 
-			for (IMixinConfig config : configs) {
-				if (config.getPlugin() == this) {
-					// set it on this config too, since we kinda need that
-					setField(config.getClass().getDeclaredField("service"), config, this);
-					break;
-				}
+		for (IMixinConfig config : configs) {
+			if (config.getPlugin() == this) {
+				// set it on this config too, since we kinda need that
+				setField(config.getClass().getDeclaredField("service"), config, this);
+				break;
 			}
-		} catch (Throwable t) {
-			throw unchecked(t);
 		}
 	}
 
@@ -335,44 +332,32 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 	private static final MethodHandles.Lookup L = getImplLookup();
 
 	private static Unsafe getUnsafe() {
-		try {
-			for(Field field : Unsafe.class.getDeclaredFields()) {
-				if(field.getType() == Unsafe.class) {
-					field.setAccessible(true);
-					return (Unsafe) field.get(null);
-				}
+		for(Field field : Unsafe.class.getDeclaredFields()) {
+			if(field.getType() == Unsafe.class) {
+				field.setAccessible(true);
+				return (Unsafe) field.get(null);
 			}
-			throw new RuntimeException("Unsafe not found");
-		} catch (IllegalAccessException e) {
-			throw unchecked(e);
 		}
+		throw new RuntimeException("Unsafe not found");
 	}
 
 	private static MethodHandles.Lookup getImplLookup() {
-		try {
-			return getField(MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP"), null);
-		} catch (Exception e) {
-			throw unchecked(e);
-		}
+		return getField(MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP"), null);
 	}
 
 	@SuppressWarnings("unchecked")
 	private static <T> T getField(final Field field, final Object instance) {
-		try {
-			Object base;
-			long offset;
-			if (instance == null) {
-				base = U.staticFieldBase(field);
-				offset = U.staticFieldOffset(field);
-			} else {
-				base = instance;
-				offset = U.objectFieldOffset(field);
-			}
-
-			return (T) U.getObject(base, offset);
-		} catch (Exception e) {
-			throw unchecked(e);
+		Object base;
+		long offset;
+		if (instance == null) {
+			base = U.staticFieldBase(field);
+			offset = U.staticFieldOffset(field);
+		} else {
+			base = instance;
+			offset = U.objectFieldOffset(field);
 		}
+
+		return (T) U.getObject(base, offset);
 	}
 
 	private static <T> void setField(final Field field, final Object instance, final T value) {
@@ -380,26 +365,17 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 			throw new IllegalArgumentException("Value type " + value.getClass() + " does not match field type " + field.getType());
 		}
 
-		try {
-			Object base;
-			long offset;
-			if (instance == null) {
-				base = U.staticFieldBase(field);
-				offset = U.staticFieldOffset(field);
-			} else {
-				base = instance;
-				offset = U.objectFieldOffset(field);
-			}
-
-			U.putObject(base, offset, value);
-		} catch (Exception e) {
-			throw unchecked(e);
+		Object base;
+		long offset;
+		if (instance == null) {
+			base = U.staticFieldBase(field);
+			offset = U.staticFieldOffset(field);
+		} else {
+			base = instance;
+			offset = U.objectFieldOffset(field);
 		}
-	}
 
-	@SuppressWarnings("unchecked")
-	private static <T extends Throwable> RuntimeException unchecked(Throwable t) throws T {
-		throw (T) t;
+		U.putObject(base, offset, value);
 	}
 	// endregion
 
@@ -419,34 +395,29 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 	private Map<String, byte[]> getPatches() {
 		Map<String, byte[]> patches = new HashMap<>();
 
-		try {
+		if (!CL.getResources("META-INF/patches.zip").hasMoreElements()) {
+			LOGGER.info("No patches found");
+			return patches;
+		}
 
-			if (!CL.getResources("META-INF/patches.zip").hasMoreElements()) {
-				LOGGER.info("No patches found");
-				return patches;
+		ZipInputStream in = new ZipInputStream(CL.getResourceAsStream("META-INF/patches.zip"));
+		for(ZipEntry entry; (entry = in.getNextEntry()) != null;) {
+			String[] split = entry.getName().split("/", 2);
+			String platformName = split[0];
+			if (!platformName.equals(platform)) {
+				continue;
 			}
 
-			ZipInputStream in = new ZipInputStream(CL.getResourceAsStream("META-INF/patches.zip"));
-			for(ZipEntry entry; (entry = in.getNextEntry()) != null;) {
-				String[] split = entry.getName().split("/", 2);
-				String platformName = split[0];
-				if (!platformName.equals(platform)) {
-					continue;
-				}
-
-				if (!split[1].endsWith(".class.diff")) {
-					throw new IllegalStateException("Unsupported file name: " + platformName);
-				}
-
-				String className = split[1].substring(0, split[1].length() - ".class.diff".length())
-					.replace('/', '.');
-
-				byte[] bytes = in.readAllBytes();
-
-				patches.put(className, bytes);
+			if (!split[1].endsWith(".class.diff")) {
+				throw new IllegalStateException("Unsupported file name: " + platformName);
 			}
-		} catch (Exception e) {
-			throw unchecked(e);
+
+			String className = split[1].substring(0, split[1].length() - ".class.diff".length())
+				.replace('/', '.');
+
+			byte[] bytes = in.readAllBytes();
+
+			patches.put(className, bytes);
 		}
 
 		LOGGER.info("Loaded {} patches for platform {}", patches.size(), platform);
@@ -461,62 +432,53 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 	 * from any classes (which is probably a safe bet) (but don't do that cause it'll break otherwise)
 	 */
 	protected Set<String> getTransformedClasses() {
-		try {
-			Set<String> transformedClasses = new HashSet<>();
-			for(String className : patches.keySet()) {
-				byte[] classBytes = CL.getResourceAsStream(className.replace('.', '/') + ".class")
-					.readAllBytes();
-				ClassNode classNode = new ClassNode();
-				new ClassReader(classBytes).accept(classNode, ClassReader.SKIP_DEBUG);
+		Set<String> transformedClasses = new HashSet<>();
+		for(String className : patches.keySet()) {
+			byte[] classBytes = CL.getResourceAsStream(className.replace('.', '/') + ".class")
+				.readAllBytes();
+			ClassNode classNode = new ClassNode();
+			new ClassReader(classBytes).accept(classNode, ClassReader.SKIP_DEBUG);
 
-				if(!hasMixin(classNode)) {
-					transformedClasses.add(className);
-				}
+			if(!hasMixin(classNode)) {
+				transformedClasses.add(className);
 			}
-
-			return transformedClasses;
-		} catch (Exception e) {
-			throw unchecked(e);
 		}
+
+		return transformedClasses;
 	}
 
 	private List<String> getTransformedMixins(String packag) {
-		try {
-			List<String> mixins = new ArrayList<>();
+		List<String> mixins = new ArrayList<>();
 
-			for(String className : patches.keySet()) {
-				byte[] classBytes = CL.getResourceAsStream(className.replace('.', '/') + ".class")
-					.readAllBytes();
-				ClassNode classNode = new ClassNode();
-				new ClassReader(classBytes).accept(classNode, ClassReader.SKIP_DEBUG);
+		for(String className : patches.keySet()) {
+			byte[] classBytes = CL.getResourceAsStream(className.replace('.', '/') + ".class")
+				.readAllBytes();
+			ClassNode classNode = new ClassNode();
+			new ClassReader(classBytes).accept(classNode, ClassReader.SKIP_DEBUG);
 
-				if(!hasMixin(classNode)) continue;
+			if(!hasMixin(classNode)) continue;
 
-				if (!className.startsWith(packag)) {
-					LOGGER.warn("found mixin {} outside package {}", className, packag);
-					continue;
-				}
-
-				transform(classNode);
-				SimpleRemapper remapper = new SimpleRemapper(classNode.name, classNode.name + "$Patched");
-				classNode.accept(new ClassRemapper(classNode, remapper));
-
-				if (!addClass(classNode)) {
-					LOGGER.warn("Failed to add mixin class {} to Transformer", classNode.name);
-				}
-
-				mixins.add(classNode.name
-					.replace('/', '.')
-					.substring(packag.length() + 1) // +1 to remove the dot
-				);
+			if (!className.startsWith(packag)) {
+				LOGGER.warn("found mixin {} outside package {}", className, packag);
+				continue;
 			}
 
-			LOGGER.info("Loaded {} mixins for package {}", mixins.size(), packag);
-			return mixins;
+			transform(classNode);
+			SimpleRemapper remapper = new SimpleRemapper(classNode.name, classNode.name + "$Patched");
+			classNode.accept(new ClassRemapper(classNode, remapper));
 
-		} catch (Exception e) {
-			throw unchecked(e);
+			if (!addClass(classNode)) {
+				LOGGER.warn("Failed to add mixin class {} to Transformer", classNode.name);
+			}
+
+			mixins.add(classNode.name
+				.replace('/', '.')
+				.substring(packag.length() + 1) // +1 to remove the dot
+			);
 		}
+
+		LOGGER.info("Loaded {} mixins for package {}", mixins.size(), packag);
+		return mixins;
 	}
 
 	private static boolean hasMixin(ClassNode classNode) {

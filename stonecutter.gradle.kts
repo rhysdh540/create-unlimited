@@ -1,4 +1,4 @@
-import net.fabricmc.loom.task.RemapJarTask
+import dev.kikugie.stonecutter.controller.StonecutterControllerExtension
 import org.gradle.kotlin.dsl.stonecutter
 
 plugins {
@@ -6,6 +6,7 @@ plugins {
 	id("dev.kikugie.stonecutter")
 	id("xyz.wagyourtail.manifold")
 }
+
 stonecutter active "1.20.1-forge"
 
 rootProject.group = "dev.rdh"
@@ -17,7 +18,7 @@ manifold {
 	pluginArgs.add("--no-bootstrap")
 
 	subprojectPreprocessor {
-		for (p in project.subprojects) {
+		for (p in stonecutter.versions.map { project(it.project) }) {
 			val stonecutter = p.the<dev.kikugie.stonecutter.build.StonecutterBuildExtension>()
 			subproject(p) {
 				property("MC", stonecutter.current.version.removePrefix("1."))
@@ -36,12 +37,9 @@ manifold {
 tasks.register<MergedJar>("mergeJars") {
 	group = "build"
 
-	for (p in rootProject.subprojects) {
-		if (p.name == "1.21.1-neoforge") {
-			main(p.tasks.named<Jar>("jar"))
-		} else {
-			add(p.name, p.tasks.named<org.gradle.jvm.tasks.Jar>("remapJar"))
-		}
+	mainJar = project("boot").tasks.named<Jar>("shadowJar").flatMap { it.archiveFile }
+	for (p in stonecutter.versions.map { project(it.project) }) {
+		add(p.name, p.jarOutputTask)
 	}
 
 	archiveClassifier = null

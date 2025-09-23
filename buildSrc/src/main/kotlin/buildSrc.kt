@@ -3,6 +3,11 @@
 import org.gradle.api.Project
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
+import org.gradle.api.internal.file.copy.DefaultCopySpec
+import org.gradle.api.tasks.AbstractCopyTask
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.jvm.tasks.Jar
+import org.gradle.kotlin.dsl.named
 
 /**
  * note that this can't be used in buildscripts and must be copied:
@@ -29,6 +34,10 @@ fun Project.prop(name: String): String {
 
 context(p: Project)
 fun String.maybe(block: (String) -> Unit) = p.propMaybe(this)?.let(block)
+
+val Project.jarOutputTask: TaskProvider<out Jar> get() = tasks.named<Jar>(
+	if ("platform"() == "neoforge") "jar" else "remapJar"
+)
 
 // gradle doesn't have a lazy version of this? idk why
 inline fun <T : Any> NamedDomainObjectContainer<T>.maybeRegister(name: String, noinline config: T.() -> Unit = {}): NamedDomainObjectProvider<T> {

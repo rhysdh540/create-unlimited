@@ -22,6 +22,7 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.ArchiveOperations
 
 import javax.inject.Inject
+import kotlin.io.path.exists
 
 @CacheableTask
 abstract class BetterRemapJar : Jar() {
@@ -65,7 +66,7 @@ abstract class BetterRemapJar : Jar() {
 			.ignoreFieldDesc(true)
 			.build()
 
-		mapper.readClassPath(*libraries.map { it.toPath() }.toTypedArray())
+		mapper.readClassPath(*libraries.map { it.toPath() }.filter { it.exists() }.toTypedArray())
 		mapper.readInputs(input.toPath())
 
 		val output = temporaryDir.resolve("output")

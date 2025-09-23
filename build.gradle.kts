@@ -2,6 +2,8 @@ plugins {
 	id("idea")
 }
 
+evaluationDependsOn(":boot")
+
 idea {
 	module {
 		isDownloadJavadoc = true
@@ -46,38 +48,17 @@ run {
 	apply(plugin = "cu-${platform}")
 }
 
-stonecutter {
-    constants {
-        match("platform"(), "fabric", "forge", "neoforge")
-        put("forgelike", "platform"().let { it == "forge" || it == "neoforge" })
-    }
+stonecutter.constants {
+	match("platform"(), "fabric", "forge", "neoforge")
+	put("forgelike", "platform"().let { it == "forge" || it == "neoforge" })
 }
 
-manifold {
-	preprocessor {
-		sourceSet("main")
-	}
+manifold.preprocessor {
+	sourceSet("main")
 }
 
-repositories {
-	mavenLocal()
-}
-
-dependencies {
-	val include = if ("platform"() == "fabric") "include" else "jarJar"
-
-	"io.github.prcraftmc:class-diff:1.0-SNAPSHOT".let {
-		implementation(it) { exclude(group = "org.ow2.asm") }
-		include(it) { exclude(group = "org.ow2.asm") }
-	}
-}
-
-configurations.all {
-	resolutionStrategy.eachDependency {
-		if (requested.group == "org.spongepowered" && requested.name == "mixin") {
-			useVersion("0.8.7")
-		}
-	}
+sourceSets.main {
+	compileClasspath += project(":boot").sourceSets["main"].output
 }
 
 tasks.withType<Sync>().configureEach {

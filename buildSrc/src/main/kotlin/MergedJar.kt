@@ -23,7 +23,6 @@ import java.util.zip.ZipOutputStream
 import javax.inject.Inject
 import kotlin.math.min
 
-@CacheableTask
 abstract class MergedJar : Jar() {
 
 	@get:InputFile
@@ -71,7 +70,7 @@ abstract class MergedJar : Jar() {
 
 	@TaskAction
 	fun mergeJars() {
-		val output = mutableMapOf<String, ByteArray>()
+		var output = mutableMapOf<String, ByteArray>()
 
 		JarFile(mainJar.get().asFile).use { jarFile ->
 			jarFile.entries().asSequence().forEach { entry ->
@@ -80,6 +79,8 @@ abstract class MergedJar : Jar() {
 				}
 			}
 		}
+
+		println("platforms: ${platformJars.get().keys.joinToString(", ")}")
 
 		// map of platform to (map of file name to changed file)
 		val diff = mutableMapOf<String, MutableMap<String, ByteArray>>()
@@ -90,7 +91,7 @@ abstract class MergedJar : Jar() {
 
 					val bytes = jar.getInputStream(entry).use { it.readBytes() }
 					if (output[entry.name] == null) {
-						output[entry.name] = bytes;
+						output[entry.name] = bytes
 						return@a
 					}
 
@@ -119,6 +120,19 @@ abstract class MergedJar : Jar() {
 		}
 
 		output["META-INF/patches.zip"] = generatePatches(output, diff)
+
+		// we may have duplicate jarjars, so move everything in META-INF/jars to META-INF/jarjar
+		// overwriting is fine, they won't be identical because loom adds a fmj
+
+		output = output.mapKeys { (name, _) ->
+			if (name.startsWith("META-INF/jars/")) {
+				name.replaceFirst("META-INF/jars/", "META-INF/jarjar/")
+			} else name
+		}.toMutableMap()
+
+		output["fabric.mod.json"] = output["fabric.mod.json"]?.let {
+			String(it).replace("META-INF/jars", "META-INF/jarjar").toByteArray()
+		} ?: throw IllegalArgumentException("fabric.mod.json not found in main jar")
 
 		val gradleBruh = temporaryDir.resolve("merged.jar")
 		ZipOutputStream(gradleBruh.outputStream()).use {
@@ -159,7 +173,12 @@ abstract class MergedJar : Jar() {
 
 		dirty.methods.forEach { dirtyMethod ->
 			val cleanMethod = clean.methods.find { it.name == dirtyMethod.name && it.desc == dirtyMethod.desc }
+
+			// another problem is that some weird classes have null parameter nodes, which breaks class-diff
+			dirtyMethod.parameters?.removeIf { it.name == null }
+
 			if (cleanMethod != null) {
+				cleanMethod.parameters?.removeIf { it.name == null }
 				reorderAnnotations(cleanMethod.visibleAnnotations, dirtyMethod.visibleAnnotations)
 				reorderAnnotations(cleanMethod.invisibleAnnotations, dirtyMethod.invisibleAnnotations)
 			}
