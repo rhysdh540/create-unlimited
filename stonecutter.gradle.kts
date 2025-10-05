@@ -1,4 +1,3 @@
-import dev.kikugie.stonecutter.controller.StonecutterControllerExtension
 import org.gradle.kotlin.dsl.stonecutter
 
 plugins {
@@ -7,7 +6,7 @@ plugins {
 	id("xyz.wagyourtail.manifold")
 }
 
-stonecutter active "1.20.1-forge"
+stonecutter active "1.21.1-neoforge"
 
 rootProject.group = "dev.rdh"
 rootProject.base.archivesName = "createunlimited"
@@ -43,4 +42,8 @@ tasks.register<MergedJar>("mergeJars") {
 	}
 
 	archiveClassifier = null
+}
+
+tasks.assemble {
+	dependsOn("mergeJars")
 }

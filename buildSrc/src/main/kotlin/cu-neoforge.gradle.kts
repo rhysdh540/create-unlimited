@@ -12,8 +12,6 @@ tasks.processResources {
 	filesMatching("META-INF/mods.toml") {
 		name = "neoforge.mods.toml"
 	}
-
-	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 operator fun String.invoke() = prop(this)

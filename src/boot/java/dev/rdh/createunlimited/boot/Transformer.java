@@ -30,8 +30,11 @@ import sun.misc.Unsafe;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -240,6 +243,9 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 	@Override
 	public void onLoad(String mixinPackage) {
 		this.mixinPackage = mixinPackage;
+		LOGGER.info("Loading Transformer for package {}", mixinPackage);
+		LOGGER.info("Class: {}, loader: {}", getClass().getName(), CL);
+		LOGGER.info("Platform: {}", platform);
 		extensionBootstrap();
 	}
 
@@ -377,6 +383,13 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 
 		U.putObject(base, offset, value);
 	}
+
+	private static boolean isClassLoaded(ClassLoader cl, String className) {
+		MethodHandle mh = L.unreflect(
+			ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class)
+		).bindTo(cl);
+		return (Class<?>) mh.invokeExact(className) != null;
+	}
 	// endregion
 
 	// region Platform
@@ -434,6 +447,12 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 	protected Set<String> getTransformedClasses() {
 		Set<String> transformedClasses = new HashSet<>();
 		for(String className : patches.keySet()) {
+			if (isClassLoaded(CL, className)) {
+				// mixin will otherwise throw a very unhelpful "re-entrance error"
+				LOGGER.warn("Class {} is already loaded, skipping patch", className);
+				continue;
+			}
+
 			byte[] classBytes = CL.getResourceAsStream(className.replace('.', '/') + ".class")
 				.readAllBytes();
 			ClassNode classNode = new ClassNode();
@@ -454,7 +473,7 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 			byte[] classBytes = CL.getResourceAsStream(className.replace('.', '/') + ".class")
 				.readAllBytes();
 			ClassNode classNode = new ClassNode();
-			new ClassReader(classBytes).accept(classNode, ClassReader.SKIP_DEBUG);
+			new ClassReader(classBytes).accept(classNode, 0);
 
 			if(!hasMixin(classNode)) continue;
 
@@ -501,7 +520,17 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 
 		LOGGER.info("patching {}", node.name);
 
-		ClassPatcher.patch(node, new DiffReader(patch));
+		try {
+			ClassPatcher.patch(node, new DiffReader(patch));
+		} catch (Exception e) {
+			LOGGER.error("Failed to patch class " + node.name, e);
+			// dump class and patch to files for easier debugging
+			Path p = Path.of("patch-error-" + node.name.replace('/', '_') + ".class");
+			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+			node.accept(cw);
+			Files.write(p, cw.toByteArray());
+			Files.write(Path.of(p.toString() + ".diff"), patch);
+		}
 	}
 	// endregion
 }

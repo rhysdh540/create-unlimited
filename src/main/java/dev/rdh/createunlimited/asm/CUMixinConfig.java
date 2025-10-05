@@ -1,6 +1,7 @@
 package dev.rdh.createunlimited.asm;
 
 import org.objectweb.asm.tree.ClassNode;
+import org.spongepowered.asm.mixin.transformer.throwables.ReEntrantTransformerError;
 
 import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.boot.Transformer;
@@ -49,13 +50,18 @@ public final class CUMixinConfig extends Transformer {
 
 	@Override
 	public void transform(ClassNode node) {
-		super.transform(node);
-		if (node.name.equals("com/copycatsplus/copycats/foundation/copycat/ICopycatBlock")) {
-			Asm.instrumentICopycatBlock(node);
-		}
+		try {
+			super.transform(node);
+			if(node.name.equals("com/copycatsplus/copycats/foundation/copycat/ICopycatBlock")) {
+				Asm.instrumentICopycatBlock(node);
+			}
 
-		if (node.name.equals("com/simibubi/create/content/trains/track/TrackPlacement")) {
-			Asm.instrumentTrackPlacement(node);
+			if(node.name.equals("com/simibubi/create/content/trains/track/TrackPlacement")) {
+				Asm.instrumentTrackPlacement(node);
+			}
+		} catch (ReEntrantTransformerError what) {
+			System.err.println("bruh " + node.name);
+			throw what;
 		}
 	}
 }

@@ -15,22 +15,20 @@ import com.simibubi.create.api.contraption.BlockMovementChecks.CheckResult;
 
 #if forge
 import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 #elif neoforge
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.bus.api.IEventBus;
 #endif
 
-#if forgelike @Mod(CreateUnlimited.ID) #endif
-public final class CreateUnlimited #if fabric implements net.fabricmc.api.ModInitializer #endif {
+public #if forgelike sealed #else final #endif
+class CreateUnlimited #if fabric implements net.fabricmc.api.ModInitializer #endif {
 	public static final String ID = "createunlimited";
 	public static final String NAME = "Create Unlimited";
 	public static final String VERSION = Util.getVersion(ID).split("-build")[0];
@@ -46,7 +44,7 @@ public final class CreateUnlimited #if fabric implements net.fabricmc.api.ModIni
 	}
 
 	#if forge
-	public final net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext forgeContext;
+	public final FMLJavaModLoadingContext forgeContext;
 	#endif
 
 	#if forgelike
@@ -55,8 +53,8 @@ public final class CreateUnlimited #if fabric implements net.fabricmc.api.ModIni
 
 	#if fabric @Override public void onInitialize()
 	#else public CreateUnlimited
-	#if forge (net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext context)
-	#elif neoforge (net.neoforged.bus.api.IEventBus modBus, ModContainer container)
+	#if forge (FMLJavaModLoadingContext context)
+	#elif neoforge (IEventBus modBus, ModContainer container)
 	#endif #endif {
 		instance = this;
 		#if forge
@@ -130,4 +128,22 @@ public final class CreateUnlimited #if fabric implements net.fabricmc.api.ModIni
 		return ResourceLocation.fromNamespaceAndPath(ID, path);
 		#endif
 	}
+
+	// forge doesn't recognize transformer transformed classes, so we just gotta make new ones
+	// thanks forge
+	#if forge
+	@net.minecraftforge.fml.common.Mod(ID)
+	public static final class ForgeInit extends CreateUnlimited {
+		public ForgeInit(FMLJavaModLoadingContext context) {
+			super(context);
+		}
+	}
+	#elif neoforge
+	@net.neoforged.fml.common.Mod(ID)
+	public static final class NeoForgeInit extends CreateUnlimited {
+		public NeoForgeInit(IEventBus modBus, ModContainer container) {
+			super(modBus, container);
+		}
+	}
+	#endif
 }

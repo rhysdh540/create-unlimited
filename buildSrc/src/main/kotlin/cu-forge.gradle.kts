@@ -19,7 +19,7 @@ dependencies {
 
 tasks.register<BetterRemapJar>("remapJar") {
 	config(tasks.named<RemapJar>("reobfJar"))
-	input.set(tasks.jar.map { it.archiveFile.get() })
+	input = tasks.jar.flatMap { it.archiveFile }
 
 	manifest.attributes(
 		"MixinConfigs" to "createunlimited.mixins.json",
