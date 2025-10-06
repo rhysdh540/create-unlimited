@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -49,6 +50,12 @@ import java.util.zip.ZipInputStream;
 public abstract class Transformer implements IMixinService, IClassBytecodeProvider, IExtension, IMixinConfigPlugin {
 	private static final ILogger LOGGER = MixinService.getService().getLogger("CreateUnlimited/Boot");
 	private final ClassLoader CL = getClass().getClassLoader();
+
+	protected Transformer() {
+		LOGGER.info("Loading Transformer...");
+		LOGGER.info("Class: {}, loader: {}", getClass().getName(), CL);
+		LOGGER.info("Platform: {}", platform);
+	}
 
 	// region IMixinService
 	private IMixinService serviceDelegate;
@@ -211,6 +218,7 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 		if (bootstrapped) return;
 		bootstrapped = true;
 
+		LOGGER.info("Bootstrapping Transformer as IExtension...");
 		IMixinTransformer transformer = (IMixinTransformer) MixinEnvironment.getCurrentEnvironment().getActiveTransformer();
 		Extensions extensions = (Extensions) transformer.getExtensions();
 		extensions.add(this);
@@ -243,9 +251,6 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 	@Override
 	public void onLoad(String mixinPackage) {
 		this.mixinPackage = mixinPackage;
-		LOGGER.info("Loading Transformer for package {}", mixinPackage);
-		LOGGER.info("Class: {}, loader: {}", getClass().getName(), CL);
-		LOGGER.info("Platform: {}", platform);
 		extensionBootstrap();
 	}
 
@@ -296,7 +301,11 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 
 		// set the global service
 		Field f = MixinService.class.getDeclaredField("service");
-		this.serviceDelegate = getField(f, service);
+		IMixinService s = getField(f, service);
+		if (s == this) return; // already set?
+		LOGGER.info("Bootstrapping Transformer as IMixinService...");
+		this.serviceDelegate = s;
+
 		setField(f, service, this);
 
 		Object transformer = MixinEnvironment.getCurrentEnvironment().getActiveTransformer();
@@ -355,10 +364,16 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 	private static <T> T getField(final Field field, final Object instance) {
 		Object base;
 		long offset;
-		if (instance == null) {
+		if (Modifier.isStatic(field.getModifiers())) {
+			if (instance != null) {
+				throw new IllegalArgumentException("Instance must be null for static fields");
+			}
 			base = U.staticFieldBase(field);
 			offset = U.staticFieldOffset(field);
 		} else {
+			if (instance == null) {
+				throw new IllegalArgumentException("Instance must not be null for non-static fields");
+			}
 			base = instance;
 			offset = U.objectFieldOffset(field);
 		}
@@ -384,12 +399,25 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 		U.putObject(base, offset, value);
 	}
 
-	private static boolean isClassLoaded(ClassLoader cl, String className) {
+	// region what
+	private boolean isClassLoaded(String className) {
 		MethodHandle mh = L.unreflect(
 			ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class)
-		).bindTo(cl);
+		).bindTo(CL);
 		return (Class<?>) mh.invokeExact(className) != null;
 	}
+
+	protected void loadClass(ClassNode classNode) {
+		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		classNode.accept(cw);
+		byte[] classBytes = cw.toByteArray();
+
+		MethodHandle mh = L.unreflect(
+			ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class)
+		).bindTo(CL);
+		Class<?> c = (Class<?>) mh.invokeExact(classNode.name.replace('/', '.'), classBytes, 0, classBytes.length);
+	}
+	// endregion
 	// endregion
 
 	// region Platform
@@ -447,7 +475,7 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 	protected Set<String> getTransformedClasses() {
 		Set<String> transformedClasses = new HashSet<>();
 		for(String className : patches.keySet()) {
-			if (isClassLoaded(CL, className)) {
+			if (isClassLoaded(className)) {
 				// mixin will otherwise throw a very unhelpful "re-entrance error"
 				LOGGER.warn("Class {} is already loaded, skipping patch", className);
 				continue;

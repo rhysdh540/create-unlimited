@@ -1,7 +1,7 @@
 package dev.rdh.createunlimited.asm;
 
 import org.objectweb.asm.tree.ClassNode;
-import org.spongepowered.asm.mixin.transformer.throwables.ReEntrantTransformerError;
+import org.spongepowered.asm.service.MixinService;
 
 import dev.rdh.createunlimited.Util;
 import dev.rdh.createunlimited.boot.Transformer;
@@ -9,6 +9,20 @@ import dev.rdh.createunlimited.boot.Transformer;
 import java.util.Set;
 
 public final class CUMixinConfig extends Transformer {
+
+	@Override
+	public void onLoad(String mixinPackage) {
+		super.onLoad(mixinPackage);
+
+		try {
+			// why do i have to be doing jank code with my own jank code
+			ClassNode n = MixinService.getService().getBytecodeProvider().getClassNode("dev/rdh/createunlimited/asm/Asm");
+			transform(n);
+			loadClass(n);
+		} catch (Throwable t) {
+			throw new RuntimeException(t);
+		}
+	}
 
 	@Override
 	protected String getPlatform() {
@@ -50,18 +64,13 @@ public final class CUMixinConfig extends Transformer {
 
 	@Override
 	public void transform(ClassNode node) {
-		try {
-			super.transform(node);
-			if(node.name.equals("com/copycatsplus/copycats/foundation/copycat/ICopycatBlock")) {
-				Asm.instrumentICopycatBlock(node);
-			}
+		super.transform(node);
+		if(node.name.equals("com/copycatsplus/copycats/foundation/copycat/ICopycatBlock")) {
+			Asm.instrumentICopycatBlock(node);
+		}
 
-			if(node.name.equals("com/simibubi/create/content/trains/track/TrackPlacement")) {
-				Asm.instrumentTrackPlacement(node);
-			}
-		} catch (ReEntrantTransformerError what) {
-			System.err.println("bruh " + node.name);
-			throw what;
+		if(node.name.equals("com/simibubi/create/content/trains/track/TrackPlacement")) {
+			Asm.instrumentTrackPlacement(node);
 		}
 	}
 }
