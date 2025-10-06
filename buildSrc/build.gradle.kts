@@ -39,7 +39,11 @@ repositories {
 		}
 	}
 
-	mavenLocal() // for class-diff, for now
+	maven("https://maven.thebrokenscript.net/snapshots") {
+		content {
+			includeGroupAndSubgroups("io.github.prcraftmc")
+		}
+	}
 }
 
 kotlin {

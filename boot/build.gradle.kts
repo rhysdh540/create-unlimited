@@ -5,9 +5,13 @@ plugins {
 }
 
 repositories {
-	mavenLocal()
 	mavenCentral()
 	maven("https://repo.spongepowered.org/maven")
+	maven("https://maven.thebrokenscript.net/snapshots") {
+		content {
+			includeGroupAndSubgroups("io.github.prcraftmc")
+		}
+	}
 }
 
 java.toolchain {
