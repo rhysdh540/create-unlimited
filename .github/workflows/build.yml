@@ -28,4 +28,5 @@ jobs:
                 with:
                     name: unlimited-artifacts-v${{ github.run_number }}
                     path: |
-                        artifacts/*
+                        build/libs/*
+                        build/distributions/*
