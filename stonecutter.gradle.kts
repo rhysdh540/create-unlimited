@@ -6,7 +6,7 @@ plugins {
 	id("xyz.wagyourtail.manifold")
 }
 
-stonecutter active "1.20.1-fabric"
+stonecutter active "1.20.1-forge"
 
 rootProject.group = "dev.rdh"
 rootProject.base.archivesName = "createunlimited"

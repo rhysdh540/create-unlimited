@@ -37,11 +37,11 @@ import java.util.stream.Stream;
  * <p>
  * oh yeah i also added configurable lowercase because yes
  */
-public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
-	private static final Dynamic2CommandExceptionType INVALID_ENUM = new Dynamic2CommandExceptionType(
-		(found, constants) -> Component.literal(String.format("Invalid enum value '%s', expected one of: %s", found, constants)));
-	private final Class<T> enumClass;
-	private final boolean lowercase;
+public record EnumArgument<T extends Enum<T>>(Class<T> enumClass, boolean lowercase) implements ArgumentType<T> {
+	private static final Dynamic2CommandExceptionType INVALID_ENUM =
+		new Dynamic2CommandExceptionType((found, constants) ->
+			Component.literal(String.format("Invalid enum value '%s', expected one of: %s", found, constants))
+		);
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static void init() {
@@ -50,11 +50,6 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 
 	public static <R extends Enum<R>> EnumArgument<R> enumArg(Class<R> enumClass, boolean lowercase) {
 		return new EnumArgument<>(enumClass, lowercase);
-	}
-
-	private EnumArgument(final Class<T> enumClass, final boolean lowercase) {
-		this.enumClass = enumClass;
-		this.lowercase = lowercase;
 	}
 
 	@Override
@@ -135,6 +130,7 @@ public class EnumArgument<T extends Enum<T>> implements ArgumentType<T> {
 	private String lowercase(String s) {
 		return lowercase ? s.toLowerCase() : s;
 	}
+
 	private String unlowercase(String s) {
 		if(!lowercase)
 			return s;
