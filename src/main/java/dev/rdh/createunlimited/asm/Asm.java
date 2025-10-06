@@ -3,14 +3,6 @@ package dev.rdh.createunlimited.asm;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
-import dev.rdh.createunlimited.config.CUConfig;
-import dev.rdh.createunlimited.config.PlacementCheck;
-
-import net.createmod.catnip.config.ConfigBase.CValue;
-import net.createmod.catnip.config.ConfigBase.ConfigEnum;
-
-import org.objectweb.asm.util.*;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
-
+// TODO: make sure mixins into Player/BlockState don't kill this
 public final class Asm implements Opcodes {
 
 	public static void instrumentTrackPlacement(ClassNode targetClass) {
@@ -54,23 +46,23 @@ public final class Asm implements Opcodes {
 
 			AbstractInsnNode[] toInject = new AbstractInsnNode[] {
 				// get CUConfigs.server.placementChecks
-				new FieldInsnNode(GETSTATIC, Type.getInternalName(CUConfig.class), "instance", Type.getDescriptor(CUConfig.class)),
-				new FieldInsnNode(GETFIELD, Type.getInternalName(CUConfig.class), "placementChecks", Type.getDescriptor(ConfigEnum.class)),
+				new FieldInsnNode(GETSTATIC, "dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;"),
+				new FieldInsnNode(GETFIELD, "dev/rdh/createunlimited/config/CUConfig", "placementChecks", "Lnet/createmod/catnip/config/ConfigBase$ConfigEnum;"),
 
 				// get PlacementCheck.ON
-				new FieldInsnNode(GETSTATIC, Type.getInternalName(PlacementCheck.class), "ON", Type.getDescriptor(PlacementCheck.class)),
+				new FieldInsnNode(GETSTATIC, "dev/rdh/createunlimited/config/PlacementCheck", "ON", "Ldev/rdh/createunlimited/config/PlacementCheck;"),
 
 				// call CUConfigs.getOrDefault(CUConfigs.server.placementChecks, PlacementCheck.ON)
-				new MethodInsnNode(INVOKESTATIC, Type.getInternalName(CUConfig.class), "getOrDefault", Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(CValue.class), Type.getType(Object.class))),
+				new MethodInsnNode(INVOKESTATIC, "dev/rdh/createunlimited/config/CUConfig", "getOrDefault", "(Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;"),
 
 				// cast result of orElse to PlacementCheck
-				new TypeInsnNode(CHECKCAST, Type.getInternalName(PlacementCheck.class)),
+				new TypeInsnNode(CHECKCAST, "dev/rdh/createunlimited/config/PlacementCheck"),
 
 				// load player (second argument of tryConnect)
 				new VarInsnNode(ALOAD, 1),
 
 				// call isEnabledFor(player) on the PlacementCheck from above
-				new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(PlacementCheck.class), "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class))),
+				new MethodInsnNode(INVOKEVIRTUAL, "dev/rdh/createunlimited/config/PlacementCheck", "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class))),
 
 				// store result of isEnabledFor in local variable
 				new VarInsnNode(ISTORE, lvtIndex),
@@ -155,15 +147,15 @@ public final class Asm implements Opcodes {
 			*/
 			AbstractInsnNode[] toInject = new AbstractInsnNode[] {
 				// get CUConfig.instance
-				new FieldInsnNode(GETSTATIC, Type.getInternalName(CUConfig.class), "instance", Type.getDescriptor(CUConfig.class)),
+				new FieldInsnNode(GETSTATIC, "dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;"),
 				// get CUConfig.instance.allowAllCopycatBlocks
-				new FieldInsnNode(GETFIELD, Type.getInternalName(CUConfig.class), "allowAllCopycatBlocks", /*Type.getDescriptor(ConfigBool.class)*/ "Lnet/createmod/catnip/config/ConfigBase$ConfigBool;"),
-				new TypeInsnNode(CHECKCAST,/*Type.getInternalName(CValue.class)*/ "net/createmod/catnip/config/ConfigBase$CValue"),
+				new FieldInsnNode(GETFIELD, "dev/rdh/createunlimited/config/CUConfig", "allowAllCopycatBlocks", "Lnet/createmod/catnip/config/ConfigBase$ConfigBool;"),
+				new TypeInsnNode(CHECKCAST, "net/createmod/catnip/config/ConfigBase$CValue"),
 				// push Boolean.FALSE onto stack
 				new FieldInsnNode(GETSTATIC, Type.getInternalName(Boolean.class), "FALSE", Type.getDescriptor(Boolean.class)),
 				// call CUConfig.getOrDefault(allowAllCopycatBlocks, false)
-				new MethodInsnNode(INVOKESTATIC, Type.getInternalName(CUConfig.class), "getOrDefault", Type.getMethodDescriptor(
-					Type.getType(Object.class), Type.getType(/*CValue.class*/"Lnet/createmod/catnip/config/ConfigBase$CValue;"), Type.getType(Object.class)
+				new MethodInsnNode(INVOKESTATIC, "dev/rdh/createunlimited/config/CUConfig", "getOrDefault", Type.getMethodDescriptor(
+					Type.getType(Object.class), Type.getType("Lnet/createmod/catnip/config/ConfigBase$CValue;"), Type.getType(Object.class)
 				)),
 				// cast result to Boolean
 				new TypeInsnNode(CHECKCAST, Type.getInternalName(Boolean.class)),
@@ -179,7 +171,6 @@ public final class Asm implements Opcodes {
 			i += toInject.length;
 		}
 
-		dumpClass(targetClass);
 	}
 
 	private static void dumpClass(ClassNode classNode) {

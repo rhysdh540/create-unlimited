@@ -11,7 +11,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import dev.rdh.createunlimited.CreateUnlimited;
 import dev.rdh.createunlimited.config.CUConfig;
-import dev.rdh.createunlimited.asm.mixin.accessor.CValueAccessor;
 
 import net.createmod.catnip.config.ConfigBase.CValue;
 import net.createmod.catnip.config.ConfigBase.ConfigGroup;
@@ -77,11 +76,25 @@ public final class CUConfigCommand extends CUCommands {
 				cValue = (CValue<?, ?>) field.get(CUConfig.instance);
 			} catch (IllegalAccessException | ClassCastException e) {
 				//noinspection StringConcatenationArgumentToLogCall
-				CreateUnlimited.LOGGER.error("Failed to get config value for " + name, e);
+				CreateUnlimited.LOGGER.error("Failed to get CValue for " + name, e);
 				continue;
 			}
 
-			configure(category, name, ((CValueAccessor) cValue).getValue());
+			ConfigValue<?> configValue;
+			try {
+				Field f = CValue.class.getDeclaredField("value");
+				if (!f.trySetAccessible()) {
+					CreateUnlimited.LOGGER.error("Could not access `value` field for {}", name);
+					continue;
+				}
+				configValue = (ConfigValue<?>) f.get(cValue);
+			} catch (IllegalAccessException | ClassCastException | NoSuchFieldException e) {
+				//noinspection StringConcatenationArgumentToLogCall
+				CreateUnlimited.LOGGER.error("Failed to get ConfigValue for " + name, e);
+				continue;
+			}
+
+			configure(category, name, configValue);
 		}
 
 		if (category != null)

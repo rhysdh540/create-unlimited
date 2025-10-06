@@ -417,6 +417,12 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 		).bindTo(CL);
 		Class<?> c = (Class<?>) mh.invokeExact(classNode.name.replace('/', '.'), classBytes, 0, classBytes.length);
 	}
+
+	protected void earlyBoot(String name) {
+		ClassNode n = MixinService.getService().getBytecodeProvider().getClassNode(name.replace(".", "/"));
+		transform(n);
+		loadClass(n);
+	}
 	// endregion
 	// endregion
 
@@ -494,6 +500,7 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 		return transformedClasses;
 	}
 
+	// TODO: does not work with accessor mixins
 	private List<String> getTransformedMixins(String packag) {
 		List<String> mixins = new ArrayList<>();
 
@@ -512,7 +519,9 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 
 			transform(classNode);
 			SimpleRemapper remapper = new SimpleRemapper(classNode.name, classNode.name + "$Patched");
-			classNode.accept(new ClassRemapper(classNode, remapper));
+			ClassNode remapped = new ClassNode();
+			classNode.accept(new ClassRemapper(remapped, remapper));
+			classNode = remapped;
 
 			if (!addClass(classNode)) {
 				LOGGER.warn("Failed to add mixin class {} to Transformer", classNode.name);
