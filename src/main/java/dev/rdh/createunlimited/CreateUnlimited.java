@@ -19,12 +19,14 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 #elif neoforge
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.loading.FMLLoader;
 #endif
 
 public #if forgelike sealed #else final #endif
@@ -72,11 +74,15 @@ class CreateUnlimited #if fabric implements net.fabricmc.api.ModInitializer #end
 		gameBus.addListener(this::registerCommands);
 		modBus.addListener(this::onConfigLoad);
 		modBus.addListener(this::onConfigReload);
-		modBus.addListener(this::onClientSetup);
+		if (FMLLoader.getDist().isClient()) {
+			modBus.addListener(ForgeClient::onClientSetup);
+		}
 		#endif
 
 		#if fabric
 		net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register(CUCommands::register);
+		fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents.loading(ID).register(CUConfig::onLoad);
+		fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents.reloading(ID).register(CUConfig::onReload);
 		#endif
 
 		LOGGER.info("{} v{} initializing on platform: {}!", NAME, VERSION, Util.platformName());
@@ -96,19 +102,6 @@ class CreateUnlimited #if fabric implements net.fabricmc.api.ModInitializer #end
 	#if forgelike
 	void registerCommands(RegisterCommandsEvent event) {
 		CUCommands.register(event.getDispatcher(), event.getBuildContext(), event.getCommandSelection());
-	}
-
-	void onClientSetup(FMLClientSetupEvent event) {
-		event.enqueueWork(() -> {
-			#if neoforge
-				// TODO: make this not crash the game on dedicated server
-			modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
-				(container, parent) -> CUConfig.ScreenManager.createConfigScreen(parent));
-			#elif forge
-			modContainer.registerExtensionPoint(net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class,
-				() -> new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory(CUConfig.ScreenManager::createConfigScreen));
-			#endif
-		});
 	}
 
 	void onConfigLoad(ModConfigEvent.Loading event) {
@@ -143,6 +136,23 @@ class CreateUnlimited #if fabric implements net.fabricmc.api.ModInitializer #end
 	public static final class NeoForgeInit extends CreateUnlimited {
 		public NeoForgeInit(IEventBus modBus, ModContainer container) {
 			super(modBus, container);
+		}
+	}
+	#endif
+
+	#if forgelike
+	public static final class ForgeClient {
+		static void onClientSetup(FMLClientSetupEvent event) {
+			event.enqueueWork(() -> {
+			#if neoforge
+				// TODO: make this not crash the game on dedicated server
+				instance.modContainer.registerExtensionPoint(net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
+					(container, parent) -> CUConfig.ScreenManager.createConfigScreen(parent));
+			#elif forge
+			instance.modContainer.registerExtensionPoint(net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class,
+				() -> new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory(CUConfig.ScreenManager::createConfigScreen));
+			#endif
+			});
 		}
 	}
 	#endif

@@ -122,7 +122,7 @@ public final class Asm implements Opcodes {
 			.orElseThrow(() -> new NoSuchMethodError("Could not find getAcceptedBlockState method in ICopycatBlock"));
 
 		// modify call to this.isAcceptedRegardless(BlockState)Z, add:
-		//   || CUConfig.getOrDefault(CUConfig.instance.allowAllCopycatBlocks, false)
+		//   || CUConfig.getOrFalse(CUConfig.instance.allowAllCopycatBlocks)
 		for(int i = 0; i < method.instructions.size(); i++) {
 			AbstractInsnNode insn = method.instructions.get(i);
 			if(insn.getOpcode() != INVOKEINTERFACE) continue;
@@ -136,11 +136,7 @@ public final class Asm implements Opcodes {
 			/* compiles down to:
 			GETSTATIC dev/rdh/createunlimited/config/CUConfig.instance : Ldev/rdh/createunlimited/config/CUConfig;
 			GETFIELD dev/rdh/createunlimited/config/CUConfig.allowAllCopycatBlocks : Lnet/createmod/catnip/config/ConfigBase$ConfigBool;
-			CHECKCAST net/createmod/catnip/config/ConfigBase$CValue;
-			GETSTATIC java/lang/Boolean.FALSE : Ljava/lang/Boolean; (must be Boolean, not boolean)
-			INVOKESTATIC dev/rdh/createunlimited/config/CUConfig.getOrDefault (Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;
-			CHECKCAST java/lang/Boolean
-			INVOKEVIRTUAL java/lang/Boolean.booleanValue ()Z
+			INVOKESTATIC dev/rdh/createunlimited/config/CUConfig.getOrFalse (Lnet/createmod/catnip/config/ConfigBase$ConfigBool;)Z
 			IOR
 
 			this isn't a logical or, but i'm too lazy to mess with jump instructions
@@ -150,18 +146,11 @@ public final class Asm implements Opcodes {
 				new FieldInsnNode(GETSTATIC, "dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;"),
 				// get CUConfig.instance.allowAllCopycatBlocks
 				new FieldInsnNode(GETFIELD, "dev/rdh/createunlimited/config/CUConfig", "allowAllCopycatBlocks", "Lnet/createmod/catnip/config/ConfigBase$ConfigBool;"),
-				new TypeInsnNode(CHECKCAST, "net/createmod/catnip/config/ConfigBase$CValue"),
-				// push Boolean.FALSE onto stack
-				new FieldInsnNode(GETSTATIC, Type.getInternalName(Boolean.class), "FALSE", Type.getDescriptor(Boolean.class)),
-				// call CUConfig.getOrDefault(allowAllCopycatBlocks, false)
-				new MethodInsnNode(INVOKESTATIC, "dev/rdh/createunlimited/config/CUConfig", "getOrDefault", Type.getMethodDescriptor(
-					Type.getType(Object.class), Type.getType("Lnet/createmod/catnip/config/ConfigBase$CValue;"), Type.getType(Object.class)
+				// call CUConfig.getOrFalse(allowAllCopycatBlocks)
+				new MethodInsnNode(INVOKESTATIC, "dev/rdh/createunlimited/config/CUConfig", "getOrFalse", Type.getMethodDescriptor(
+					Type.BOOLEAN_TYPE, Type.getType("Lnet/createmod/catnip/config/ConfigBase$ConfigBool;")
 				)),
-				// cast result to Boolean
-				new TypeInsnNode(CHECKCAST, Type.getInternalName(Boolean.class)),
-				// call booleanValue() on the Boolean
-				new MethodInsnNode(INVOKEVIRTUAL, Type.getInternalName(Boolean.class), "booleanValue", Type.getMethodDescriptor(Type.BOOLEAN_TYPE)),
-				// OR the result of booleanValue() with the result of isAcceptedRegardless()
+				// OR the result with the result of isAcceptedRegardless()
 				new InsnNode(IOR),
 			};
 

@@ -69,7 +69,7 @@ tasks.withType<Sync>().configureEach {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-	//options.compilerArgs.add("-g:none")
+	options.compilerArgs.add("-g:none")
 }
 
 tasks.withType<AbstractArchiveTask>().configureEach {
