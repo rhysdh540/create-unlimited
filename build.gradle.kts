@@ -57,8 +57,8 @@ manifold.preprocessor {
 	sourceSet("main")
 }
 
-sourceSets.main {
-	compileClasspath += project(":boot").sourceSets["main"].output
+dependencies {
+	implementation(project(path = ":boot"))
 }
 
 tasks.withType<Sync>().configureEach {
@@ -85,7 +85,7 @@ tasks.processResources {
 	}
 }
 
-tasks.named<AbstractArchiveTask>(if ("platform"() == "neoforge") "jar" else "remapJar") {
+jarOutputTask {
 	destinationDirectory = rootProject.layout.buildDirectory.dir("libs")
 }
 

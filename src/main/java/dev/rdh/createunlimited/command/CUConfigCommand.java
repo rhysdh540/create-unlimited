@@ -125,6 +125,7 @@ public final class CUConfigCommand extends CUCommands {
 					}
 					value.set(value.getDefault());
 					message(context, name + " reset to: " + value.get());
+					value.save();
 					return Command.SINGLE_SUCCESS;
 				})
 			)
@@ -137,6 +138,7 @@ public final class CUConfigCommand extends CUCommands {
 					}
 					value.set(set);
 					message(context, "Value set to: " + set);
+					value.save();
 					return Command.SINGLE_SUCCESS;
 				})
 			)

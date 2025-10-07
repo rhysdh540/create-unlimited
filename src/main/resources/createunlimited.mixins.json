@@ -7,7 +7,7 @@
   "mixins": [
     "CopycatBlockMixin",
     "ExtendoGripItemMixin",
-    "ChainConveyorConnectionHandlerMixin",
+    "chain.ChainConveyorConnectionHandlerMixin",
     "glue.SuperGlueSelectionPacketMixin",
     "train.CarriageContraptionMixin",
     "train.CTrainsMixin",
@@ -19,7 +19,8 @@
   ],
   "client": [
     "glue.SuperGlueSectionHandlerMixin",
-    "train.TrainRelocatorMixin"
+    "train.TrainRelocatorMixin",
+    "chain.ChainConveyorVisualMixin"
   ],
   "injectors": {
     "defaultRequire": 1
