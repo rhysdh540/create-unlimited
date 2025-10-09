@@ -13,7 +13,6 @@ public final class CUMixinConfig extends Transformer {
 	public void onLoad(String mixinPackage) {
 		super.onLoad(mixinPackage);
 
-		earlyBoot("dev.rdh.createunlimited.config.CUConfig");
 		earlyBoot("dev.rdh.createunlimited.asm.Asm");
 	}
 

@@ -388,10 +388,16 @@ public abstract class Transformer implements IMixinService, IClassBytecodeProvid
 
 		Object base;
 		long offset;
-		if (instance == null) {
+		if (Modifier.isStatic(field.getModifiers())) {
+			if (instance != null) {
+				throw new IllegalArgumentException("Instance must be null for static fields");
+			}
 			base = U.staticFieldBase(field);
 			offset = U.staticFieldOffset(field);
 		} else {
+			if (instance == null) {
+				throw new IllegalArgumentException("Instance must not be null for non-static fields");
+			}
 			base = instance;
 			offset = U.objectFieldOffset(field);
 		}
