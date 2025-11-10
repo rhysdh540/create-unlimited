@@ -1,6 +1,7 @@
 package dev.rdh.createunlimited.asm;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.commons.*;
 import org.objectweb.asm.tree.*;
 
 import net.minecraft.core.BlockPos;
@@ -44,33 +45,17 @@ public final class Asm implements Opcodes {
 			ISTORE [lvtIndex]
 		 	*/
 
-			AbstractInsnNode[] toInject = new AbstractInsnNode[] {
-				// get CUConfigs.server.placementChecks
-				new FieldInsnNode(GETSTATIC, "dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;"),
-				new FieldInsnNode(GETFIELD, "dev/rdh/createunlimited/config/CUConfig", "placementChecks", "Lnet/createmod/catnip/config/ConfigBase$ConfigEnum;"),
+			InstructionAdapter injection = new InstructionAdapter(new MethodNode());
+			injection.getstatic("dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;");
+			injection.getfield("dev/rdh/createunlimited/config/CUConfig", "placementChecks", "Lnet/createmod/catnip/config/ConfigBase$ConfigEnum;");
+			injection.getstatic("dev/rdh/createunlimited/config/PlacementCheck", "ON", "Ldev/rdh/createunlimited/config/PlacementCheck;");
+			injection.invokestatic("dev/rdh/createunlimited/config/CUConfig", "getOrDefault", "(Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;", false);
+			injection.checkcast(Type.getType("Ldev/rdh/createunlimited/config/PlacementCheck;"));
+			injection.visitVarInsn(ALOAD, 1);
+			injection.invokespecial("dev/rdh/createunlimited/config/PlacementCheck", "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class)), false);
+			injection.visitVarInsn(ISTORE, lvtIndex);
 
-				// get PlacementCheck.ON
-				new FieldInsnNode(GETSTATIC, "dev/rdh/createunlimited/config/PlacementCheck", "ON", "Ldev/rdh/createunlimited/config/PlacementCheck;"),
-
-				// call CUConfigs.getOrDefault(CUConfigs.server.placementChecks, PlacementCheck.ON)
-				new MethodInsnNode(INVOKESTATIC, "dev/rdh/createunlimited/config/CUConfig", "getOrDefault", "(Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;"),
-
-				// cast result of orElse to PlacementCheck
-				new TypeInsnNode(CHECKCAST, "dev/rdh/createunlimited/config/PlacementCheck"),
-
-				// load player (second argument of tryConnect)
-				new VarInsnNode(ALOAD, 1),
-
-				// call isEnabledFor(player) on the PlacementCheck from above
-				new MethodInsnNode(INVOKEVIRTUAL, "dev/rdh/createunlimited/config/PlacementCheck", "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class))),
-
-				// store result of isEnabledFor in local variable
-				new VarInsnNode(ISTORE, lvtIndex),
-			};
-
-			for(int i = toInject.length - 1; i >= 0; i--) {
-				tryConnect.instructions.insert(toInject[i]);
-			}
+			tryConnect.instructions.insert(((MethodNode) injection.getDelegate()).instructions);
 		}
 
 		Set<String> targetMessages = Set.of(
@@ -141,23 +126,15 @@ public final class Asm implements Opcodes {
 
 			this isn't a logical or, but i'm too lazy to mess with jump instructions
 			*/
-			AbstractInsnNode[] toInject = new AbstractInsnNode[] {
-				// get CUConfig.instance
-				new FieldInsnNode(GETSTATIC, "dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;"),
-				// get CUConfig.instance.allowAllCopycatBlocks
-				new FieldInsnNode(GETFIELD, "dev/rdh/createunlimited/config/CUConfig", "allowAllCopycatBlocks", "Lnet/createmod/catnip/config/ConfigBase$ConfigBool;"),
-				// call CUConfig.getOrFalse(allowAllCopycatBlocks)
-				new MethodInsnNode(INVOKESTATIC, "dev/rdh/createunlimited/config/CUConfig", "getOrFalse", Type.getMethodDescriptor(
-					Type.BOOLEAN_TYPE, Type.getType("Lnet/createmod/catnip/config/ConfigBase$ConfigBool;")
-				)),
-				// OR the result with the result of isAcceptedRegardless()
-				new InsnNode(IOR),
-			};
+			InstructionAdapter injection = new InstructionAdapter(new MethodNode());
+			injection.getstatic("dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;");
+			injection.getfield("dev/rdh/createunlimited/config/CUConfig", "allowAllCopycatBlocks", "Lnet/createmod/catnip/config/ConfigBase$ConfigBool;");
+			injection.invokestatic("dev/rdh/createunlimited/config/CUConfig", "getOrFalse", "(Lnet/createmod/catnip/config/ConfigBase$ConfigBool;)Z", false);
+			injection.visitInsn(IOR);
 
-			for (int j = toInject.length - 1; j >= 0; j--) {
-				method.instructions.insert(insn, toInject[j]);
-			}
-			i += toInject.length;
+			var insns = ((MethodNode) injection.getDelegate()).instructions;
+			method.instructions.insert(insn, insns);
+			i += insns.size();
 		}
 
 	}

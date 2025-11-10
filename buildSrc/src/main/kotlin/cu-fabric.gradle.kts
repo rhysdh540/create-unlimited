@@ -44,7 +44,7 @@ dependencies {
 	modImplementation("net.fabricmc:fabric-loader:${"fabric_version"()}")
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${"fabric_api_version"()}+${"minecraft_version"()}")
 
-	modImplementation("com.simibubi.create:create-fabric-${"minecraft_version"()}:${"create_version"().split("$$").joinToString("+mc${"minecraft_version"()}-build.")}")
+	modImplementation("com.simibubi.create:create-fabric:${"create_version"()}-mc${"minecraft_version"()}")
 	modImplementation("com.terraformersmc:modmenu:${"modmenu_version"()}")
 	modLocalRuntime("net.fabricmc.fabric-api:fabric-api-deprecated:${"fabric_api_version"()}+${"minecraft_version"()}")
 }
