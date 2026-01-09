@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.function.Consumer;
 
 // TODO: make sure mixins into Player/BlockState don't kill this
 public final class Asm implements Opcodes {
@@ -45,17 +46,16 @@ public final class Asm implements Opcodes {
 			ISTORE [lvtIndex]
 		 	*/
 
-			InstructionAdapter injection = new InstructionAdapter(new MethodNode());
-			injection.getstatic("dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;");
-			injection.getfield("dev/rdh/createunlimited/config/CUConfig", "placementChecks", "Lnet/createmod/catnip/config/ConfigBase$ConfigEnum;");
-			injection.getstatic("dev/rdh/createunlimited/config/PlacementCheck", "ON", "Ldev/rdh/createunlimited/config/PlacementCheck;");
-			injection.invokestatic("dev/rdh/createunlimited/config/CUConfig", "getOrDefault", "(Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;", false);
-			injection.checkcast(Type.getType("Ldev/rdh/createunlimited/config/PlacementCheck;"));
-			injection.visitVarInsn(ALOAD, 1);
-			injection.invokespecial("dev/rdh/createunlimited/config/PlacementCheck", "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class)), false);
-			injection.visitVarInsn(ISTORE, lvtIndex);
-
-			tryConnect.instructions.insert(((MethodNode) injection.getDelegate()).instructions);
+			tryConnect.instructions.insert(make(injection -> {
+				injection.getstatic("dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;");
+				injection.getfield("dev/rdh/createunlimited/config/CUConfig", "placementChecks", "Lnet/createmod/catnip/config/ConfigBase$ConfigEnum;");
+				injection.getstatic("dev/rdh/createunlimited/config/PlacementCheck", "ON", "Ldev/rdh/createunlimited/config/PlacementCheck;");
+				injection.invokestatic("dev/rdh/createunlimited/config/CUConfig", "getOrDefault", "(Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;", false);
+				injection.checkcast(Type.getType("Ldev/rdh/createunlimited/config/PlacementCheck;"));
+				injection.visitVarInsn(ALOAD, 1);
+				injection.invokespecial("dev/rdh/createunlimited/config/PlacementCheck", "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class)), false);
+				injection.visitVarInsn(ISTORE, lvtIndex);
+			}));
 		}
 
 		Set<String> targetMessages = Set.of(
@@ -126,17 +126,22 @@ public final class Asm implements Opcodes {
 
 			this isn't a logical or, but i'm too lazy to mess with jump instructions
 			*/
-			InstructionAdapter injection = new InstructionAdapter(new MethodNode());
-			injection.getstatic("dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;");
-			injection.getfield("dev/rdh/createunlimited/config/CUConfig", "allowAllCopycatBlocks", "Lnet/createmod/catnip/config/ConfigBase$ConfigBool;");
-			injection.invokestatic("dev/rdh/createunlimited/config/CUConfig", "getOrFalse", "(Lnet/createmod/catnip/config/ConfigBase$ConfigBool;)Z", false);
-			injection.visitInsn(IOR);
-
-			var insns = ((MethodNode) injection.getDelegate()).instructions;
+			var insns = make(injection -> {
+				injection.getstatic("dev/rdh/createunlimited/config/CUConfig", "instance", "Ldev/rdh/createunlimited/config/CUConfig;");
+				injection.getfield("dev/rdh/createunlimited/config/CUConfig", "allowAllCopycatBlocks", "Lnet/createmod/catnip/config/ConfigBase$ConfigBool;");
+				injection.invokestatic("dev/rdh/createunlimited/config/CUConfig", "getOrFalse", "(Lnet/createmod/catnip/config/ConfigBase$ConfigBool;)Z", false);
+				injection.visitInsn(IOR);
+			});
 			method.instructions.insert(insn, insns);
 			i += insns.size();
 		}
 
+	}
+
+	private static InsnList make(Consumer<InstructionAdapter> consumer) {
+		MethodNode mn = new MethodNode();
+		consumer.accept(new InstructionAdapter(mn));
+		return mn.instructions;
 	}
 
 	private static void dumpClass(ClassNode classNode) {
