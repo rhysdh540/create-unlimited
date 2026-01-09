@@ -57,8 +57,8 @@ body:
         label: Minecraft Version
         description: The version of Minecraft you were using when the bug occurred
         options:
-          - "1.19.2"
           - "1.20.1"
+          - "1.21.1"
       validations:
         required: true
   -   type: dropdown
