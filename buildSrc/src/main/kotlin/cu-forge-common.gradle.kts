@@ -14,6 +14,7 @@ forge {
 
 	mods.maybeRegister("create-unlimited") {
 		modSourceSets.add(sourceSets.main)
+		modSourceSets.add(project(":boot").sourceSets.main)
 	}
 
 	runs {

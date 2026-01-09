@@ -3,7 +3,7 @@ build/
 versions/*/.gradle/
 versions/*/build/
 versions/*/run/
-.idea/
+.idea/**
 !.idea/icon.png
 *.iml
 .DS_Store

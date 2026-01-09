@@ -33,7 +33,7 @@ public abstract class ChainConveyorConnectionHandlerMixin {
 		return value && CUConfig.getOrTrue(CUConfig.instance.chainConveyorConnectionLimits);
 	}
 
-	@Redirect(method = "clientTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;cross(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;"))
+	@Redirect(method = "clientTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;cross(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;"), require = 0)
 	private static Vec3 modifyChainConveyorClientTick(Vec3 diff, Vec3 up) {
 		Vec3 horizontalDiff = diff.multiply(1, 0, 1);
 		if (horizontalDiff.length() < 0.01) {
