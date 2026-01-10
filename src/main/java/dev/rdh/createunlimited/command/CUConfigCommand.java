@@ -120,7 +120,7 @@ public final class CUConfigCommand extends CUCommands {
 			.then(literal("reset").requires(this::perms)
 				.executes(context -> {
 					if(value.get().equals(value.getDefault())) {
-						error(context, "Value is already default!");
+						error(context, name + " is already default!");
 						return 0;
 					}
 					value.set(value.getDefault());
@@ -133,11 +133,11 @@ public final class CUConfigCommand extends CUCommands {
 				.executes(context -> {
 					T set = context.getArgument("value", clazz);
 					if(set == value.get()) {
-						error(context, "Value is already set to " + set);
+						error(context, name + " is already set to " + set);
 						return 0;
 					}
 					value.set(set);
-					message(context, "Value set to: " + set);
+					message(context, name + " set to: " + set);
 					value.save();
 					return Command.SINGLE_SUCCESS;
 				})

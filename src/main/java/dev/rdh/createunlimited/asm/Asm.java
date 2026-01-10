@@ -53,7 +53,7 @@ public final class Asm implements Opcodes {
 				injection.invokestatic("dev/rdh/createunlimited/config/CUConfig", "getOrDefault", "(Lnet/createmod/catnip/config/ConfigBase$CValue;Ljava/lang/Object;)Ljava/lang/Object;", false);
 				injection.checkcast(Type.getType("Ldev/rdh/createunlimited/config/PlacementCheck;"));
 				injection.visitVarInsn(ALOAD, 1);
-				injection.invokespecial("dev/rdh/createunlimited/config/PlacementCheck", "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class)), false);
+				injection.invokevirtual("dev/rdh/createunlimited/config/PlacementCheck", "isEnabledFor", Type.getMethodDescriptor(Type.BOOLEAN_TYPE, Type.getType(Player.class)), false);
 				injection.visitVarInsn(ISTORE, lvtIndex);
 			}));
 		}

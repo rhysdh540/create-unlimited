@@ -78,15 +78,19 @@ public class CUConfig extends ConfigBase {
 			chainConveyorConnectionLimits = "Whether to check for valid connections when connecting chain conveyors.",
 			allowContraptionMoveAll = "Whether to allow contraptions to move any block.";
 
-		private static final Map<String, String> comments = new HashMap<>();
+		private static final Map<String, String> comments;
 		static {
+			Map<String, String> c = new HashMap<>();
 			for(Field field : Comments.class.getDeclaredFields()) {
 				try {
-					comments.put(field.getName(), (String) field.get(null));
+					if (!field.getName().equals("comments")) {
+						c.put(field.getName(), (String) field.get(null));
+					}
 				} catch (IllegalAccessException e) {
 					CreateUnlimited.LOGGER.error("Failed to get comment for " + field.getName(), e);
 				}
 			}
+			comments = Map.copyOf(c);
 		}
 	}
 
