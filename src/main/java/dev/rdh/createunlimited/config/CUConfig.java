@@ -56,6 +56,7 @@ public class CUConfig extends ConfigBase {
 	public final ConfigBool allowAllCopycatBlocks = b(false, "allowAllCopycatBlocks", Comments.allowAllCopycatBlocks);
 	public final ConfigBool allowContraptionMoveAll = b(false, "allowContraptionMoveAll", Comments.allowContraptionMoveAll);
 	public final ConfigInt maxFlickerScore = i(128, 0, "maxFlickerScore", Comments.maxFlickerScore);
+	public final ConfigInt maxArmSpeed = i(256, 0, 1024, "maxArmSpeed", Comments.maxArmSpeed);
 
 	private static class Comments {
 		static final String trains = "Realism, what's that?",
@@ -78,7 +79,8 @@ public class CUConfig extends ConfigBase {
 			allowAllCopycatBlocks = "Whether or not to allow all blocks to be inserted into Copycat blocks.",
 			chainConveyorConnectionLimits = "Whether to check for valid connections when connecting chain conveyors.",
 			allowContraptionMoveAll = "Whether to allow contraptions to move any block.",
-			maxFlickerScore = "Maximum allowed rotation flicker (start/stop churn) for any Kinetic Block. Set to 0 to disable flicker checks.";
+			maxFlickerScore = "Maximum allowed rotation flicker (start/stop churn) for any Kinetic Block. Set to 0 to disable flicker checks.",
+			maxArmSpeed = "Maximum movement speed for Mechanical Arms.";
 
 		private static final Map<String, String> comments;
 		static {

@@ -8,6 +8,7 @@
     "CopycatBlockMixin",
     "ExtendoGripItemMixin",
     "RotationPropagatorMixin",
+    "ArmBlockEntityMixin",
     "chain.ChainConveyorConnectionHandlerMixin",
     "glue.SuperGlueSelectionPacketMixin",
     "train.CarriageContraptionMixin",
